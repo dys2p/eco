@@ -1,4 +1,4 @@
-// Diceware funcs generate random passphrases from a small word list (1296 words), joined with dashes.
+// Package diceware generates random passphrases from a small word list (1296 words). Words are joined with dashes.
 package diceware
 
 import (
