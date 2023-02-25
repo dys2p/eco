@@ -1,4 +1,5 @@
-package lib
+// Package id generates random n-digit IDs.
+package id
 
 import (
 	"crypto/rand"
