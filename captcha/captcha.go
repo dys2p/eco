@@ -2,7 +2,7 @@
 //
 // Add to your router:
 //
-//	router.Handler("GET", "/captcha/:fn", captcha.Handler())
+//	router.Handler(http.MethodGet, "/captcha/:fn", captcha.Handler())
 //
 // Add to your html template:
 //
@@ -24,7 +24,7 @@
 //	    data.Captcha.ID = captcha.New()
 //	    data.Captcha.Err = true
 //	    html.MyTemplate.Execute(w, data)
-//		return
+//	    return
 //	}
 package captcha
 
