@@ -6,8 +6,8 @@ type DummyMailer struct{}
 
 func (DummyMailer) Send(to string, subject string, body []byte) error {
 	log.Println("------ dummy mailer ------")
-	log.Println("to: %s", to)
-	log.Println("subject: %s", subject)
-	log.Println("body: %s", body)
+	log.Printf("to: %s", to)
+	log.Printf("subject: %s", subject)
+	log.Printf("body: %s", body)
 	return nil
 }
