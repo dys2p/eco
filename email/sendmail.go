@@ -2,7 +2,6 @@ package email
 
 import (
 	"context"
-	"io"
 	"os/exec"
 	"time"
 )
@@ -34,16 +33,6 @@ func (mailer Sendmail) Send(to string, subject string, body []byte) error {
 	envelopeTo := to
 
 	sendmail := exec.CommandContext(ctx, "/usr/sbin/sendmail", "-i", "-f", envelopeFrom, "--", envelopeTo) // -i don't treat a line with only a . character as the end of input
-	stdin, err := sendmail.StdinPipe()
-	if err != nil {
-		return err
-	}
-	if err := sendmail.Start(); err != nil {
-		return err
-	}
-	if _, err := io.Copy(stdin, mail); err != nil {
-		return err
-	}
-	stdin.Close()
-	return sendmail.Wait()
+	sendmail.Stdin = mail
+	return sendmail.Run()
 }
