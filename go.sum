@@ -4,3 +4,5 @@ github.com/mattn/go-sqlite3 v1.14.16 h1:yOQRA0RpS5PFz/oikGwBEqvAWhWg5ufRz4ETLjwp
 github.com/mattn/go-sqlite3 v1.14.16/go.mod h1:2eHXhiwb8IkHr+BDWZGa96P6+rkvnG63S2DGjv9HUNg=
 github.com/sethvargo/go-diceware v0.3.0 h1:UVVEfmN/uF50JfWAN7nbY6CiAlp5xeSx+5U0lWKkMCQ=
 github.com/sethvargo/go-diceware v0.3.0/go.mod h1:lH5Q/oSPMivseNdhMERAC7Ti5oOPqsaVddU1BcN1CY0=
+golang.org/x/exp v0.0.0-20230224173230-c95f2b4c22f2 h1:Jvc7gsqn21cJHCmAWx0LiimpP18LZmUxkT5Mp7EZ1mI=
+golang.org/x/exp v0.0.0-20230224173230-c95f2b4c22f2/go.mod h1:CxIveKay+FTh1D0yPZemJVgC/95VzuuOLq5Qi4xnoYc=

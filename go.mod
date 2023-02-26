@@ -7,3 +7,5 @@ require (
 	github.com/mattn/go-sqlite3 v1.14.16
 	github.com/sethvargo/go-diceware v0.3.0
 )
+
+require golang.org/x/exp v0.0.0-20230224173230-c95f2b4c22f2 // indirect
