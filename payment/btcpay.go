@@ -58,14 +58,14 @@ func (b BTCPay) PayHTML(purchaseID string) (template.HTML, error) {
 }
 
 func (b BTCPay) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	r.URL.Path = strings.Trim(r.URL.Path, "/")
+	r.URL.Path = strings.TrimSuffix(r.URL.Path, "/")
 	switch r.URL.Path {
-	case "webhook":
+	case "/btcpay/webhook":
 		if err := b.processWebhook(w, r); err != nil {
 			log.Printf("error processing btcpay webhook: %v", err)
 			w.WriteHeader(http.StatusInternalServerError)
 		}
-	case "create-invoice":
+	case "/btcpay/create-invoice":
 		if err := b.createInvoice(w, r); err != nil {
 			log.Printf("error creating btcpay invoice: %v", err)
 			w.WriteHeader(http.StatusInternalServerError)

@@ -24,42 +24,41 @@ type paypalTmplData struct {
 }
 
 var payPalTmpl = template.Must(template.New("").Parse(`
-	<div>
-		<!-- Ensure that Smart Payment Buttons render inside an element that does not have a fixed height. -->
-		<div id="paypal-button-container" style="text-align: center;"></div>
-
-		<script src="https://www.paypal.com/sdk/js?currency=EUR&client-id={{.ClientID}}"></script>
-		<script>
-			paypal.Buttons({
-				createOrder: function() {
-					return fetch('/paypal/create-transaction', {
-						method: 'post',
-						headers: {
-							'content-type': 'application/json'
-						},
-						body: '{{.PurchaseID}}'
-					}).then(function(res) {
-						return res.json();
-					}).then(function(data) {
-						return data.id; // Use the key sent by your server's response, ex. 'id' or 'token'
-					});
-				},
-				onApprove: function(data) {
-					return fetch('/paypal/capture-transaction', {
-						method: 'post',
-						headers: {
-							'content-type': 'application/json'
-						},
-						body: data.orderID
-					}).then(function(res) {
-						return res.json();
-					}).then(function(details) {
-						window.location.replace("/view");
+	<script src="https://www.paypal.com/sdk/js?client-id={{.ClientID}}&currency=EUR"></script>
+	<!-- Set up a container element for the button -->
+	<div id="paypal-button-container" style="text-align: center;"></div>
+	<script>
+		paypal.Buttons({
+			// Order is created on the server and the order id is returned
+			createOrder() {
+				return fetch("/paypal-checkout/create-paypal-order", {
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
+					},
+					body: "{{.PurchaseID}}"
+				})
+				.then((response) => response.json())
+				.then((order) => order.id);
+			},
+			onApprove(data) {
+				return fetch("/paypal-checkout/capture-paypal-order", {
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
+					},
+					body: JSON.stringify({
+						orderID: data.orderID
 					})
-				}
-			}).render('#paypal-button-container');
-		</script>
-	</div>
+				})
+				.then((response) => response.json())
+				.then((orderData) => {
+					window.location.href = "/view";
+				});
+			}
+		}).render('#paypal-button-container');
+	</script>
+
 	<p>Wir übermitteln nur die Bestellnummer an PayPal. Deine bestellten Artikel sowie die Details zu Lieferung oder Abholung werden nicht an PayPal gesendet.</p>
 	<p>Falls du TOR oder einen VPN benutzt: Die angezeigten Bezahlmöglichkeiten sind von der Länderzuordnung deiner IP-Adresse abhängig. Darüber hinaus blockiert PayPal manche TOR Exit Nodes. In dem Fall versuche es mit „New Circuit for this Site“.</p>
 `))
@@ -82,14 +81,14 @@ func (p PayPal) PayHTML(purchaseID string) (template.HTML, error) {
 }
 
 func (p PayPal) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	r.URL.Path = strings.Trim(r.URL.Path, "/")
+	r.URL.Path = strings.TrimSuffix(r.URL.Path, "/")
 	switch r.URL.Path {
-	case "create-transaction":
+	case "/paypal-checkout/create-paypal-order":
 		if err := p.createTransaction(w, r); err != nil {
 			log.Printf("error creating PayPal transaction: %v", err)
 			w.WriteHeader(http.StatusInternalServerError)
 		}
-	case "capture-transaction":
+	case "/paypal-checkout/capture-paypal-order":
 		if err := p.captureTransaction(w, r); err != nil {
 			log.Printf("error capturing PayPal transaction: %v", err)
 			w.WriteHeader(http.StatusInternalServerError)
