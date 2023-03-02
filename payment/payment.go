@@ -10,7 +10,7 @@ import (
 	"net/http"
 )
 
-type PaymentMethod interface {
+type Method interface {
 	http.Handler
 	ID() string
 	Name() string
