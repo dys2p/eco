@@ -31,7 +31,7 @@ var payPalTmpl = template.Must(template.New("").Parse(`
 		paypal.Buttons({
 			// Order is created on the server and the order id is returned
 			createOrder() {
-				return fetch("/paypal-checkout/create-paypal-order", {
+				return fetch("/payment/paypal-checkout/create-paypal-order", {
 					method: "POST",
 					headers: {
 						"Content-Type": "application/json",
@@ -42,7 +42,7 @@ var payPalTmpl = template.Must(template.New("").Parse(`
 				.then((order) => order.id);
 			},
 			onApprove(data) {
-				return fetch("/paypal-checkout/capture-paypal-order", {
+				return fetch("/payment/paypal-checkout/capture-paypal-order", {
 					method: "POST",
 					headers: {
 						"Content-Type": "application/json",
@@ -83,12 +83,12 @@ func (p PayPal) PayHTML(purchaseID string) (template.HTML, error) {
 func (p PayPal) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	r.URL.Path = strings.TrimSuffix(r.URL.Path, "/")
 	switch r.URL.Path {
-	case "/paypal-checkout/create-paypal-order":
+	case "/payment/paypal-checkout/create-paypal-order":
 		if err := p.createTransaction(w, r); err != nil {
 			log.Printf("error creating PayPal transaction: %v", err)
 			w.WriteHeader(http.StatusInternalServerError)
 		}
-	case "/paypal-checkout/capture-paypal-order":
+	case "/payment/paypal-checkout/capture-paypal-order":
 		if err := p.captureTransaction(w, r); err != nil {
 			log.Printf("error capturing PayPal transaction: %v", err)
 			w.WriteHeader(http.StatusInternalServerError)

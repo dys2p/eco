@@ -13,7 +13,7 @@ import (
 )
 
 func init() {
-	log.Println(`Don't forget to set up the BTCPay webhook for your store: URL: "/btcpay/webhook", event: "An invoice has been settled"`)
+	log.Println(`Don't forget to set up the BTCPay webhook for your store: URL: "/payment/btcpay/webhook", event: "An invoice has been settled"`)
 }
 
 type BTCPay struct {
@@ -33,7 +33,7 @@ var lastInvoice = make(map[string]createdInvoice) // key: purchase ID
 var btcpayTmpl = template.Must(template.New("").Parse(`
 	<p>Bezahle den angegebenen Betrag in Monero (XMR) oder Bitcoin (BTC). Der Betrag muss innerhalb von 60 Minuten vollständig und als einzelne Transaktion auf der angegebenen Adresse eingehen.</p>
 	<p>Hinweis: Das BTCPay-Fenster bestätigt deine Zahlung, sobald die Zahlung in der Blockchain sichtbar ist. Der Status deiner Bestellung wird jedoch erst einige Minuten später aktualisiert, wenn die Transaktion ausreichend Bestätigungen hat.</p>
-	<form action="/btcpay/create-invoice" method="post">
+	<form action="/payment/btcpay/create-invoice" method="post">
 		<input type="hidden" name="purchase-id" value="{{.}}">
 		<button type="submit" class="btn btn-success">Zahlungsaufforderung erzeugen</button>
 	</form>
@@ -60,12 +60,12 @@ func (b BTCPay) PayHTML(purchaseID string) (template.HTML, error) {
 func (b BTCPay) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	r.URL.Path = strings.TrimSuffix(r.URL.Path, "/")
 	switch r.URL.Path {
-	case "/btcpay/webhook":
+	case "/payment/btcpay/webhook":
 		if err := b.processWebhook(w, r); err != nil {
 			log.Printf("error processing btcpay webhook: %v", err)
 			w.WriteHeader(http.StatusInternalServerError)
 		}
-	case "/btcpay/create-invoice":
+	case "/payment/btcpay/create-invoice":
 		if err := b.createInvoice(w, r); err != nil {
 			log.Printf("error creating btcpay invoice: %v", err)
 			w.WriteHeader(http.StatusInternalServerError)
