@@ -3,6 +3,8 @@
 // Register the http.Handler for POST requests under /id:
 //
 //	router.Handler(http.MethodPost, fmt.Sprintf("/%s/*path", paymentMethod.ID()), paymentMethod)
+//
+// The handler will be publicly available.
 package payment
 
 import (
