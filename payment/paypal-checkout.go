@@ -13,6 +13,7 @@ import (
 	"github.com/dys2p/paypal"
 )
 
+// PayPal does the PayPal Standard Checkout described at https://developer.paypal.com/docs/checkout/standard/
 type PayPal struct {
 	Config    *paypal.Config
 	Purchases PurchaseRepo
@@ -31,7 +32,7 @@ var payPalTmpl = template.Must(template.New("").Parse(`
 		paypal.Buttons({
 			// Order is created on the server and the order id is returned
 			createOrder() {
-				return fetch("/payment/paypal-checkout/create-paypal-order", {
+				return fetch("/payment/paypal-checkout/create-order", {
 					method: "POST",
 					headers: {
 						"Content-Type": "application/json",
@@ -42,7 +43,8 @@ var payPalTmpl = template.Must(template.New("").Parse(`
 				.then((order) => order.id);
 			},
 			onApprove(data) {
-				return fetch("/payment/paypal-checkout/capture-paypal-order", {
+				console.log(data);
+				return fetch("/payment/paypal-checkout/capture-order", {
 					method: "POST",
 					headers: {
 						"Content-Type": "application/json",
@@ -83,12 +85,12 @@ func (p PayPal) PayHTML(purchaseID string) (template.HTML, error) {
 func (p PayPal) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	r.URL.Path = strings.TrimSuffix(r.URL.Path, "/")
 	switch r.URL.Path {
-	case "/payment/paypal-checkout/create-paypal-order":
+	case "/payment/paypal-checkout/create-order":
 		if err := p.createTransaction(w, r); err != nil {
 			log.Printf("error creating PayPal transaction: %v", err)
 			w.WriteHeader(http.StatusInternalServerError)
 		}
-	case "/payment/paypal-checkout/capture-paypal-order":
+	case "/payment/paypal-checkout/capture-order":
 		if err := p.captureTransaction(w, r); err != nil {
 			log.Printf("error capturing PayPal transaction: %v", err)
 			w.WriteHeader(http.StatusInternalServerError)
@@ -125,26 +127,32 @@ func (p PayPal) createTransaction(w http.ResponseWriter, r *http.Request) error 
 	return nil
 }
 
+type CaptureRequest struct {
+	OrderID string `json:"orderID"`
+}
+
 // advantage over webhook: this works on localhost
 func (p PayPal) captureTransaction(w http.ResponseWriter, r *http.Request) error {
-	orderIDBytes, _ := io.ReadAll(r.Body) // = paypal order id
-	orderID := string(orderIDBytes)
+	var captureRequest CaptureRequest
+	if err := json.NewDecoder(r.Body).Decode(&captureRequest); err != nil {
+		return fmt.Errorf("decoding capture request: %w", err)
+	}
 
 	authResult, err := p.Config.Auth()
 	if err != nil {
-		return err
+		return fmt.Errorf("getting auth: %w", err)
 	}
 
 	// 2a. Get the order ID from the request body
 	// 3. Call PayPal to capture the order
-	captureResponse, err := p.Config.Capture(authResult, orderID)
+	captureResponse, err := p.Config.Capture(authResult, captureRequest.OrderID)
 	if err != nil {
-		return err
+		return fmt.Errorf("capturing response: %w", err)
 	}
 
 	purchaseID := captureResponse.PurchaseUnits[0].ReferenceID
 
-	log.Printf("[%s] captured transaction: order: %s, capture: %s", purchaseID, orderID, captureResponse.PurchaseUnits[0].Payments.Captures[0].ID)
+	log.Printf("[%s] captured transaction: order: %s, capture: %s", purchaseID, captureRequest.OrderID, captureResponse.PurchaseUnits[0].Payments.Captures[0].ID)
 
 	if err := p.Purchases.SetPurchasePaid(purchaseID); err != nil {
 		return err
