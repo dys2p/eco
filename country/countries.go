@@ -1,6 +1,7 @@
 // Package country contains European countries and their VAT rates.
 package country
 
+// Source: https://europa.eu/youreurope/business/taxation/vat/vat-rules-rates/index_en.htm#shortcut-5
 var (
 	AT = Country{"AT", "Österreich", 0.20}
 	BE = Country{"BE", "Belgien", 0.21}
