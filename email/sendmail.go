@@ -9,13 +9,27 @@ import (
 // Sendmail runs /usr/bin/sendmail to queue an email for sending.
 //
 // Your sendmail binary probably has the setgid bit set to be able to copy the mail into the queue directory.
-// If your binary runs as a sandboxed systemd service, you might have to specify one or several of these lines:
+// If your binary runs as a sandboxed systemd service, you might have to disable these options:
 //
-//	SupplementaryGroup=postdrop
+//	LockPersonality
+//	MemoryDenyWriteExecute
+//	PrivateDevices
+//	ProtectClock
+//	ProtectHostname
+//	ProtectKernelLogs
+//	ProtectKernelModules
+//	ProtectKernelTunables
+//	RestrictAddressFamilies
+//	RestrictNamespaces
+//	RestrictRealtime
+//	RestrictSUIDSGID
+//	SystemCallArchitectures
+//	SystemCallFilter
+//	SystemCallLog
+//
+// Plus you might have to enable writing to the spool directory:
+//
 //	ReadWritePaths=/var/spool/nullmailer
-//	# remove anything that sets NoNewPrivileges=true, such as:
-//	# PrivateDevices=true
-//	# ProtectKernelTunables=true
 type Sendmail struct {
 	From string
 }
