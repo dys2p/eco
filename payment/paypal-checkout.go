@@ -127,14 +127,14 @@ func (p PayPal) createTransaction(w http.ResponseWriter, r *http.Request) error 
 	return nil
 }
 
-type CaptureRequest struct {
+type captureRequest struct {
 	OrderID string `json:"orderID"`
 }
 
 // advantage over webhook: this works on localhost
 func (p PayPal) captureTransaction(w http.ResponseWriter, r *http.Request) error {
-	var captureRequest CaptureRequest
-	if err := json.NewDecoder(r.Body).Decode(&captureRequest); err != nil {
+	var captureReq captureRequest
+	if err := json.NewDecoder(r.Body).Decode(&captureReq); err != nil {
 		return fmt.Errorf("decoding capture request: %w", err)
 	}
 
@@ -145,14 +145,14 @@ func (p PayPal) captureTransaction(w http.ResponseWriter, r *http.Request) error
 
 	// 2a. Get the order ID from the request body
 	// 3. Call PayPal to capture the order
-	captureResponse, err := p.Config.Capture(authResult, captureRequest.OrderID)
+	captureResponse, err := p.Config.Capture(authResult, captureReq.OrderID)
 	if err != nil {
 		return fmt.Errorf("capturing response: %w", err)
 	}
 
 	purchaseID := captureResponse.PurchaseUnits[0].ReferenceID
 
-	log.Printf("[%s] captured transaction: order: %s, capture: %s", purchaseID, captureRequest.OrderID, captureResponse.PurchaseUnits[0].Payments.Captures[0].ID)
+	log.Printf("[%s] captured transaction: order: %s, capture: %s", purchaseID, captureReq.OrderID, captureResponse.PurchaseUnits[0].Payments.Captures[0].ID)
 
 	if err := p.Purchases.SetPurchasePaid(purchaseID); err != nil {
 		return err
