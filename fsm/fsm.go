@@ -8,11 +8,21 @@ type Transition[State comparable] struct {
 
 type FSM[State comparable] []Transition[State] // easier than a map for a small number of transactions
 
-func (fsm *FSM[State]) Can(from, to State) bool {
-	for _, t := range *fsm {
+func (fsm FSM[State]) Can(from, to State) bool {
+	for _, t := range fsm {
 		if t.From == from && t.To == to {
 			return true
 		}
 	}
 	return false
+}
+
+func (fsm FSM[State]) From(from State) []State {
+	var to []State
+	for _, t := range fsm {
+		if t.From == from {
+			to = append(to, t.To)
+		}
+	}
+	return to
 }
