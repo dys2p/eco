@@ -13,7 +13,7 @@ func Initialize(sqlitedb string) error {
 	if err != nil {
 		return err
 	}
-	store, err := NewSQLiteStore(db)
+	store, err := newSQLiteStore(db)
 	if err != nil {
 		return err
 	}
@@ -29,7 +29,7 @@ func Initialize(sqlitedb string) error {
 	return nil
 }
 
-type SQLiteStore struct {
+type sqliteStore struct {
 	sqlDB *sql.DB
 	clean *sql.Stmt
 	del   *sql.Stmt
@@ -37,7 +37,7 @@ type SQLiteStore struct {
 	set   *sql.Stmt
 }
 
-func NewSQLiteStore(db *sql.DB) (*SQLiteStore, error) {
+func newSQLiteStore(db *sql.DB) (*sqliteStore, error) {
 	if _, err := db.Exec(`
 		CREATE TABLE IF NOT EXISTS captcha (
 			id     TEXT    PRIMARY KEY,
@@ -64,7 +64,7 @@ func NewSQLiteStore(db *sql.DB) (*SQLiteStore, error) {
 		return nil, err
 	}
 
-	return &SQLiteStore{
+	return &sqliteStore{
 		sqlDB: db,
 		clean: clean,
 		del:   del,
@@ -74,7 +74,7 @@ func NewSQLiteStore(db *sql.DB) (*SQLiteStore, error) {
 }
 
 // Cleanup removes captchas older than two days.
-func (s *SQLiteStore) Cleanup() {
+func (s *sqliteStore) Cleanup() {
 	if _, err := s.clean.Exec(time.Now().AddDate(0, 0, -2).Unix()); err != nil {
 		log.Printf("error cleaning up captcha sqlite store: %v", err)
 	}
@@ -82,7 +82,7 @@ func (s *SQLiteStore) Cleanup() {
 
 // Get returns stored digits for the captcha id. Clear indicates
 // whether the captcha must be deleted from the store.
-func (s *SQLiteStore) Get(id string, clear bool) (digits []byte) {
+func (s *sqliteStore) Get(id string, clear bool) (digits []byte) {
 	if err := s.get.QueryRow(id).Scan(&digits); err != nil {
 		if err == sql.ErrNoRows {
 			// no problem, happens if a POST request is repeated
@@ -99,7 +99,7 @@ func (s *SQLiteStore) Get(id string, clear bool) (digits []byte) {
 }
 
 // Set sets the digits for the captcha id.
-func (s *SQLiteStore) Set(id string, digits []byte) {
+func (s *sqliteStore) Set(id string, digits []byte) {
 	if _, err := s.set.Exec(id, time.Now().Unix(), digits); err != nil {
 		log.Printf("error setting captcha sqlite store: %v", err)
 	}
