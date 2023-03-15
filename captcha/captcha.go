@@ -1,5 +1,9 @@
 // Package captcha wraps github.com/dchest/captcha and provides an sqlite store for it.
 //
+// Initialize the captcha package:
+//
+//	captcha.Initialize("captcha.sqlite3")
+//
 // Add to your router:
 //
 //	router.Handler(http.MethodGet, "/captcha/:fn", captcha.Handler())
