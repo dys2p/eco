@@ -27,7 +27,7 @@ import (
 //	SystemCallFilter
 //	SystemCallLog
 //
-// Plus you might have to enable writing to the spool directory:
+// Plus you might have to enable writing to the spool directory, for example:
 //
 //	ReadWritePaths=/var/spool/nullmailer
 type Sendmail struct {

@@ -28,7 +28,7 @@ func (mailer SMTP) hostAddr() string {
 	return mailer.Host + ":465"
 }
 
-func CreateConfig(jsonPath string) error {
+func createConfig(jsonPath string) error {
 	data, err := json.Marshal(&SMTP{})
 	if err != nil {
 		return err
@@ -39,10 +39,16 @@ func CreateConfig(jsonPath string) error {
 	return fmt.Errorf("created empty config file: %s", jsonPath)
 }
 
+// LoadSMTP reads a JSON file and unmarshals it into an SMTP struct.
+// Then it connects and authenticates to the server in order to test the hostname and credentials.
+//
+// If the file does not exist, an empty file is created:
+//
+//	{"from":"","username":"","password":"","host":""}
 func LoadSMTP(jsonPath string) (*SMTP, error) {
 	data, err := os.ReadFile(jsonPath)
 	if os.IsNotExist(err) {
-		return nil, CreateConfig(jsonPath)
+		return nil, createConfig(jsonPath)
 	}
 	if err != nil {
 		return nil, err
