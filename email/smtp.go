@@ -10,6 +10,7 @@ import (
 	"github.com/emersion/go-smtp"
 )
 
+// SMTP connects to a SMTP server. If the server is not reachable, Send fails.
 type SMTP struct {
 	From     string `json:"from"`
 	Username string `json:"username"`
