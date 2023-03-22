@@ -4,15 +4,19 @@
 //
 //	captcha.Initialize("captcha.sqlite3")
 //
-// Add to your router:
+// Register the captcha handler in your HTTP router:
 //
 //	router.Handler(http.MethodGet, "/captcha/:fn", captcha.Handler())
 //
-// Add to your html template:
+// Parse the captcha template string along with your HTML templates:
 //
-//	.Parse(captcha.TemplateText)
+//	t = template.Must(t.Parse(captcha.TemplateString))
 //
-// Pass captcha data to the template:
+// Execute the template:
+//
+//	{{template "captcha" .Captcha}}
+//
+// Pass captcha data to your template:
 //
 //	type MyTemplateData struct {
 //	    Captcha captcha.TemplateData
