@@ -17,10 +17,10 @@ func init() {
 }
 
 type BTCPay struct {
-	CustomName string
-	ShopURL    string // for redirect URL, like "https://example.com"
-	Store      btcpay.Store
-	Purchases  PurchaseRepo
+	CustomName  string
+	RedirectURL string
+	Store       btcpay.Store
+	Purchases   PurchaseRepo
 }
 
 type createdInvoice struct {
@@ -94,7 +94,7 @@ func (b BTCPay) createInvoice(w http.ResponseWriter, r *http.Request) error {
 	invoiceRequest.ExpirationMinutes = 60
 	invoiceRequest.DefaultLanguage = "de-DE"
 	invoiceRequest.OrderID = purchaseID
-	invoiceRequest.RedirectURL = fmt.Sprintf("%s/view", b.ShopURL)
+	invoiceRequest.RedirectURL = b.RedirectURL
 	invoice, err := b.Store.CreateInvoice(invoiceRequest)
 	if err != nil {
 		return fmt.Errorf("querying store: %w", err)
