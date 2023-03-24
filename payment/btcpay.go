@@ -14,7 +14,7 @@ import (
 )
 
 func init() {
-	log.Println(`Don't forget to set up the BTCPay webhook for your store: URL: "/payment/btcpay/webhook", event: "An invoice has been settled"`)
+	log.Println(`Don't forget to set up the BTCPay webhook for your store: URL: "/payment/btcpay/webhook", events: "An invoice is processing" and "An invoice has been settled"`)
 }
 
 type BTCPay struct {
@@ -122,21 +122,24 @@ func (b BTCPay) webhook(w http.ResponseWriter, r *http.Request) error {
 	if err != nil {
 		return fmt.Errorf("getting event: %w", err)
 	}
-
 	invoice, err := b.Store.GetInvoice(event.InvoiceID)
 	if err != nil {
 		return fmt.Errorf("getting invoice %s: %w", event.InvoiceID, err)
 	}
-
 	purchaseID := invoice.InvoiceMetadata.OrderID
 
-	if event.Type == btcpay.EventInvoiceSettled {
-		if err := b.Purchases.SetPurchasePaid(purchaseID); err == nil {
-			return nil
-		} else {
+	switch event.Type {
+	case btcpay.EventInvoiceProcessing:
+		if err := b.Purchases.SetPurchaseProcessing(purchaseID); err != nil {
+			return fmt.Errorf("setting purchase %s processing: %w", purchaseID, err)
+		}
+		return nil
+	case btcpay.EventInvoiceSettled:
+		if err := b.Purchases.SetPurchasePaid(purchaseID); err != nil {
 			return fmt.Errorf("setting purchase %s paid: %w", purchaseID, err)
 		}
-	} else {
+		return nil
+	default:
 		return fmt.Errorf("unknown event type: %s", event.Type)
 	}
 }

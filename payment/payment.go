@@ -24,6 +24,7 @@ type Method interface {
 type PurchaseRepo interface {
 	PurchaseSumCents(purchaseID string) (int, error)
 	SetPurchasePaid(purchaseID string) error
+	SetPurchaseProcessing(purchaseID string) error
 }
 
 func Get(methods []Method, id string) (Method, error) {
