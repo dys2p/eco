@@ -8,6 +8,7 @@
 package payment
 
 import (
+	"errors"
 	"html/template"
 	"net/http"
 )
@@ -23,4 +24,16 @@ type Method interface {
 type PurchaseRepo interface {
 	PurchaseSumCents(purchaseID string) (int, error)
 	SetPurchasePaid(purchaseID string) error
+}
+
+func Get(methods []Method, id string) (Method, error) {
+	for _, m := range methods {
+		if m.ID() == id {
+			return m, nil
+		}
+	}
+	if len(methods) > 0 {
+		return methods[0], nil
+	}
+	return nil, errors.New("no payment methods found")
 }
