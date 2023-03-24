@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/dys2p/btcpay"
+	"golang.org/x/text/language"
 )
 
 func init() {
@@ -92,7 +93,7 @@ func (b BTCPay) createInvoice(w http.ResponseWriter, r *http.Request) error {
 		Currency: "EUR",
 	}
 	invoiceRequest.ExpirationMinutes = 60
-	invoiceRequest.DefaultLanguage = "de-DE"
+	invoiceRequest.DefaultLanguage = b.defaultLanguage(r)
 	invoiceRequest.OrderID = purchaseID
 	invoiceRequest.RedirectURL = b.RedirectURL
 	invoice, err := b.Store.CreateInvoice(invoiceRequest)
@@ -107,6 +108,13 @@ func (b BTCPay) createInvoice(w http.ResponseWriter, r *http.Request) error {
 
 	http.Redirect(w, r, invoice.CheckoutLink, http.StatusSeeOther)
 	return nil
+}
+
+func (BTCPay) defaultLanguage(r *http.Request) string {
+	tags := []language.Tag{language.AmericanEnglish, language.German}
+	langs := []string{"en", "de-DE"} // from https://github.com/btcpayserver/btcpayserver/tree/master/BTCPayServer/wwwroot/locales
+	_, i := language.MatchStrings(language.NewMatcher(tags), r.Header.Get("Accept-Language"))
+	return langs[i]
 }
 
 func (b BTCPay) webhook(w http.ResponseWriter, r *http.Request) error {
