@@ -18,10 +18,11 @@ func init() {
 }
 
 type BTCPay struct {
-	CustomName  string
-	RedirectURL string
-	Store       btcpay.Store
-	Purchases   PurchaseRepo
+	CustomName        string
+	ExpirationMinutes int
+	RedirectURL       string
+	Store             btcpay.Store
+	Purchases         PurchaseRepo
 }
 
 type createdInvoice struct {
@@ -92,7 +93,7 @@ func (b BTCPay) createInvoice(w http.ResponseWriter, r *http.Request) error {
 		Amount:   float64(sumCents) / 100.0,
 		Currency: "EUR",
 	}
-	invoiceRequest.ExpirationMinutes = 60
+	invoiceRequest.ExpirationMinutes = b.expirationMinutes()
 	invoiceRequest.DefaultLanguage = b.defaultLanguage(r)
 	invoiceRequest.OrderID = purchaseID
 	invoiceRequest.RedirectURL = b.RedirectURL
@@ -115,6 +116,19 @@ func (BTCPay) defaultLanguage(r *http.Request) string {
 	langs := []string{"en", "de-DE"} // from https://github.com/btcpayserver/btcpayserver/tree/master/BTCPayServer/wwwroot/locales
 	_, i := language.MatchStrings(language.NewMatcher(tags), r.Header.Get("Accept-Language"))
 	return langs[i]
+}
+
+func (b BTCPay) expirationMinutes() int {
+	if b.ExpirationMinutes == 0 {
+		return 60 // default
+	}
+	if b.ExpirationMinutes < 30 {
+		return 30
+	}
+	if b.ExpirationMinutes > 1440 {
+		return 1440
+	}
+	return b.ExpirationMinutes
 }
 
 func (b BTCPay) webhook(w http.ResponseWriter, r *http.Request) error {
