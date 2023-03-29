@@ -1,4 +1,5 @@
-// Command gotext-update-templates is like gotext, but it extracts messages for translation from HTML templates.
+// Command gotext-update-templates merge translations and generates a catalog.
+// Unlike gotext update, it also extracts messages for translation from HTML templates. For that purpose it accepts an additional flag "trfunc".
 // It reads from the working directory. If you use go generate, note that "the generator is run in the package's source directory".
 package main
 
@@ -17,23 +18,29 @@ import (
 )
 
 type Config struct {
+	Dir               string
 	Lang              string
 	Out               string
+	Packages          []string
 	SrcLang           string
 	TranslateFuncName string
 }
 
 func main() {
-	flagSet := flag.NewFlagSet(os.Args[0], flag.ExitOnError)
-	lang := flagSet.String("lang", "de-DE,en-US", "")
-	out := flagSet.String("out", "catalog.go", "")
-	srcLang := flagSet.String("srclang", "de-DE", "")
-	trFunc := flagSet.String("trfunc", "Tr", "")
-	flagSet.Parse(os.Args[1:])
+	// own FlagSet because the global one is polluted
+	fs := flag.NewFlagSet(os.Args[0], flag.ExitOnError)
+	dir := fs.String("dir", "locales", "default subdirectory to store translation files")
+	lang := fs.String("lang", "en-US", "comma-separated list of languages to process")
+	out := fs.String("out", "", "output file to write to") // TODO catalog.go default?
+	srcLang := fs.String("srclang", "en-US", "the source-code language")
+	trFunc := fs.String("trfunc", "Tr", "")
+	fs.Parse(os.Args[1:])
 
 	config := Config{
+		Dir:               *dir,
 		Lang:              *lang,
 		Out:               *out,
+		Packages:          fs.Args(),
 		SrcLang:           *srcLang,
 		TranslateFuncName: *trFunc,
 	}
@@ -99,27 +106,25 @@ func (config Config) Run() error {
 		return err
 	}
 
-	if len(messages) == 0 {
-		return nil
-	}
-
 	supported := []language.Tag{}
-	for _, l := range strings.Split(config.Lang, ",") {
+	for _, l := range strings.FieldsFunc(config.Lang, func(r rune) bool { return r == ',' }) {
 		supported = append(supported, language.Make(l))
 	}
 
-	state := pipeline.State{
-		Extracted: pipeline.Messages{
-			Language: language.Make(config.SrcLang),
-			Messages: messages,
-		},
-		Config: pipeline.Config{
-			Supported:      supported,
-			SourceLanguage: language.Make(config.SrcLang),
-			GenFile:        config.Out,
-		},
-		Translations: nil,
+	pconf := &pipeline.Config{
+		Supported:      supported,
+		SourceLanguage: language.Make(config.SrcLang),
+		Packages:       config.Packages,
+		Dir:            config.Dir,
+		GenFile:        config.Out,
 	}
+
+	// see https://cs.opensource.google/go/x/text/+/master:cmd/gotext/update.go
+	state, err := pipeline.Extract(pconf)
+	if err != nil {
+		return err
+	}
+	state.Extracted.Messages = append(state.Extracted.Messages, messages...)
 	if err := state.Import(); err != nil {
 		return err
 	}
