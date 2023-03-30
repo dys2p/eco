@@ -10,19 +10,18 @@ import (
 	"time"
 
 	"github.com/dys2p/btcpay"
-	"golang.org/x/text/language"
+	"github.com/dys2p/eco/language"
 )
 
 func init() {
 	log.Println(`Don't forget to set up the BTCPay webhook for your store: URL: "/payment/btcpay/webhook", events: "An invoice is processing" and "An invoice has been settled"`)
 }
 
-type BTCPay struct {
-	CustomName        string
-	ExpirationMinutes int
-	RedirectURL       string
-	Store             btcpay.Store
-	Purchases         PurchaseRepo
+var btcpayTmpl = template.Must(template.ParseFS(htmlfiles, "btcpay.html"))
+
+type btcpayTmplData struct {
+	language.Lang
+	PurchaseID string
 }
 
 type createdInvoice struct {
@@ -32,30 +31,27 @@ type createdInvoice struct {
 
 var lastInvoice = make(map[string]createdInvoice) // key: purchase ID
 
-var btcpayTmpl = template.Must(template.New("").Parse(`
-	<p>Bezahle den angegebenen Betrag in Monero (XMR) oder Bitcoin (BTC). Der Betrag muss innerhalb von 60 Minuten vollständig und als einzelne Transaktion auf der angegebenen Adresse eingehen.</p>
-	<p>Hinweis: Das BTCPay-Fenster bestätigt deine Zahlung, sobald die Zahlung in der Blockchain sichtbar ist. Der Status deiner Bestellung wird jedoch erst einige Minuten später aktualisiert, wenn die Transaktion ausreichend Bestätigungen hat.</p>
-	<form action="/payment/btcpay/create-invoice" method="post">
-		<input type="hidden" name="purchase-id" value="{{.}}">
-		<button type="submit" class="btn btn-success">Zahlungsaufforderung erzeugen</button>
-	</form>
-`))
+type BTCPay struct {
+	ExpirationMinutes int
+	RedirectURL       string
+	Store             btcpay.Store
+	Purchases         PurchaseRepo
+}
 
 func (BTCPay) ID() string {
 	return "btcpay"
 }
 
-func (b BTCPay) Name() string {
-	if b.CustomName == "" {
-		return "BTCPay"
-	} else {
-		return b.CustomName
-	}
+func (BTCPay) Name(r *http.Request) string {
+	return language.Get(r).Tr("Monero oder Bitcoin")
 }
 
-func (b BTCPay) PayHTML(purchaseID string) (template.HTML, error) {
+func (b BTCPay) PayHTML(r *http.Request, purchaseID string) (template.HTML, error) {
 	buf := &bytes.Buffer{}
-	err := btcpayTmpl.Execute(buf, purchaseID)
+	err := btcpayTmpl.Execute(buf, btcpayTmplData{
+		Lang:       language.Get(r),
+		PurchaseID: purchaseID,
+	})
 	return template.HTML(buf.String()), err
 }
 
@@ -89,12 +85,14 @@ func (b BTCPay) createInvoice(w http.ResponseWriter, r *http.Request) error {
 		return fmt.Errorf("getting sum: %w", err)
 	}
 
+	defaultLanguage := strings.TrimPrefix(language.Get(r).Tr("btcpay:de-DE"), "btcpay:") // see https://github.com/btcpayserver/btcpayserver/tree/master/BTCPayServer/wwwroot/locales
+
 	invoiceRequest := &btcpay.InvoiceRequest{
 		Amount:   float64(sumCents) / 100.0,
 		Currency: "EUR",
 	}
 	invoiceRequest.ExpirationMinutes = b.expirationMinutes()
-	invoiceRequest.DefaultLanguage = b.defaultLanguage(r)
+	invoiceRequest.DefaultLanguage = defaultLanguage
 	invoiceRequest.OrderID = purchaseID
 	invoiceRequest.RedirectURL = b.RedirectURL
 	invoice, err := b.Store.CreateInvoice(invoiceRequest)
@@ -109,13 +107,6 @@ func (b BTCPay) createInvoice(w http.ResponseWriter, r *http.Request) error {
 
 	http.Redirect(w, r, invoice.CheckoutLink, http.StatusSeeOther)
 	return nil
-}
-
-func (BTCPay) defaultLanguage(r *http.Request) string {
-	tags := []language.Tag{language.AmericanEnglish, language.German}
-	langs := []string{"en", "de-DE"} // from https://github.com/btcpayserver/btcpayserver/tree/master/BTCPayServer/wwwroot/locales
-	_, i := language.MatchStrings(language.NewMatcher(tags), r.Header.Get("Accept-Language"))
-	return langs[i]
 }
 
 func (b BTCPay) expirationMinutes() int {

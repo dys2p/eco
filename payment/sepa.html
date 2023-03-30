@@ -1,0 +1,8 @@
+<p>{{.Tr "Führe eine SEPA-Überweisung (einheitlicher Euro-Zahlungsverkehrsraum) auf unser deutsches Bankkonto aus. Wir prüfen es täglich manuell auf neue Zahlungseingänge. Wir werden deinen Namen und deine IBAN auf unserem Kontoauszug sehen."}}</p>
+<p>
+	{{.Tr "Kontoinhaber"}}:       {{.Account.Holder}}<br>
+	{{.Tr "IBAN"}}:               {{.Account.IBAN}}<br>
+	{{.Tr "BIC (falls nötig)"}}:  {{.Account.BIC}}<br>
+	{{.Tr "Bank (falls nötig)"}}: {{.Account.BankName}}
+</p>
+<p>{{.Tr "Überweisungszweck"}}: {{.Purpose}}</p>

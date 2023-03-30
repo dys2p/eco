@@ -10,8 +10,17 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/dys2p/eco/language"
 	"github.com/dys2p/paypal"
 )
+
+var payPalTmpl = template.Must(template.ParseFS(htmlfiles, "paypal-checkout.html"))
+
+type paypalTmplData struct {
+	language.Lang
+	ClientID   string
+	PurchaseID string
+}
 
 // PayPal does the PayPal Standard Checkout described at https://developer.paypal.com/docs/checkout/standard/
 type PayPal struct {
@@ -19,63 +28,18 @@ type PayPal struct {
 	Purchases PurchaseRepo
 }
 
-type paypalTmplData struct {
-	ClientID   string
-	PurchaseID string
-}
-
-var payPalTmpl = template.Must(template.New("").Parse(`
-	<script src="https://www.paypal.com/sdk/js?client-id={{.ClientID}}&currency=EUR"></script>
-	<!-- Set up a container element for the button -->
-	<div id="paypal-button-container" style="text-align: center;"></div>
-	<script>
-		paypal.Buttons({
-			// Order is created on the server and the order id is returned
-			createOrder() {
-				return fetch("/payment/paypal-checkout/create-order", {
-					method: "POST",
-					headers: {
-						"Content-Type": "application/json",
-					},
-					body: "{{.PurchaseID}}"
-				})
-				.then((response) => response.json())
-				.then((order) => order.id);
-			},
-			onApprove(data) {
-				console.log(data);
-				return fetch("/payment/paypal-checkout/capture-order", {
-					method: "POST",
-					headers: {
-						"Content-Type": "application/json",
-					},
-					body: JSON.stringify({
-						orderID: data.orderID
-					})
-				})
-				.then((response) => response.json())
-				.then((orderData) => {
-					window.location.href = "/view";
-				});
-			}
-		}).render('#paypal-button-container');
-	</script>
-
-	<p>Wir übermitteln nur die Bestellnummer an PayPal. Deine bestellten Artikel sowie die Details zu Lieferung oder Abholung werden nicht an PayPal gesendet.</p>
-	<p>Falls du TOR oder einen VPN benutzt: Die angezeigten Bezahlmöglichkeiten sind von der Länderzuordnung deiner IP-Adresse abhängig. Darüber hinaus blockiert PayPal manche TOR Exit Nodes. In dem Fall versuche es mit „New Circuit for this Site“.</p>
-`))
-
 func (PayPal) ID() string {
 	return "paypal-checkout"
 }
 
-func (PayPal) Name() string {
+func (PayPal) Name(r *http.Request) string {
 	return "PayPal"
 }
 
-func (p PayPal) PayHTML(purchaseID string) (template.HTML, error) {
+func (p PayPal) PayHTML(r *http.Request, purchaseID string) (template.HTML, error) {
 	b := &bytes.Buffer{}
 	err := payPalTmpl.Execute(b, paypalTmplData{
+		Lang:       language.Get(r),
 		ClientID:   p.Config.ClientID,
 		PurchaseID: purchaseID,
 	})

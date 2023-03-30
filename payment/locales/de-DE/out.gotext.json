@@ -1,0 +1,117 @@
+{
+    "language": "de-DE",
+    "messages": [
+        {
+            "id": "Monero oder Bitcoin",
+            "message": "Monero oder Bitcoin",
+            "translation": "Monero oder Bitcoin",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
+        },
+        {
+            "id": "btcpay:de-DE",
+            "message": "btcpay:de-DE",
+            "translation": "btcpay:de-DE",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
+        },
+        {
+            "id": "Bargeld",
+            "message": "Bargeld",
+            "translation": "Bargeld",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
+        },
+        {
+            "id": "SEPA-Banküberweisung",
+            "message": "SEPA-Banküberweisung",
+            "translation": "SEPA-Banküberweisung",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
+        },
+        {
+            "id": "Bezahle den angegebenen Betrag in Monero (XMR) oder Bitcoin (BTC). Der Betrag muss innerhalb von 60 Minuten vollständig und als einzelne Transaktion auf der angegebenen Adresse eingehen. Falls deine Zahlung verspätet eintrifft, müssen wir sie manuell bestätigen. Im Zweifel kontaktiere uns bitte.",
+            "message": "Bezahle den angegebenen Betrag in Monero (XMR) oder Bitcoin (BTC). Der Betrag muss innerhalb von 60 Minuten vollständig und als einzelne Transaktion auf der angegebenen Adresse eingehen. Falls deine Zahlung verspätet eintrifft, müssen wir sie manuell bestätigen. Im Zweifel kontaktiere uns bitte.",
+            "translation": "Bezahle den angegebenen Betrag in Monero (XMR) oder Bitcoin (BTC). Der Betrag muss innerhalb von 60 Minuten vollständig und als einzelne Transaktion auf der angegebenen Adresse eingehen. Falls deine Zahlung verspätet eintrifft, müssen wir sie manuell bestätigen. Im Zweifel kontaktiere uns bitte.",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
+        },
+        {
+            "id": "Zur Bezahlung mit Monero oder Bitcoin",
+            "message": "Zur Bezahlung mit Monero oder Bitcoin",
+            "translation": "Zur Bezahlung mit Monero oder Bitcoin",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
+        },
+        {
+            "id": "Sende uns Bargeld in einem versichertem Brief oder Paket. Nachdem wir das Geld entnommen haben, schreddern wir den Brief. Bitte beachte die Höchstgrenzen deines Postunternehmens für den Bargeldversand (z. B. Deutsche Post „Einschreiben Wert“ bis 100 Euro innerhalb Deutschlands, DHL Paket bis 500 Euro). Sende es an:",
+            "message": "Sende uns Bargeld in einem versichertem Brief oder Paket. Nachdem wir das Geld entnommen haben, schreddern wir den Brief. Bitte beachte die Höchstgrenzen deines Postunternehmens für den Bargeldversand (z. B. Deutsche Post „Einschreiben Wert“ bis 100 Euro innerhalb Deutschlands, DHL Paket bis 500 Euro). Sende es an:",
+            "translation": "Sende uns Bargeld in einem versichertem Brief oder Paket. Nachdem wir das Geld entnommen haben, schreddern wir den Brief. Bitte beachte die Höchstgrenzen deines Postunternehmens für den Bargeldversand (z. B. Deutsche Post „Einschreiben Wert“ bis 100 Euro innerhalb Deutschlands, DHL Paket bis 500 Euro). Sende es an:",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
+        },
+        {
+            "id": "Bitte lege einen Zettel mit der Bestellnummer bei",
+            "message": "Bitte lege einen Zettel mit der Bestellnummer bei",
+            "translation": "Bitte lege einen Zettel mit der Bestellnummer bei",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
+        },
+        {
+            "id": "Wir übermitteln nur die Bestellnummer an PayPal. Deine bestellten Artikel sowie die Details zu Lieferung oder Abholung werden nicht an PayPal gesendet.",
+            "message": "Wir übermitteln nur die Bestellnummer an PayPal. Deine bestellten Artikel sowie die Details zu Lieferung oder Abholung werden nicht an PayPal gesendet.",
+            "translation": "Wir übermitteln nur die Bestellnummer an PayPal. Deine bestellten Artikel sowie die Details zu Lieferung oder Abholung werden nicht an PayPal gesendet.",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
+        },
+        {
+            "id": "Falls du TOR oder einen VPN benutzt: Die angezeigten Bezahlmöglichkeiten sind von der Länderzuordnung deiner IP-Adresse abhängig. Darüber hinaus blockiert PayPal manche TOR Exit Nodes. In dem Fall versuche es mit „New Circuit for this Site“.",
+            "message": "Falls du TOR oder einen VPN benutzt: Die angezeigten Bezahlmöglichkeiten sind von der Länderzuordnung deiner IP-Adresse abhängig. Darüber hinaus blockiert PayPal manche TOR Exit Nodes. In dem Fall versuche es mit „New Circuit for this Site“.",
+            "translation": "Falls du TOR oder einen VPN benutzt: Die angezeigten Bezahlmöglichkeiten sind von der Länderzuordnung deiner IP-Adresse abhängig. Darüber hinaus blockiert PayPal manche TOR Exit Nodes. In dem Fall versuche es mit „New Circuit for this Site“.",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
+        },
+        {
+            "id": "Führe eine SEPA-Überweisung (einheitlicher Euro-Zahlungsverkehrsraum) auf unser deutsches Bankkonto aus. Wir prüfen es täglich manuell auf neue Zahlungseingänge. Wir werden deinen Namen und deine IBAN auf unserem Kontoauszug sehen.",
+            "message": "Führe eine SEPA-Überweisung (einheitlicher Euro-Zahlungsverkehrsraum) auf unser deutsches Bankkonto aus. Wir prüfen es täglich manuell auf neue Zahlungseingänge. Wir werden deinen Namen und deine IBAN auf unserem Kontoauszug sehen.",
+            "translation": "Führe eine SEPA-Überweisung (einheitlicher Euro-Zahlungsverkehrsraum) auf unser deutsches Bankkonto aus. Wir prüfen es täglich manuell auf neue Zahlungseingänge. Wir werden deinen Namen und deine IBAN auf unserem Kontoauszug sehen.",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
+        },
+        {
+            "id": "Kontoinhaber",
+            "message": "Kontoinhaber",
+            "translation": "Kontoinhaber",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
+        },
+        {
+            "id": "IBAN",
+            "message": "IBAN",
+            "translation": "IBAN",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
+        },
+        {
+            "id": "BIC (falls nötig)",
+            "message": "BIC (falls nötig)",
+            "translation": "BIC (falls nötig)",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
+        },
+        {
+            "id": "Bank (falls nötig)",
+            "message": "Bank (falls nötig)",
+            "translation": "Bank (falls nötig)",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
+        },
+        {
+            "id": "Überweisungszweck",
+            "message": "Überweisungszweck",
+            "translation": "Überweisungszweck",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
+        }
+    ]
+}

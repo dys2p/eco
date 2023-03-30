@@ -1,0 +1,38 @@
+<p>{{.Tr "Wir übermitteln nur die Bestellnummer an PayPal. Deine bestellten Artikel sowie die Details zu Lieferung oder Abholung werden nicht an PayPal gesendet."}}</p>
+<p>{{.Tr "Falls du TOR oder einen VPN benutzt: Die angezeigten Bezahlmöglichkeiten sind von der Länderzuordnung deiner IP-Adresse abhängig. Darüber hinaus blockiert PayPal manche TOR Exit Nodes. In dem Fall versuche es mit „New Circuit for this Site“."}}</p>
+
+<script src="https://www.paypal.com/sdk/js?client-id={{.ClientID}}&currency=EUR"></script>
+<!-- Set up a container element for the button -->
+<div id="paypal-button-container" style="text-align: center;"></div>
+<script>
+	paypal.Buttons({
+		// Order is created on the server and the order id is returned
+		createOrder() {
+			return fetch("/payment/paypal-checkout/create-order", {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: "{{.PurchaseID}}"
+			})
+			.then((response) => response.json())
+			.then((order) => order.id);
+		},
+		onApprove(data) {
+			console.log(data);
+			return fetch("/payment/paypal-checkout/capture-order", {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({
+					orderID: data.orderID
+				})
+			})
+			.then((response) => response.json())
+			.then((orderData) => {
+				window.location.href = "/view";
+			});
+		}
+	}).render('#paypal-button-container');
+</script>

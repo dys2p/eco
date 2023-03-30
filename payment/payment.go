@@ -16,8 +16,8 @@ import (
 type Method interface {
 	http.Handler
 	ID() string
-	Name() string
-	PayHTML(purchaseID string) (template.HTML, error)
+	Name(r *http.Request) string
+	PayHTML(r *http.Request, purchaseID string) (template.HTML, error)
 	VerifiesAdult() bool
 }
 
