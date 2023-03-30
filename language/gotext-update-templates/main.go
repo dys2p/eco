@@ -31,9 +31,9 @@ func main() {
 	fs := flag.NewFlagSet(os.Args[0], flag.ExitOnError)
 	dir := fs.String("dir", "locales", "default subdirectory to store translation files")
 	lang := fs.String("lang", "en-US", "comma-separated list of languages to process")
-	out := fs.String("out", "", "output file to write to") // TODO catalog.go default?
+	out := fs.String("out", "catalog.go", "output file to write to")
 	srcLang := fs.String("srclang", "en-US", "the source-code language")
-	trFunc := fs.String("trfunc", "Tr", "")
+	trFunc := fs.String("trfunc", "Tr", "name of translate method which is used in templates")
 	fs.Parse(os.Args[1:])
 
 	config := Config{
