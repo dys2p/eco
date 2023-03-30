@@ -24,6 +24,6 @@ func Get(r *http.Request) Lang {
 type Lang string
 
 // Tr translates the given input text.
-func (lang Lang) Tr(input string) string {
-	return message.NewPrinter(message.MatchLanguage(string(lang))).Sprintf(input)
+func (lang Lang) Tr(key message.Reference, a ...interface{}) string {
+	return message.NewPrinter(message.MatchLanguage(string(lang))).Sprintf(key, a...)
 }
