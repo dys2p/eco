@@ -19,6 +19,10 @@
 				<td>{{.Account.BankName}}</td>
 			</tr>
 			<tr>
+				<td>{{.Tr "Betrag"}}:</td>
+				<td>{{.Tr "%.2f €" .Amount}}</td>
+			</tr>
+			<tr>
 				<td><strong>{{.Tr "Überweisungszweck"}}:</strong></td>
 				<td><strong>{{.Purpose}}</strong></td>
 			</tr>
