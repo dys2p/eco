@@ -1,8 +1,27 @@
 <p>{{.Tr "Führe eine SEPA-Überweisung (einheitlicher Euro-Zahlungsverkehrsraum) auf unser deutsches Bankkonto aus. Wir prüfen es täglich manuell auf neue Zahlungseingänge. Wir werden deinen Namen und deine IBAN auf unserem Kontoauszug sehen."}}</p>
 <p>
-	{{.Tr "Kontoinhaber"}}:       {{.Account.Holder}}<br>
-	{{.Tr "IBAN"}}:               {{.Account.IBAN}}<br>
-	{{.Tr "BIC (falls nötig)"}}:  {{.Account.BIC}}<br>
-	{{.Tr "Bank (falls nötig)"}}: {{.Account.BankName}}
+	<table class="table ms-3 w-auto">
+		<tbody>
+			<tr>
+				<td>{{.Tr "Kontoinhaber"}}:</td>
+				<td>{{.Account.Holder}}</td>
+			</tr>
+			<tr>
+				<td>{{.Tr "IBAN"}}:</td>
+				<td>{{.Account.IBAN}}</td>
+			</tr>
+			<tr>
+				<td>{{.Tr "BIC (falls nötig)"}}:</td>
+				<td>{{.Account.BIC}}</td>
+			</tr>
+			<tr>
+				<td>{{.Tr "Bank (falls nötig)"}}:</td>
+				<td>{{.Account.BankName}}</td>
+			</tr>
+			<tr>
+				<td><strong>{{.Tr "Überweisungszweck"}}:</strong></td>
+				<td><strong>{{.Purpose}}</strong></td>
+			</tr>
+		</tbody>
+	</table>
 </p>
-<p>{{.Tr "Überweisungszweck"}}: {{.Purpose}}</p>
