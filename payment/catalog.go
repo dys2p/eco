@@ -39,9 +39,11 @@ func init() {
 }
 
 var messageKeyToIndex = map[string]int{
+	"%.2f €":             16,
 	"BIC (falls nötig)":  13,
 	"Bank (falls nötig)": 14,
 	"Bargeld":            2,
+	"Betrag":             15,
 	"Bezahle den angegebenen Betrag in Monero (XMR) oder Bitcoin (BTC). Der Betrag muss innerhalb von 60 Minuten vollständig und als einzelne Transaktion auf der angegebenen Adresse eingehen. Falls deine Zahlung verspätet eintrifft, müssen wir sie manuell bestätigen. Im Zweifel kontaktiere uns bitte.": 4,
 	"Bitte lege einen Zettel mit der Bestellnummer bei": 7,
 	"Falls du TOR oder einen VPN benutzt: Die angezeigten Bezahlmöglichkeiten sind von der Länderzuordnung deiner IP-Adresse abhängig. Darüber hinaus blockiert PayPal manche TOR Exit Nodes. In dem Fall versuche es mit „New Circuit for this Site“.": 9,
@@ -54,18 +56,18 @@ var messageKeyToIndex = map[string]int{
 	"Wir übermitteln nur die Bestellnummer an PayPal. Deine bestellten Artikel sowie die Details zu Lieferung oder Abholung werden nicht an PayPal gesendet.":                                                                                                                                                                      8,
 	"Zur Bezahlung mit Monero oder Bitcoin": 5,
 	"btcpay:de-DE":                          1,
-	"Überweisungszweck":                     15,
+	"Überweisungszweck":                     17,
 }
 
-var de_DEIndex = []uint32{ // 17 elements
+var de_DEIndex = []uint32{ // 19 elements
 	0x00000000, 0x00000014, 0x00000021, 0x00000029,
 	0x0000003f, 0x0000016c, 0x00000192, 0x000002d5,
 	0x00000307, 0x000003a0, 0x0000049a, 0x00000587,
 	0x00000594, 0x00000599, 0x000005ac, 0x000005c0,
-	0x000005d3,
-} // Size: 92 bytes
+	0x000005c7, 0x000005d0, 0x000005e3,
+} // Size: 100 bytes
 
-const de_DEData string = "" + // Size: 1491 bytes
+const de_DEData string = "" + // Size: 1507 bytes
 	"\x02Monero oder Bitcoin\x02btcpay:de-DE\x02Bargeld\x02SEPA-Banküberweisu" +
 	"ng\x02Bezahle den angegebenen Betrag in Monero (XMR) oder Bitcoin (BTC)." +
 	" Der Betrag muss innerhalb von 60 Minuten vollständig und als einzelne T" +
@@ -86,17 +88,18 @@ const de_DEData string = "" + // Size: 1491 bytes
 	"nheitlicher Euro-Zahlungsverkehrsraum) auf unser deutsches Bankkonto aus" +
 	". Wir prüfen es täglich manuell auf neue Zahlungseingänge. Wir werden de" +
 	"inen Namen und deine IBAN auf unserem Kontoauszug sehen.\x02Kontoinhaber" +
-	"\x02IBAN\x02BIC (falls nötig)\x02Bank (falls nötig)\x02Überweisungszweck"
+	"\x02IBAN\x02BIC (falls nötig)\x02Bank (falls nötig)\x02Betrag\x02%.2f €" +
+	"\x02Überweisungszweck"
 
-var en_USIndex = []uint32{ // 17 elements
+var en_USIndex = []uint32{ // 19 elements
 	0x00000000, 0x00000012, 0x0000001c, 0x00000021,
 	0x00000034, 0x0000011d, 0x00000139, 0x00000269,
 	0x00000296, 0x0000030d, 0x000003d1, 0x000004a2,
 	0x000004b1, 0x000004b6, 0x000004c8, 0x000004e0,
-	0x000004e8,
-} // Size: 92 bytes
+	0x000004e7, 0x000004f0, 0x000004f8,
+} // Size: 100 bytes
 
-const en_USData string = "" + // Size: 1256 bytes
+const en_USData string = "" + // Size: 1272 bytes
 	"\x02Monero or Bitcoin\x02btcpay:en\x02Cash\x02SEPA Bank Transfer\x02Pay " +
 	"with Monero (XMR) or Bitcoin (BTC). The full amount must be paid with a " +
 	"single transaction to the given address within 60 minutes. If your payme" +
@@ -114,6 +117,7 @@ const en_USData string = "" + // Size: 1256 bytes
 	"a SEPA (Single Euro Payments Area) bank transfer to our German bank acco" +
 	"unt. We manually check for new incoming payments every day. We will see " +
 	"your name and bank account number on our account statement.\x02Account h" +
-	"older\x02IBAN\x02BIC (if required)\x02Bank name (if required)\x02Purpose"
+	"older\x02IBAN\x02BIC (if required)\x02Bank name (if required)\x02Amount" +
+	"\x02%.2f EUR\x02Purpose"
 
-	// Total table size 2931 bytes (2KiB); checksum: 3926848A
+	// Total table size 2979 bytes (2KiB); checksum: E9B441EF

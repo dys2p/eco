@@ -107,6 +107,20 @@
             "fuzzy": true
         },
         {
+            "id": "Betrag",
+            "message": "Betrag",
+            "translation": "Betrag",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
+        },
+        {
+            "id": "%.2f €",
+            "message": "%.2f €",
+            "translation": "%.2f €",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
+        },
+        {
             "id": "Überweisungszweck",
             "message": "Überweisungszweck",
             "translation": "Überweisungszweck",

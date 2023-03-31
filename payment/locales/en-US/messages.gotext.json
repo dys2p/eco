@@ -77,6 +77,16 @@
             "translation": "Bank name (if required)"
         },
         {
+            "id": "Betrag",
+            "message": "Betrag",
+            "translation": "Amount"
+        },
+        {
+            "id": "%.2f €",
+            "message": "%.2f €",
+            "translation": "%.2f EUR"
+        },
+        {
             "id": "Überweisungszweck",
             "message": "Überweisungszweck",
             "translation": "Purpose"
