@@ -26,8 +26,8 @@ type btcpayTmplData struct {
 }
 
 type createdInvoice struct {
-	CheckoutLink string
-	Time         int64
+	ID   string
+	Time int64
 }
 
 var lastInvoice = make(map[string]createdInvoice) // key: purchase ID
@@ -77,7 +77,7 @@ func (b BTCPay) createInvoice(w http.ResponseWriter, r *http.Request) error {
 
 	// redirect to existing invoice if it is younger than 15 minutes
 	if last, ok := lastInvoice[purchaseID]; ok && time.Now().Unix()-last.Time < 15*60 {
-		http.Redirect(w, r, last.CheckoutLink, http.StatusSeeOther)
+		http.Redirect(w, r, b.checkoutLink(r, last.ID), http.StatusSeeOther)
 		return nil
 	}
 
@@ -102,12 +102,21 @@ func (b BTCPay) createInvoice(w http.ResponseWriter, r *http.Request) error {
 	}
 
 	lastInvoice[purchaseID] = createdInvoice{
-		CheckoutLink: invoice.CheckoutLink,
-		Time:         time.Now().Unix(),
+		ID:   invoice.ID,
+		Time: time.Now().Unix(),
 	}
 
-	http.Redirect(w, r, invoice.CheckoutLink, http.StatusSeeOther)
+	http.Redirect(w, r, b.checkoutLink(r, invoice.ID), http.StatusSeeOther)
 	return nil
+}
+
+func (b BTCPay) checkoutLink(r *http.Request, invoiceID string) string {
+	// ignore invoice.CheckoutLink in favor of the onion option
+	link := b.Store.InvoiceCheckoutLink(invoiceID)
+	if strings.HasSuffix(r.Host, ".onion") || strings.Contains(r.Host, ".onion:") {
+		link = b.Store.InvoiceCheckoutLinkPreferOnion(invoiceID)
+	}
+	return link
 }
 
 func (b BTCPay) expirationMinutes() int {
