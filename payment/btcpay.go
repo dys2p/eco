@@ -6,6 +6,7 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+	"path"
 	"strings"
 	"time"
 
@@ -33,7 +34,7 @@ var lastInvoice = make(map[string]createdInvoice) // key: purchase ID
 
 type BTCPay struct {
 	ExpirationMinutes int
-	RedirectURL       string
+	RedirectPath      string
 	Store             btcpay.Store
 	Purchases         PurchaseRepo
 }
@@ -94,7 +95,7 @@ func (b BTCPay) createInvoice(w http.ResponseWriter, r *http.Request) error {
 	invoiceRequest.ExpirationMinutes = b.expirationMinutes()
 	invoiceRequest.DefaultLanguage = defaultLanguage
 	invoiceRequest.OrderID = purchaseID
-	invoiceRequest.RedirectURL = b.RedirectURL
+	invoiceRequest.RedirectURL = absHost(r) + path.Join("/", b.RedirectPath)
 	invoice, err := b.Store.CreateInvoice(invoiceRequest)
 	if err != nil {
 		return fmt.Errorf("querying store: %w", err)
@@ -151,4 +152,15 @@ func (b BTCPay) webhook(w http.ResponseWriter, r *http.Request) error {
 
 func (BTCPay) VerifiesAdult() bool {
 	return false
+}
+
+// absHost returns the scheme and host part of an HTTP request. It uses a heuristic for the scheme.
+//
+// If you use nginx as a reverse proxy, make sure you have set "proxy_set_header Host $host;" besides proxy_pass in your configuration.
+func absHost(r *http.Request) string {
+	var proto = "https"
+	if strings.HasPrefix(r.Host, "127.0.") || strings.HasPrefix(r.Host, "[::1]") || strings.HasSuffix(r.Host, ".onion") { // if running locally or through TOR
+		proto = "http"
+	}
+	return fmt.Sprintf("%s://%s", proto, r.Host)
 }
