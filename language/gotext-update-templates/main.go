@@ -1,6 +1,13 @@
 // Command gotext-update-templates merge translations and generates a catalog.
-// Unlike gotext update, it also extracts messages for translation from HTML templates. For that purpose it accepts an additional flag "trfunc".
-// It reads from the working directory. If you use go generate, note that "the generator is run in the package's source directory".
+//
+// Unlike gotext update, it also extracts messages for translation from HTML
+// templates. For that purpose it accepts an additional flag "trfunc", which
+// defaults to "Tr". It extracts strings from pipelines ".Tr" and "$.Tr", but
+// does not recurse into range nodes.
+//
+// Templates are read recursively from the working directory. If you use
+// go generate, note that "the generator is run in the package's source
+// directory".
 package main
 
 import (
@@ -50,7 +57,7 @@ func main() {
 }
 
 func (config Config) Run() error {
-	var messages = []pipeline.Message{}
+	var templateMessages = []pipeline.Message{}
 	err := filepath.Walk(".", func(path string, info fs.FileInfo, err error) error {
 		if err != nil {
 			return err
@@ -70,7 +77,7 @@ func (config Config) Run() error {
 			if _, err := t.Parse(string(file), "", "", trees); err != nil {
 				return err
 			}
-			// nodes are in linear order, not nested
+			// this ignores nested nodes, like *parse.RangeNode
 			for _, tree := range trees {
 				for _, node := range tree.Root.Nodes {
 					if node.Type() == parse.NodeAction {
@@ -90,7 +97,7 @@ func (config Config) Run() error {
 													Msg: text,
 												},
 											}
-											messages = append(messages, message)
+											templateMessages = append(templateMessages, message)
 										}
 									}
 								}
@@ -124,7 +131,7 @@ func (config Config) Run() error {
 	if err != nil {
 		return err
 	}
-	state.Extracted.Messages = append(state.Extracted.Messages, messages...)
+	state.Extracted.Messages = append(state.Extracted.Messages, templateMessages...)
 	if err := state.Import(); err != nil {
 		return err
 	}
