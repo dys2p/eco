@@ -46,8 +46,8 @@ var messageKeyToIndex = map[string]int{
 	"Bank name (if required)": 14,
 	"Cash":                    2,
 	"IBAN":                    12,
-	"If you use TOR or a VPN: The payment options displayed depend on the country of your IP address. In addition, PayPal blocks some TOR exit nodes. In that case, try „New Circuit for this Site“.":                  9,
-	"Make a SEPA (Single Euro Payments Area) bank transfer to our German bank account. We manually check for new incoming payments every day. We will see your name and bank account number on our account statement.": 10,
+	"If you use TOR or a VPN: The payment options displayed depend on the country of your IP address. In addition, PayPal blocks some TOR exit nodes. In that case, try „New Circuit for this Site“.":                                                                                                        9,
+	"Make a SEPA (Single Euro Payments Area) bank transfer to our German bank account. We manually check for new incoming payments every day. We will see your name and bank account number on our account statement. If you are making an international wire transfer, please select the „OUR“ fee option.": 10,
 	"Monero or Bitcoin":           0,
 	"Pay using Monero or Bitcoin": 5,
 	"Pay with Monero (XMR) or Bitcoin (BTC). The full amount must be paid with a single transaction to the given address within 60 minutes. If your payment arrives too late, we have to confirm it manually. If in doubt, please contact us.": 4,
@@ -62,12 +62,12 @@ var messageKeyToIndex = map[string]int{
 var de_DEIndex = []uint32{ // 19 elements
 	0x00000000, 0x00000014, 0x00000021, 0x00000029,
 	0x0000003f, 0x0000016c, 0x00000192, 0x000002d5,
-	0x00000307, 0x000003a0, 0x0000049a, 0x00000587,
-	0x00000594, 0x00000599, 0x000005ac, 0x000005c0,
-	0x000005c7, 0x000005d0, 0x000005e3,
+	0x00000307, 0x000003a0, 0x0000049a, 0x000005d4,
+	0x000005e1, 0x000005e6, 0x000005f9, 0x0000060d,
+	0x00000614, 0x0000061d, 0x00000630,
 } // Size: 100 bytes
 
-const de_DEData string = "" + // Size: 1507 bytes
+const de_DEData string = "" + // Size: 1584 bytes
 	"\x02Monero oder Bitcoin\x02btcpay:de-DE\x02Bargeld\x02SEPA-Banküberweisu" +
 	"ng\x02Bezahle den angegebenen Betrag in Monero (XMR) oder Bitcoin (BTC)." +
 	" Der Betrag muss innerhalb von 60 Minuten vollständig und als einzelne T" +
@@ -87,19 +87,20 @@ const de_DEData string = "" + // Size: 1507 bytes
 	"e es mit „New Circuit for this Site“.\x02Führe eine SEPA-Überweisung (ei" +
 	"nheitlicher Euro-Zahlungsverkehrsraum) auf unser deutsches Bankkonto aus" +
 	". Wir prüfen es täglich manuell auf neue Zahlungseingänge. Wir werden de" +
-	"inen Namen und deine IBAN auf unserem Kontoauszug sehen.\x02Kontoinhaber" +
+	"inen Namen und deine IBAN auf unserem Kontoauszug sehen. Bei einer Ausla" +
+	"ndsüberweisung wähle bitte die Gebührenregelung „OUR“.\x02Kontoinhaber" +
 	"\x02IBAN\x02BIC (falls nötig)\x02Bank (falls nötig)\x02Betrag\x02%.2f €" +
 	"\x02Überweisungszweck"
 
 var en_USIndex = []uint32{ // 19 elements
 	0x00000000, 0x00000012, 0x0000001c, 0x00000021,
 	0x00000034, 0x0000011d, 0x00000139, 0x00000269,
-	0x00000296, 0x0000030d, 0x000003d1, 0x000004a2,
-	0x000004b1, 0x000004b6, 0x000004c8, 0x000004e0,
-	0x000004e7, 0x000004f0, 0x000004f8,
+	0x00000296, 0x0000030d, 0x000003d1, 0x000004fc,
+	0x0000050b, 0x00000510, 0x00000522, 0x0000053a,
+	0x00000541, 0x0000054a, 0x00000552,
 } // Size: 100 bytes
 
-const en_USData string = "" + // Size: 1272 bytes
+const en_USData string = "" + // Size: 1362 bytes
 	"\x02Monero or Bitcoin\x02btcpay:en\x02Cash\x02SEPA Bank Transfer\x02Pay " +
 	"with Monero (XMR) or Bitcoin (BTC). The full amount must be paid with a " +
 	"single transaction to the given address within 60 minutes. If your payme" +
@@ -116,8 +117,9 @@ const en_USData string = "" + // Size: 1272 bytes
 	" TOR exit nodes. In that case, try „New Circuit for this Site“.\x02Make " +
 	"a SEPA (Single Euro Payments Area) bank transfer to our German bank acco" +
 	"unt. We manually check for new incoming payments every day. We will see " +
-	"your name and bank account number on our account statement.\x02Account h" +
-	"older\x02IBAN\x02BIC (if required)\x02Bank name (if required)\x02Amount" +
-	"\x02%.2f EUR\x02Purpose"
+	"your name and bank account number on our account statement. If you are m" +
+	"aking an international wire transfer, please select the „OUR“ fee option" +
+	".\x02Account holder\x02IBAN\x02BIC (if required)\x02Bank name (if requir" +
+	"ed)\x02Amount\x02%.2f EUR\x02Purpose"
 
-	// Total table size 2979 bytes (2KiB); checksum: E9B441EF
+	// Total table size 3146 bytes (3KiB); checksum: 270F5798
