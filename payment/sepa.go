@@ -38,8 +38,8 @@ func (SEPA) Name(r *http.Request) string {
 	return language.Get(r).Tr("SEPA Bank Transfer")
 }
 
-func (sepa SEPA) PayHTML(r *http.Request, purchaseID string) (template.HTML, error) {
-	eurocents, err := sepa.Purchases.PurchaseSumCents(purchaseID)
+func (sepa SEPA) PayHTML(r *http.Request, purchaseID, paymentKey string) (template.HTML, error) {
+	eurocents, err := sepa.Purchases.PurchaseSumCents(purchaseID, paymentKey)
 	if err != nil {
 		log.Printf("error getting purchase sum from database: %v", err)
 		return template.HTML("Error getting purchase information from database"), nil

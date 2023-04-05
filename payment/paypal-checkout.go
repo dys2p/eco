@@ -18,8 +18,8 @@ var payPalTmpl = template.Must(template.ParseFS(htmlfiles, "paypal-checkout.html
 
 type paypalTmplData struct {
 	language.Lang
-	ClientID   string
-	PurchaseID string
+	ClientID  string
+	Reference string
 }
 
 // PayPal does the PayPal Standard Checkout described at https://developer.paypal.com/docs/checkout/standard/
@@ -36,12 +36,12 @@ func (PayPal) Name(r *http.Request) string {
 	return "PayPal"
 }
 
-func (p PayPal) PayHTML(r *http.Request, purchaseID string) (template.HTML, error) {
+func (p PayPal) PayHTML(r *http.Request, purchaseID, paymentKey string) (template.HTML, error) {
 	b := &bytes.Buffer{}
 	err := payPalTmpl.Execute(b, paypalTmplData{
-		Lang:       language.Get(r),
-		ClientID:   p.Config.ClientID,
-		PurchaseID: purchaseID,
+		Lang:      language.Get(r),
+		ClientID:  p.Config.ClientID,
+		Reference: purchaseID + ":" + paymentKey,
 	})
 	return template.HTML(b.String()), err
 }
@@ -63,10 +63,10 @@ func (p PayPal) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func (p PayPal) createTransaction(w http.ResponseWriter, r *http.Request) error {
-	purchaseIDBytes, _ := io.ReadAll(r.Body)
-	purchaseID := string(purchaseIDBytes)
+	reference, _ := io.ReadAll(r.Body)
+	purchaseID, paymentKey, _ := strings.Cut(string(reference), ":")
 
-	sumCents, err := p.Purchases.PurchaseSumCents(purchaseID)
+	sumCents, err := p.Purchases.PurchaseSumCents(purchaseID, paymentKey)
 	if err != nil {
 		return fmt.Errorf("getting sum: %w", err)
 	}
@@ -76,7 +76,7 @@ func (p PayPal) createTransaction(w http.ResponseWriter, r *http.Request) error 
 		return err
 	}
 
-	generateOrderResponse, err := p.Config.CreateOrder(authResult, purchaseID, sumCents)
+	generateOrderResponse, err := p.Config.CreateOrder(authResult, purchaseID+":"+paymentKey, sumCents)
 	if err != nil {
 		return err
 	}
@@ -114,11 +114,11 @@ func (p PayPal) captureTransaction(w http.ResponseWriter, r *http.Request) error
 		return fmt.Errorf("capturing response: %w", err)
 	}
 
-	purchaseID := captureResponse.PurchaseUnits[0].ReferenceID
+	purchaseID, paymentKey, _ := strings.Cut(captureResponse.PurchaseUnits[0].ReferenceID, ":")
 
-	log.Printf("[%s] captured transaction: order: %s, capture: %s", purchaseID, captureReq.OrderID, captureResponse.PurchaseUnits[0].Payments.Captures[0].ID)
+	log.Printf("[%s] captured transaction: order: %s, capture: %s", purchaseID+":"+paymentKey, captureReq.OrderID, captureResponse.PurchaseUnits[0].Payments.Captures[0].ID)
 
-	if err := p.Purchases.SetPurchasePaid(purchaseID); err != nil {
+	if err := p.Purchases.SetPurchasePaid(purchaseID, paymentKey); err != nil {
 		return err
 	}
 

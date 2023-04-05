@@ -22,7 +22,7 @@ var btcpayTmpl = template.Must(template.ParseFS(htmlfiles, "btcpay.html"))
 
 type btcpayTmplData struct {
 	language.Lang
-	PurchaseID string
+	Reference string
 }
 
 type createdInvoice struct {
@@ -47,11 +47,11 @@ func (BTCPay) Name(r *http.Request) string {
 	return language.Get(r).Tr("Monero or Bitcoin")
 }
 
-func (b BTCPay) PayHTML(r *http.Request, purchaseID string) (template.HTML, error) {
+func (b BTCPay) PayHTML(r *http.Request, purchaseID, paymentKey string) (template.HTML, error) {
 	buf := &bytes.Buffer{}
 	err := btcpayTmpl.Execute(buf, btcpayTmplData{
-		Lang:       language.Get(r),
-		PurchaseID: purchaseID,
+		Lang:      language.Get(r),
+		Reference: purchaseID + ":" + paymentKey,
 	})
 	return template.HTML(buf.String()), err
 }
@@ -73,15 +73,15 @@ func (b BTCPay) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func (b BTCPay) createInvoice(w http.ResponseWriter, r *http.Request) error {
-	purchaseID := r.PostFormValue("purchase-id")
+	purchaseID, paymentKey, _ := strings.Cut(r.PostFormValue("reference"), ":")
 
 	// redirect to existing invoice if it is younger than 15 minutes
-	if last, ok := lastInvoice[purchaseID]; ok && time.Now().Unix()-last.Time < 15*60 {
+	if last, ok := lastInvoice[purchaseID+":"+paymentKey]; ok && time.Now().Unix()-last.Time < 15*60 {
 		http.Redirect(w, r, b.checkoutLink(r, last.ID), http.StatusSeeOther)
 		return nil
 	}
 
-	sumCents, err := b.Purchases.PurchaseSumCents(purchaseID)
+	sumCents, err := b.Purchases.PurchaseSumCents(purchaseID, paymentKey)
 	if err != nil {
 		return fmt.Errorf("getting sum: %w", err)
 	}
@@ -94,14 +94,14 @@ func (b BTCPay) createInvoice(w http.ResponseWriter, r *http.Request) error {
 	}
 	invoiceRequest.ExpirationMinutes = b.expirationMinutes()
 	invoiceRequest.DefaultLanguage = defaultLanguage
-	invoiceRequest.OrderID = purchaseID
+	invoiceRequest.OrderID = purchaseID + ":" + paymentKey // reference
 	invoiceRequest.RedirectURL = absHost(r) + path.Join("/", b.RedirectPath)
 	invoice, err := b.Store.CreateInvoice(invoiceRequest)
 	if err != nil {
 		return fmt.Errorf("querying store: %w", err)
 	}
 
-	lastInvoice[purchaseID] = createdInvoice{
+	lastInvoice[purchaseID+":"+paymentKey] = createdInvoice{
 		ID:   invoice.ID,
 		Time: time.Now().Unix(),
 	}
@@ -141,16 +141,16 @@ func (b BTCPay) webhook(w http.ResponseWriter, r *http.Request) error {
 	if err != nil {
 		return fmt.Errorf("getting invoice %s: %w", event.InvoiceID, err)
 	}
-	purchaseID := invoice.InvoiceMetadata.OrderID
+	purchaseID, paymentKey, _ := strings.Cut(invoice.InvoiceMetadata.OrderID, ":")
 
 	switch event.Type {
 	case btcpay.EventInvoiceProcessing:
-		if err := b.Purchases.SetPurchaseProcessing(purchaseID); err != nil {
+		if err := b.Purchases.SetPurchaseProcessing(purchaseID, paymentKey); err != nil {
 			return fmt.Errorf("setting purchase %s processing: %w", purchaseID, err)
 		}
 		return nil
 	case btcpay.EventInvoiceSettled:
-		if err := b.Purchases.SetPurchasePaid(purchaseID); err != nil {
+		if err := b.Purchases.SetPurchasePaid(purchaseID, paymentKey); err != nil {
 			return fmt.Errorf("setting purchase %s paid: %w", purchaseID, err)
 		}
 		return nil

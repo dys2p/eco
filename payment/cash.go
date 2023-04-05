@@ -28,7 +28,7 @@ func (Cash) Name(r *http.Request) string {
 	return language.Get(r).Tr("Cash")
 }
 
-func (cash Cash) PayHTML(r *http.Request, purchaseID string) (template.HTML, error) {
+func (cash Cash) PayHTML(r *http.Request, purchaseID, paymentKey string) (template.HTML, error) {
 	buf := &bytes.Buffer{}
 	err := cashTmpl.Execute(buf, cashTmplData{
 		Lang:        language.Get(r),

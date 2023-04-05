@@ -13,7 +13,7 @@
 				headers: {
 					"Content-Type": "application/json",
 				},
-				body: "{{.PurchaseID}}"
+				body: "{{.Reference}}"
 			})
 			.then((response) => response.json())
 			.then((order) => order.id);
