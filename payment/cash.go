@@ -25,7 +25,7 @@ func (Cash) ID() string {
 }
 
 func (Cash) Name(r *http.Request) string {
-	return language.Get(r).Tr("Bargeld")
+	return language.Get(r).Tr("Cash")
 }
 
 func (cash Cash) PayHTML(r *http.Request, purchaseID string) (template.HTML, error) {

@@ -1,3 +1,3 @@
 package payment
 
-//go:generate gotext-update-templates -lang=de-DE,en-US -out=catalog.go -srclang=de-DE .
+//go:generate gotext-update-templates -srclang=en-US -lang=en-US,de-DE -out=catalog.go .

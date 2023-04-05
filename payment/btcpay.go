@@ -44,7 +44,7 @@ func (BTCPay) ID() string {
 }
 
 func (BTCPay) Name(r *http.Request) string {
-	return language.Get(r).Tr("Monero oder Bitcoin")
+	return language.Get(r).Tr("Monero or Bitcoin")
 }
 
 func (b BTCPay) PayHTML(r *http.Request, purchaseID string) (template.HTML, error) {
@@ -86,7 +86,7 @@ func (b BTCPay) createInvoice(w http.ResponseWriter, r *http.Request) error {
 		return fmt.Errorf("getting sum: %w", err)
 	}
 
-	defaultLanguage := strings.TrimPrefix(language.Get(r).Tr("btcpay:de-DE"), "btcpay:") // see https://github.com/btcpayserver/btcpayserver/tree/master/BTCPayServer/wwwroot/locales
+	defaultLanguage := strings.TrimPrefix(language.Get(r).Tr("btcpay:en"), "btcpay:") // see https://github.com/btcpayserver/btcpayserver/tree/master/BTCPayServer/wwwroot/locales
 
 	invoiceRequest := &btcpay.InvoiceRequest{
 		Amount:   float64(sumCents) / 100.0,

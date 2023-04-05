@@ -30,7 +30,7 @@ func init() {
 		"de_DE": &dictionary{index: de_DEIndex, data: de_DEData},
 		"en_US": &dictionary{index: en_USIndex, data: en_USData},
 	}
-	fallback := language.MustParse("de-DE")
+	fallback := language.MustParse("en-US")
 	cat, err := catalog.NewFromMap(dict, catalog.Fallback(fallback))
 	if err != nil {
 		panic(err)
@@ -39,24 +39,24 @@ func init() {
 }
 
 var messageKeyToIndex = map[string]int{
-	"%.2f €":             16,
-	"BIC (falls nötig)":  13,
-	"Bank (falls nötig)": 14,
-	"Bargeld":            2,
-	"Betrag":             15,
-	"Bezahle den angegebenen Betrag in Monero (XMR) oder Bitcoin (BTC). Der Betrag muss innerhalb von 60 Minuten vollständig und als einzelne Transaktion auf der angegebenen Adresse eingehen. Falls deine Zahlung verspätet eintrifft, müssen wir sie manuell bestätigen. Im Zweifel kontaktiere uns bitte.": 4,
-	"Bitte lege einen Zettel mit der Bestellnummer bei": 7,
-	"Falls du TOR oder einen VPN benutzt: Die angezeigten Bezahlmöglichkeiten sind von der Länderzuordnung deiner IP-Adresse abhängig. Darüber hinaus blockiert PayPal manche TOR Exit Nodes. In dem Fall versuche es mit „New Circuit for this Site“.": 9,
-	"Führe eine SEPA-Überweisung (einheitlicher Euro-Zahlungsverkehrsraum) auf unser deutsches Bankkonto aus. Wir prüfen es täglich manuell auf neue Zahlungseingänge. Wir werden deinen Namen und deine IBAN auf unserem Kontoauszug sehen.":           10,
-	"IBAN":                 12,
-	"Kontoinhaber":         11,
-	"Monero oder Bitcoin":  0,
-	"SEPA-Banküberweisung": 3,
-	"Sende uns Bargeld in einem versichertem Brief oder Paket. Nachdem wir das Geld entnommen haben, schreddern wir den Brief. Bitte beachte die Höchstgrenzen deines Postunternehmens für den Bargeldversand (z. B. Deutsche Post „Einschreiben Wert“ bis 100 Euro innerhalb Deutschlands, DHL Paket bis 500 Euro). Sende es an:": 6,
-	"Wir übermitteln nur die Bestellnummer an PayPal. Deine bestellten Artikel sowie die Details zu Lieferung oder Abholung werden nicht an PayPal gesendet.":                                                                                                                                                                      8,
-	"Zur Bezahlung mit Monero oder Bitcoin": 5,
-	"btcpay:de-DE":                          1,
-	"Überweisungszweck":                     17,
+	"%.2f EUR":                16,
+	"Account holder":          11,
+	"Amount":                  15,
+	"BIC (if required)":       13,
+	"Bank name (if required)": 14,
+	"Cash":                    2,
+	"IBAN":                    12,
+	"If you use TOR or a VPN: The payment options displayed depend on the country of your IP address. In addition, PayPal blocks some TOR exit nodes. In that case, try „New Circuit for this Site“.":                  9,
+	"Make a SEPA (Single Euro Payments Area) bank transfer to our German bank account. We manually check for new incoming payments every day. We will see your name and bank account number on our account statement.": 10,
+	"Monero or Bitcoin":           0,
+	"Pay using Monero or Bitcoin": 5,
+	"Pay with Monero (XMR) or Bitcoin (BTC). The full amount must be paid with a single transaction to the given address within 60 minutes. If your payment arrives too late, we have to confirm it manually. If in doubt, please contact us.": 4,
+	"Please include a note with this order number": 7,
+	"Purpose":            17,
+	"SEPA Bank Transfer": 3,
+	"Send cash in an insured letter or package to our store address in Germany. After we take out the money, we shred the letter. Please check the cash shipment limits of your postal company (e. g. Deutsche Post „Einschreiben Wert“ up to 100 Euros within Germany, DHL Parcel up to 500 Euros). Send it to:": 6,
+	"We only send the order number to PayPal. Your ordered items and delivery or pickup details will not be sent to PayPal.": 8,
+	"btcpay:en": 1,
 }
 
 var de_DEIndex = []uint32{ // 19 elements

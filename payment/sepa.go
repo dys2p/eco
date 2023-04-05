@@ -35,7 +35,7 @@ func (SEPA) ID() string {
 }
 
 func (SEPA) Name(r *http.Request) string {
-	return language.Get(r).Tr("SEPA-Banküberweisung")
+	return language.Get(r).Tr("SEPA Bank Transfer")
 }
 
 func (sepa SEPA) PayHTML(r *http.Request, purchaseID string) (template.HTML, error) {

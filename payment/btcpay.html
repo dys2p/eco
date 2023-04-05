@@ -1,6 +1,6 @@
-<p>{{.Tr "Bezahle den angegebenen Betrag in Monero (XMR) oder Bitcoin (BTC). Der Betrag muss innerhalb von 60 Minuten vollständig und als einzelne Transaktion auf der angegebenen Adresse eingehen. Falls deine Zahlung verspätet eintrifft, müssen wir sie manuell bestätigen. Im Zweifel kontaktiere uns bitte."}}</p>
+<p>{{.Tr "Pay with Monero (XMR) or Bitcoin (BTC). The full amount must be paid with a single transaction to the given address within 60 minutes. If your payment arrives too late, we have to confirm it manually. If in doubt, please contact us."}}</p>
 <!-- open in new window, in case you didn't bookmark the purchase url -->
 <form action="/payment/btcpay/create-invoice" method="post" target="_blank">
 	<input type="hidden" name="purchase-id" value="{{.PurchaseID}}">
-	<button type="submit" class="btn btn-success">{{.Tr "Zur Bezahlung mit Monero oder Bitcoin"}}</button>
+	<button type="submit" class="btn btn-success">{{.Tr "Pay using Monero or Bitcoin"}}</button>
 </form>
