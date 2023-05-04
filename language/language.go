@@ -11,6 +11,8 @@ import (
 
 var PathPrefixes = []string{"de", "en"}
 
+type Lang string
+
 // Get returns the first URL path item (if it is in PathPrefixes) or the HTTP "Accept-Language" header value.
 func Get(r *http.Request) Lang {
 	relpath := strings.TrimPrefix(r.URL.Path, "/")
@@ -20,8 +22,6 @@ func Get(r *http.Request) Lang {
 	}
 	return Lang(r.Header.Get("Accept-Language"))
 }
-
-type Lang string
 
 // Tr translates the given input text.
 func (lang Lang) Tr(key message.Reference, a ...interface{}) string {
