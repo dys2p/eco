@@ -30,12 +30,6 @@ type Method interface {
 	VerifiesAdult() bool
 }
 
-type PurchaseRepo interface {
-	PurchaseSumCents(purchaseID, paymentKey string) (int, error)
-	SetPurchasePaid(purchaseID, paymentKey string) error
-	SetPurchaseProcessing(purchaseID, paymentKey string) error
-}
-
 func Get(methods []Method, id string) (Method, error) {
 	for _, m := range methods {
 		if m.ID() == id {
@@ -46,4 +40,10 @@ func Get(methods []Method, id string) (Method, error) {
 		return methods[0], nil
 	}
 	return nil, errors.New("no payment methods found")
+}
+
+type PurchaseRepo interface {
+	PurchaseSumCents(purchaseID, paymentKey string) (int, error)
+	SetPurchasePaid(purchaseID, paymentKey string) error
+	SetPurchaseProcessing(purchaseID, paymentKey string) error
 }
