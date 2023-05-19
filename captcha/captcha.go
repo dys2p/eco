@@ -28,6 +28,8 @@
 //
 // In your POST handler, call Verify after validating other input because Verify invalidates the captcha. If you're executing the template again, you must create a new captcha.
 //
+//	id := r.PostFormValue("captcha-id")
+//	answer := r.PostFormValue("captcha-answer")
 //	if !captcha.Verify(id, answer) {
 //	    data.Captcha.ID = captcha.New()
 //	    data.Captcha.Err = true
