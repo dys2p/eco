@@ -4,7 +4,7 @@
 //		// do something, then return next handler or nil
 //	}))
 //
-// Use http.NotFound and http.Redirect for not found errors and redirects.
+// Use http.NotFoundHandler and http.RedirectHandler for not found errors and redirects.
 package middleware
 
 import (
