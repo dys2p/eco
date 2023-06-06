@@ -12,6 +12,11 @@
             "translation": "btcpay:de-DE"
         },
         {
+            "id": "Cash in Foreign Currency",
+            "message": "Cash in Foreign Currency",
+            "translation": "Bargeld in Fremdwährung"
+        },
+        {
             "id": "Cash",
             "message": "Cash",
             "translation": "Bargeld"
@@ -20,6 +25,96 @@
             "id": "SEPA Bank Transfer",
             "message": "SEPA Bank Transfer",
             "translation": "SEPA-Banküberweisung"
+        },
+        {
+            "id": "Australian dollars",
+            "message": "Australian dollars",
+            "translation": "Australische Dollar"
+        },
+        {
+            "id": "Bulgarian lev",
+            "message": "Bulgarian lev",
+            "translation": "Bulgarische Lew"
+        },
+        {
+            "id": "Canadian dollars",
+            "message": "Canadian dollars",
+            "translation": "Kanadische Dollar"
+        },
+        {
+            "id": "Swiss francs",
+            "message": "Swiss francs",
+            "translation": "Schweizer Franken"
+        },
+        {
+            "id": "Chinese renminbi",
+            "message": "Chinese renminbi",
+            "translation": "Chinesische Renminbi"
+        },
+        {
+            "id": "Czech koruna",
+            "message": "Czech koruna",
+            "translation": "Tschechische Kronen"
+        },
+        {
+            "id": "Danish krone",
+            "message": "Danish krone",
+            "translation": "Dänische Kronen"
+        },
+        {
+            "id": "Pound sterling",
+            "message": "Pound sterling",
+            "translation": "Britische Pfund"
+        },
+        {
+            "id": "Icelandic króna",
+            "message": "Icelandic króna",
+            "translation": "Isländische Kronen"
+        },
+        {
+            "id": "Japanese yen",
+            "message": "Japanese yen",
+            "translation": "Japanische Yen"
+        },
+        {
+            "id": "Norwegian krone",
+            "message": "Norwegian krone",
+            "translation": "Norwegische Kronen"
+        },
+        {
+            "id": "New Zealand dollars",
+            "message": "New Zealand dollars",
+            "translation": "Neuseeland-Dollar"
+        },
+        {
+            "id": "Polish złoty",
+            "message": "Polish złoty",
+            "translation": "Polnische Złoty"
+        },
+        {
+            "id": "Romanian leu",
+            "message": "Romanian leu",
+            "translation": "Rumänische Leu"
+        },
+        {
+            "id": "Serbian dinar",
+            "message": "Serbian dinar",
+            "translation": "Serbische Dinar"
+        },
+        {
+            "id": "Swedish krona",
+            "message": "Swedish krona",
+            "translation": "Schwedische Kronen"
+        },
+        {
+            "id": "New Taiwan dollars",
+            "message": "New Taiwan dollars",
+            "translation": "Taiwan-Dollar"
+        },
+        {
+            "id": "United States dollars",
+            "message": "United States dollars",
+            "translation": "US-Dollar"
         },
         {
             "id": "Pay with Monero (XMR) or Bitcoin (BTC). The full amount must be paid with a single transaction to the given address within 60 minutes. If your payment arrives too late, we have to confirm it manually. If in doubt, please contact us.",
@@ -40,6 +135,26 @@
             "id": "Please include a note with this order number",
             "message": "Please include a note with this order number",
             "translation": "Bitte lege einen Zettel mit der Bestellnummer bei"
+        },
+        {
+            "id": "Pay the specified amount in one of the following currencies.",
+            "message": "Pay the specified amount in one of the following currencies.",
+            "translation": "Zahle den angegebenen Betrag in einer der folgenden Währungen."
+        },
+        {
+            "id": "Please send banknotes only and round up if necessary. We do not accept coins.",
+            "message": "Please send banknotes only and round up if necessary. We do not accept coins.",
+            "translation": "Bitte sende nur Banknoten und runde gegebenenfalls auf. Wir nehmen keine Münzen an."
+        },
+        {
+            "id": "Amount",
+            "message": "Amount",
+            "translation": "Betrag"
+        },
+        {
+            "id": "Currency",
+            "message": "Currency",
+            "translation": "Währung"
         },
         {
             "id": "We only send the order number to PayPal. Your ordered items and delivery or pickup details will not be sent to PayPal.",
@@ -75,11 +190,6 @@
             "id": "Bank name (if required)",
             "message": "Bank name (if required)",
             "translation": "Bank (falls nötig)"
-        },
-        {
-            "id": "Amount",
-            "message": "Amount",
-            "translation": "Betrag"
         },
         {
             "id": "%.2f EUR",

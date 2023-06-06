@@ -16,6 +16,13 @@
             "fuzzy": true
         },
         {
+            "id": "Cash in Foreign Currency",
+            "message": "Cash in Foreign Currency",
+            "translation": "Cash in Foreign Currency",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
+        },
+        {
             "id": "Cash",
             "message": "Cash",
             "translation": "Cash",
@@ -26,6 +33,132 @@
             "id": "SEPA Bank Transfer",
             "message": "SEPA Bank Transfer",
             "translation": "SEPA Bank Transfer",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
+        },
+        {
+            "id": "Australian dollars",
+            "message": "Australian dollars",
+            "translation": "Australian dollars",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
+        },
+        {
+            "id": "Bulgarian lev",
+            "message": "Bulgarian lev",
+            "translation": "Bulgarian lev",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
+        },
+        {
+            "id": "Canadian dollars",
+            "message": "Canadian dollars",
+            "translation": "Canadian dollars",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
+        },
+        {
+            "id": "Swiss francs",
+            "message": "Swiss francs",
+            "translation": "Swiss francs",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
+        },
+        {
+            "id": "Chinese renminbi",
+            "message": "Chinese renminbi",
+            "translation": "Chinese renminbi",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
+        },
+        {
+            "id": "Czech koruna",
+            "message": "Czech koruna",
+            "translation": "Czech koruna",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
+        },
+        {
+            "id": "Danish krone",
+            "message": "Danish krone",
+            "translation": "Danish krone",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
+        },
+        {
+            "id": "Pound sterling",
+            "message": "Pound sterling",
+            "translation": "Pound sterling",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
+        },
+        {
+            "id": "Icelandic króna",
+            "message": "Icelandic króna",
+            "translation": "Icelandic króna",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
+        },
+        {
+            "id": "Japanese yen",
+            "message": "Japanese yen",
+            "translation": "Japanese yen",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
+        },
+        {
+            "id": "Norwegian krone",
+            "message": "Norwegian krone",
+            "translation": "Norwegian krone",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
+        },
+        {
+            "id": "New Zealand dollars",
+            "message": "New Zealand dollars",
+            "translation": "New Zealand dollars",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
+        },
+        {
+            "id": "Polish złoty",
+            "message": "Polish złoty",
+            "translation": "Polish złoty",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
+        },
+        {
+            "id": "Romanian leu",
+            "message": "Romanian leu",
+            "translation": "Romanian leu",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
+        },
+        {
+            "id": "Serbian dinar",
+            "message": "Serbian dinar",
+            "translation": "Serbian dinar",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
+        },
+        {
+            "id": "Swedish krona",
+            "message": "Swedish krona",
+            "translation": "Swedish krona",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
+        },
+        {
+            "id": "New Taiwan dollars",
+            "message": "New Taiwan dollars",
+            "translation": "New Taiwan dollars",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
+        },
+        {
+            "id": "United States dollars",
+            "message": "United States dollars",
+            "translation": "United States dollars",
             "translatorComment": "Copied from source.",
             "fuzzy": true
         },
@@ -54,6 +187,34 @@
             "id": "Please include a note with this order number",
             "message": "Please include a note with this order number",
             "translation": "Please include a note with this order number",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
+        },
+        {
+            "id": "Pay the specified amount in one of the following currencies.",
+            "message": "Pay the specified amount in one of the following currencies.",
+            "translation": "Pay the specified amount in one of the following currencies.",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
+        },
+        {
+            "id": "Please send banknotes only and round up if necessary. We do not accept coins.",
+            "message": "Please send banknotes only and round up if necessary. We do not accept coins.",
+            "translation": "Please send banknotes only and round up if necessary. We do not accept coins.",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
+        },
+        {
+            "id": "Amount",
+            "message": "Amount",
+            "translation": "Amount",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
+        },
+        {
+            "id": "Currency",
+            "message": "Currency",
+            "translation": "Currency",
             "translatorComment": "Copied from source.",
             "fuzzy": true
         },
@@ -103,13 +264,6 @@
             "id": "Bank name (if required)",
             "message": "Bank name (if required)",
             "translation": "Bank name (if required)",
-            "translatorComment": "Copied from source.",
-            "fuzzy": true
-        },
-        {
-            "id": "Amount",
-            "message": "Amount",
-            "translation": "Amount",
             "translatorComment": "Copied from source.",
             "fuzzy": true
         },
