@@ -280,6 +280,13 @@
             "translation": "Purpose",
             "translatorComment": "Copied from source.",
             "fuzzy": true
+        },
+        {
+            "id": "Or scan the EPC QR code:",
+            "message": "Or scan the EPC QR code:",
+            "translation": "Or scan the EPC QR code:",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
         }
     ]
 }

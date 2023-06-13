@@ -200,6 +200,11 @@
             "id": "Purpose",
             "message": "Purpose",
             "translation": "Überweisungszweck"
+        },
+        {
+            "id": "Or scan the EPC QR code:",
+            "message": "Or scan the EPC QR code:",
+            "translation": "Oder scanne den EPC-QR-Code:"
         }
     ]
 }

@@ -58,10 +58,11 @@ var messageKeyToIndex = map[string]int{
 	"If you use TOR or a VPN: The payment options displayed depend on the country of your IP address. In addition, PayPal blocks some TOR exit nodes. In that case, try „New Circuit for this Site“.": 32,
 	"Japanese yen": 14,
 	"Make a SEPA (Single Euro Payments Area) bank transfer to our German bank account. We manually check for new incoming payments every day. We will see your name and bank account number on our account statement. If you are making an international wire transfer, please select the „OUR“ fee option.": 33,
-	"Monero or Bitcoin":   0,
-	"New Taiwan dollars":  21,
-	"New Zealand dollars": 16,
-	"Norwegian krone":     15,
+	"Monero or Bitcoin":        0,
+	"New Taiwan dollars":       21,
+	"New Zealand dollars":      16,
+	"Norwegian krone":          15,
+	"Or scan the EPC QR code:": 40,
 	"Pay the specified amount in one of the following currencies.": 27,
 	"Pay using Monero or Bitcoin":                                  24,
 	"Pay with Monero (XMR) or Bitcoin (BTC). The full amount must be paid with a single transaction to the given address within 60 minutes. If your payment arrives too late, we have to confirm it manually. If in doubt, please contact us.": 23,
@@ -81,7 +82,7 @@ var messageKeyToIndex = map[string]int{
 	"btcpay:en": 1,
 }
 
-var de_DEIndex = []uint32{ // 41 elements
+var de_DEIndex = []uint32{ // 42 elements
 	// Entry 0 - 1F
 	0x00000000, 0x00000014, 0x00000021, 0x0000003a,
 	0x00000042, 0x00000058, 0x0000006c, 0x0000007c,
@@ -94,10 +95,10 @@ var de_DEIndex = []uint32{ // 41 elements
 	// Entry 20 - 3F
 	0x00000594, 0x0000068e, 0x000007c8, 0x000007d5,
 	0x000007da, 0x000007ed, 0x00000801, 0x0000080a,
-	0x0000081d,
-} // Size: 188 bytes
+	0x0000081d, 0x0000083a,
+} // Size: 192 bytes
 
-const de_DEData string = "" + // Size: 2077 bytes
+const de_DEData string = "" + // Size: 2106 bytes
 	"\x02Monero oder Bitcoin\x02btcpay:de-DE\x02Bargeld in Fremdwährung\x02Ba" +
 	"rgeld\x02SEPA-Banküberweisung\x02Australische Dollar\x02Bulgarische Lew" +
 	"\x02Kanadische Dollar\x02Schweizer Franken\x02Chinesische Renminbi\x02Ts" +
@@ -127,9 +128,10 @@ const de_DEData string = "" + // Size: 2077 bytes
 	" täglich manuell auf neue Zahlungseingänge. Wir werden deinen Namen und " +
 	"deine IBAN auf unserem Kontoauszug sehen. Bei einer Auslandsüberweisung " +
 	"wähle bitte die Gebührenregelung „OUR“.\x02Kontoinhaber\x02IBAN\x02BIC (" +
-	"falls nötig)\x02Bank (falls nötig)\x02%.2f €\x02Überweisungszweck"
+	"falls nötig)\x02Bank (falls nötig)\x02%.2f €\x02Überweisungszweck\x02Ode" +
+	"r scanne den EPC-QR-Code:"
 
-var en_USIndex = []uint32{ // 41 elements
+var en_USIndex = []uint32{ // 42 elements
 	// Entry 0 - 1F
 	0x00000000, 0x00000012, 0x0000001c, 0x00000035,
 	0x0000003a, 0x0000004d, 0x00000060, 0x0000006e,
@@ -142,10 +144,10 @@ var en_USIndex = []uint32{ // 41 elements
 	// Entry 20 - 3F
 	0x000004dc, 0x000005a0, 0x000006cb, 0x000006da,
 	0x000006df, 0x000006f1, 0x00000709, 0x00000712,
-	0x0000071a,
-} // Size: 188 bytes
+	0x0000071a, 0x00000733,
+} // Size: 192 bytes
 
-const en_USData string = "" + // Size: 1818 bytes
+const en_USData string = "" + // Size: 1843 bytes
 	"\x02Monero or Bitcoin\x02btcpay:en\x02Cash in Foreign Currency\x02Cash" +
 	"\x02SEPA Bank Transfer\x02Australian dollars\x02Bulgarian lev\x02Canadia" +
 	"n dollars\x02Swiss francs\x02Chinese renminbi\x02Czech koruna\x02Danish " +
@@ -172,6 +174,7 @@ const en_USData string = "" + // Size: 1818 bytes
 	"ayments every day. We will see your name and bank account number on our " +
 	"account statement. If you are making an international wire transfer, ple" +
 	"ase select the „OUR“ fee option.\x02Account holder\x02IBAN\x02BIC (if re" +
-	"quired)\x02Bank name (if required)\x02%.2f EUR\x02Purpose"
+	"quired)\x02Bank name (if required)\x02%.2f EUR\x02Purpose\x02Or scan the" +
+	" EPC QR code:"
 
-	// Total table size 4271 bytes (4KiB); checksum: 44BB656A
+	// Total table size 4333 bytes (4KiB); checksum: 108903D8
