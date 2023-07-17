@@ -107,6 +107,13 @@
             "fuzzy": true
         },
         {
+            "id": "New Israeli shekel (NIS)",
+            "message": "New Israeli shekel (NIS)",
+            "translation": "New Israeli shekel (NIS)",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
+        },
+        {
             "id": "Norwegian krone",
             "message": "Norwegian krone",
             "translation": "Norwegian krone",

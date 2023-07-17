@@ -87,6 +87,8 @@ func (opt Option) Tr(lang language.Lang) string {
 		return printer.Sprintf("Icelandic króna")
 	case "JPY":
 		return printer.Sprintf("Japanese yen")
+	case "ILS":
+		return printer.Sprintf("New Israeli shekel (NIS)")
 	case "NOK":
 		return printer.Sprintf("Norwegian krone")
 	case "NZD":

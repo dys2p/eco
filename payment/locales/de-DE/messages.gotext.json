@@ -77,6 +77,11 @@
             "translation": "Japanische Yen"
         },
         {
+            "id": "New Israeli shekel (NIS)",
+            "message": "New Israeli shekel (NIS)",
+            "translation": "Neue israelische Schekel (NIS)"
+        },
+        {
             "id": "Norwegian krone",
             "message": "Norwegian krone",
             "translation": "Norwegische Kronen"

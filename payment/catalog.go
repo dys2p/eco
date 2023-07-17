@@ -39,142 +39,143 @@ func init() {
 }
 
 var messageKeyToIndex = map[string]int{
-	"%.2f EUR":                 38,
-	"Account holder":           34,
-	"Amount":                   29,
+	"%.2f EUR":                 39,
+	"Account holder":           35,
+	"Amount":                   30,
 	"Australian dollars":       5,
-	"BIC (if required)":        36,
-	"Bank name (if required)":  37,
+	"BIC (if required)":        37,
+	"Bank name (if required)":  38,
 	"Bulgarian lev":            6,
 	"Canadian dollars":         7,
 	"Cash":                     3,
 	"Cash in Foreign Currency": 2,
 	"Chinese renminbi":         9,
-	"Currency":                 30,
+	"Currency":                 31,
 	"Czech koruna":             10,
 	"Danish krone":             11,
-	"IBAN":                     35,
+	"IBAN":                     36,
 	"Icelandic króna":          13,
-	"If you use TOR or a VPN: The payment options displayed depend on the country of your IP address. In addition, PayPal blocks some TOR exit nodes. In that case, try „New Circuit for this Site“.": 32,
+	"If you use TOR or a VPN: The payment options displayed depend on the country of your IP address. In addition, PayPal blocks some TOR exit nodes. In that case, try „New Circuit for this Site“.": 33,
 	"Japanese yen": 14,
-	"Make a SEPA (Single Euro Payments Area) bank transfer to our German bank account. We manually check for new incoming payments every day. We will see your name and bank account number on our account statement. If you are making an international wire transfer, please select the „OUR“ fee option.": 33,
+	"Make a SEPA (Single Euro Payments Area) bank transfer to our German bank account. We manually check for new incoming payments every day. We will see your name and bank account number on our account statement. If you are making an international wire transfer, please select the „OUR“ fee option.": 34,
 	"Monero or Bitcoin":        0,
-	"New Taiwan dollars":       21,
-	"New Zealand dollars":      16,
-	"Norwegian krone":          15,
-	"Or scan the EPC QR code:": 40,
-	"Pay the specified amount in one of the following currencies.": 27,
-	"Pay using Monero or Bitcoin":                                  24,
-	"Pay with Monero (XMR) or Bitcoin (BTC). The full amount must be paid with a single transaction to the given address within 60 minutes. If your payment arrives too late, we have to confirm it manually. If in doubt, please contact us.": 23,
-	"Please include a note with this order number":                                  26,
-	"Please send banknotes only and round up if necessary. We do not accept coins.": 28,
-	"Polish złoty":       17,
+	"New Israeli shekel (NIS)": 15,
+	"New Taiwan dollars":       22,
+	"New Zealand dollars":      17,
+	"Norwegian krone":          16,
+	"Or scan the EPC QR code:": 41,
+	"Pay the specified amount in one of the following currencies.": 28,
+	"Pay using Monero or Bitcoin":                                  25,
+	"Pay with Monero (XMR) or Bitcoin (BTC). The full amount must be paid with a single transaction to the given address within 60 minutes. If your payment arrives too late, we have to confirm it manually. If in doubt, please contact us.": 24,
+	"Please include a note with this order number":                                  27,
+	"Please send banknotes only and round up if necessary. We do not accept coins.": 29,
+	"Polish złoty":       18,
 	"Pound sterling":     12,
-	"Purpose":            39,
-	"Romanian leu":       18,
+	"Purpose":            40,
+	"Romanian leu":       19,
 	"SEPA Bank Transfer": 4,
-	"Send cash in an insured letter or package to our store address in Germany. After we take out the money, we shred the letter. Please check the cash shipment limits of your postal company (e. g. Deutsche Post „Einschreiben Wert“ up to 100 Euros within Germany, DHL Parcel up to 500 Euros). Send it to:": 25,
-	"Serbian dinar":         19,
-	"Swedish krona":         20,
+	"Send cash in an insured letter or package to our store address in Germany. After we take out the money, we shred the letter. Please check the cash shipment limits of your postal company (e. g. Deutsche Post „Einschreiben Wert“ up to 100 Euros within Germany, DHL Parcel up to 500 Euros). Send it to:": 26,
+	"Serbian dinar":         20,
+	"Swedish krona":         21,
 	"Swiss francs":          8,
-	"United States dollars": 22,
-	"We only send the order number to PayPal. Your ordered items and delivery or pickup details will not be sent to PayPal.": 31,
+	"United States dollars": 23,
+	"We only send the order number to PayPal. Your ordered items and delivery or pickup details will not be sent to PayPal.": 32,
 	"btcpay:en": 1,
 }
 
-var de_DEIndex = []uint32{ // 42 elements
+var de_DEIndex = []uint32{ // 43 elements
 	// Entry 0 - 1F
 	0x00000000, 0x00000014, 0x00000021, 0x0000003a,
 	0x00000042, 0x00000058, 0x0000006c, 0x0000007c,
 	0x0000008e, 0x000000a0, 0x000000b5, 0x000000c9,
 	0x000000da, 0x000000ea, 0x000000fe, 0x0000010d,
-	0x00000120, 0x00000132, 0x00000143, 0x00000153,
-	0x00000163, 0x00000176, 0x00000184, 0x0000018e,
-	0x000002bb, 0x000002e1, 0x00000424, 0x00000456,
-	0x00000496, 0x000004eb, 0x000004f2, 0x000004fb,
+	0x0000012c, 0x0000013f, 0x00000151, 0x00000162,
+	0x00000172, 0x00000182, 0x00000195, 0x000001a3,
+	0x000001ad, 0x000002da, 0x00000300, 0x00000443,
+	0x00000475, 0x000004b5, 0x0000050a, 0x00000511,
 	// Entry 20 - 3F
-	0x00000594, 0x0000068e, 0x000007c8, 0x000007d5,
-	0x000007da, 0x000007ed, 0x00000801, 0x0000080a,
-	0x0000081d, 0x0000083a,
-} // Size: 192 bytes
+	0x0000051a, 0x000005b3, 0x000006ad, 0x000007e7,
+	0x000007f4, 0x000007f9, 0x0000080c, 0x00000820,
+	0x00000829, 0x0000083c, 0x00000859,
+} // Size: 196 bytes
 
-const de_DEData string = "" + // Size: 2106 bytes
+const de_DEData string = "" + // Size: 2137 bytes
 	"\x02Monero oder Bitcoin\x02btcpay:de-DE\x02Bargeld in Fremdwährung\x02Ba" +
 	"rgeld\x02SEPA-Banküberweisung\x02Australische Dollar\x02Bulgarische Lew" +
 	"\x02Kanadische Dollar\x02Schweizer Franken\x02Chinesische Renminbi\x02Ts" +
 	"chechische Kronen\x02Dänische Kronen\x02Britische Pfund\x02Isländische K" +
-	"ronen\x02Japanische Yen\x02Norwegische Kronen\x02Neuseeland-Dollar\x02Po" +
-	"lnische Złoty\x02Rumänische Leu\x02Serbische Dinar\x02Schwedische Kronen" +
-	"\x02Taiwan-Dollar\x02US-Dollar\x02Bezahle den angegebenen Betrag in Mone" +
-	"ro (XMR) oder Bitcoin (BTC). Der Betrag muss innerhalb von 60 Minuten vo" +
-	"llständig und als einzelne Transaktion auf der angegebenen Adresse einge" +
-	"hen. Falls deine Zahlung verspätet eintrifft, müssen wir sie manuell bes" +
-	"tätigen. Im Zweifel kontaktiere uns bitte.\x02Zur Bezahlung mit Monero o" +
-	"der Bitcoin\x02Sende uns Bargeld in einem versichertem Brief oder Paket." +
-	" Nachdem wir das Geld entnommen haben, schreddern wir den Brief. Bitte b" +
-	"eachte die Höchstgrenzen deines Postunternehmens für den Bargeldversand " +
-	"(z. B. Deutsche Post „Einschreiben Wert“ bis 100 Euro innerhalb Deutschl" +
-	"ands, DHL Paket bis 500 Euro). Sende es an:\x02Bitte lege einen Zettel m" +
-	"it der Bestellnummer bei\x02Zahle den angegebenen Betrag in einer der fo" +
-	"lgenden Währungen.\x02Bitte sende nur Banknoten und runde gegebenenfalls" +
-	" auf. Wir nehmen keine Münzen an.\x02Betrag\x02Währung\x02Wir übermittel" +
-	"n nur die Bestellnummer an PayPal. Deine bestellten Artikel sowie die De" +
-	"tails zu Lieferung oder Abholung werden nicht an PayPal gesendet.\x02Fal" +
-	"ls du TOR oder einen VPN benutzt: Die angezeigten Bezahlmöglichkeiten si" +
-	"nd von der Länderzuordnung deiner IP-Adresse abhängig. Darüber hinaus bl" +
-	"ockiert PayPal manche TOR Exit Nodes. In dem Fall versuche es mit „New C" +
-	"ircuit for this Site“.\x02Führe eine SEPA-Überweisung (einheitlicher Eur" +
-	"o-Zahlungsverkehrsraum) auf unser deutsches Bankkonto aus. Wir prüfen es" +
-	" täglich manuell auf neue Zahlungseingänge. Wir werden deinen Namen und " +
-	"deine IBAN auf unserem Kontoauszug sehen. Bei einer Auslandsüberweisung " +
-	"wähle bitte die Gebührenregelung „OUR“.\x02Kontoinhaber\x02IBAN\x02BIC (" +
-	"falls nötig)\x02Bank (falls nötig)\x02%.2f €\x02Überweisungszweck\x02Ode" +
-	"r scanne den EPC-QR-Code:"
+	"ronen\x02Japanische Yen\x02Neue israelische Schekel (NIS)\x02Norwegische" +
+	" Kronen\x02Neuseeland-Dollar\x02Polnische Złoty\x02Rumänische Leu\x02Ser" +
+	"bische Dinar\x02Schwedische Kronen\x02Taiwan-Dollar\x02US-Dollar\x02Beza" +
+	"hle den angegebenen Betrag in Monero (XMR) oder Bitcoin (BTC). Der Betra" +
+	"g muss innerhalb von 60 Minuten vollständig und als einzelne Transaktion" +
+	" auf der angegebenen Adresse eingehen. Falls deine Zahlung verspätet ein" +
+	"trifft, müssen wir sie manuell bestätigen. Im Zweifel kontaktiere uns bi" +
+	"tte.\x02Zur Bezahlung mit Monero oder Bitcoin\x02Sende uns Bargeld in ei" +
+	"nem versichertem Brief oder Paket. Nachdem wir das Geld entnommen haben," +
+	" schreddern wir den Brief. Bitte beachte die Höchstgrenzen deines Postun" +
+	"ternehmens für den Bargeldversand (z. B. Deutsche Post „Einschreiben Wer" +
+	"t“ bis 100 Euro innerhalb Deutschlands, DHL Paket bis 500 Euro). Sende e" +
+	"s an:\x02Bitte lege einen Zettel mit der Bestellnummer bei\x02Zahle den " +
+	"angegebenen Betrag in einer der folgenden Währungen.\x02Bitte sende nur " +
+	"Banknoten und runde gegebenenfalls auf. Wir nehmen keine Münzen an.\x02B" +
+	"etrag\x02Währung\x02Wir übermitteln nur die Bestellnummer an PayPal. Dei" +
+	"ne bestellten Artikel sowie die Details zu Lieferung oder Abholung werde" +
+	"n nicht an PayPal gesendet.\x02Falls du TOR oder einen VPN benutzt: Die " +
+	"angezeigten Bezahlmöglichkeiten sind von der Länderzuordnung deiner IP-A" +
+	"dresse abhängig. Darüber hinaus blockiert PayPal manche TOR Exit Nodes. " +
+	"In dem Fall versuche es mit „New Circuit for this Site“.\x02Führe eine S" +
+	"EPA-Überweisung (einheitlicher Euro-Zahlungsverkehrsraum) auf unser deut" +
+	"sches Bankkonto aus. Wir prüfen es täglich manuell auf neue Zahlungseing" +
+	"änge. Wir werden deinen Namen und deine IBAN auf unserem Kontoauszug se" +
+	"hen. Bei einer Auslandsüberweisung wähle bitte die Gebührenregelung „OUR" +
+	"“.\x02Kontoinhaber\x02IBAN\x02BIC (falls nötig)\x02Bank (falls nötig)" +
+	"\x02%.2f €\x02Überweisungszweck\x02Oder scanne den EPC-QR-Code:"
 
-var en_USIndex = []uint32{ // 42 elements
+var en_USIndex = []uint32{ // 43 elements
 	// Entry 0 - 1F
 	0x00000000, 0x00000012, 0x0000001c, 0x00000035,
 	0x0000003a, 0x0000004d, 0x00000060, 0x0000006e,
 	0x0000007f, 0x0000008c, 0x0000009d, 0x000000aa,
 	0x000000b7, 0x000000c6, 0x000000d7, 0x000000e4,
-	0x000000f4, 0x00000108, 0x00000116, 0x00000123,
-	0x00000131, 0x0000013f, 0x00000152, 0x00000168,
-	0x00000251, 0x0000026d, 0x0000039d, 0x000003ca,
-	0x00000407, 0x00000455, 0x0000045c, 0x00000465,
+	0x000000fd, 0x0000010d, 0x00000121, 0x0000012f,
+	0x0000013c, 0x0000014a, 0x00000158, 0x0000016b,
+	0x00000181, 0x0000026a, 0x00000286, 0x000003b6,
+	0x000003e3, 0x00000420, 0x0000046e, 0x00000475,
 	// Entry 20 - 3F
-	0x000004dc, 0x000005a0, 0x000006cb, 0x000006da,
-	0x000006df, 0x000006f1, 0x00000709, 0x00000712,
-	0x0000071a, 0x00000733,
-} // Size: 192 bytes
+	0x0000047e, 0x000004f5, 0x000005b9, 0x000006e4,
+	0x000006f3, 0x000006f8, 0x0000070a, 0x00000722,
+	0x0000072b, 0x00000733, 0x0000074c,
+} // Size: 196 bytes
 
-const en_USData string = "" + // Size: 1843 bytes
+const en_USData string = "" + // Size: 1868 bytes
 	"\x02Monero or Bitcoin\x02btcpay:en\x02Cash in Foreign Currency\x02Cash" +
 	"\x02SEPA Bank Transfer\x02Australian dollars\x02Bulgarian lev\x02Canadia" +
 	"n dollars\x02Swiss francs\x02Chinese renminbi\x02Czech koruna\x02Danish " +
-	"krone\x02Pound sterling\x02Icelandic króna\x02Japanese yen\x02Norwegian " +
-	"krone\x02New Zealand dollars\x02Polish złoty\x02Romanian leu\x02Serbian " +
-	"dinar\x02Swedish krona\x02New Taiwan dollars\x02United States dollars" +
-	"\x02Pay with Monero (XMR) or Bitcoin (BTC). The full amount must be paid" +
-	" with a single transaction to the given address within 60 minutes. If yo" +
-	"ur payment arrives too late, we have to confirm it manually. If in doubt" +
-	", please contact us.\x02Pay using Monero or Bitcoin\x02Send cash in an i" +
-	"nsured letter or package to our store address in Germany. After we take " +
-	"out the money, we shred the letter. Please check the cash shipment limit" +
-	"s of your postal company (e. g. Deutsche Post „Einschreiben Wert“ up to " +
-	"100 Euros within Germany, DHL Parcel up to 500 Euros). Send it to:\x02Pl" +
-	"ease include a note with this order number\x02Pay the specified amount i" +
-	"n one of the following currencies.\x02Please send banknotes only and rou" +
-	"nd up if necessary. We do not accept coins.\x02Amount\x02Currency\x02We " +
-	"only send the order number to PayPal. Your ordered items and delivery or" +
-	" pickup details will not be sent to PayPal.\x02If you use TOR or a VPN: " +
-	"The payment options displayed depend on the country of your IP address. " +
-	"In addition, PayPal blocks some TOR exit nodes. In that case, try „New C" +
-	"ircuit for this Site“.\x02Make a SEPA (Single Euro Payments Area) bank t" +
-	"ransfer to our German bank account. We manually check for new incoming p" +
-	"ayments every day. We will see your name and bank account number on our " +
-	"account statement. If you are making an international wire transfer, ple" +
-	"ase select the „OUR“ fee option.\x02Account holder\x02IBAN\x02BIC (if re" +
-	"quired)\x02Bank name (if required)\x02%.2f EUR\x02Purpose\x02Or scan the" +
-	" EPC QR code:"
+	"krone\x02Pound sterling\x02Icelandic króna\x02Japanese yen\x02New Israel" +
+	"i shekel (NIS)\x02Norwegian krone\x02New Zealand dollars\x02Polish złoty" +
+	"\x02Romanian leu\x02Serbian dinar\x02Swedish krona\x02New Taiwan dollars" +
+	"\x02United States dollars\x02Pay with Monero (XMR) or Bitcoin (BTC). The" +
+	" full amount must be paid with a single transaction to the given address" +
+	" within 60 minutes. If your payment arrives too late, we have to confirm" +
+	" it manually. If in doubt, please contact us.\x02Pay using Monero or Bit" +
+	"coin\x02Send cash in an insured letter or package to our store address i" +
+	"n Germany. After we take out the money, we shred the letter. Please chec" +
+	"k the cash shipment limits of your postal company (e. g. Deutsche Post „" +
+	"Einschreiben Wert“ up to 100 Euros within Germany, DHL Parcel up to 500 " +
+	"Euros). Send it to:\x02Please include a note with this order number\x02P" +
+	"ay the specified amount in one of the following currencies.\x02Please se" +
+	"nd banknotes only and round up if necessary. We do not accept coins.\x02" +
+	"Amount\x02Currency\x02We only send the order number to PayPal. Your orde" +
+	"red items and delivery or pickup details will not be sent to PayPal.\x02" +
+	"If you use TOR or a VPN: The payment options displayed depend on the cou" +
+	"ntry of your IP address. In addition, PayPal blocks some TOR exit nodes." +
+	" In that case, try „New Circuit for this Site“.\x02Make a SEPA (Single E" +
+	"uro Payments Area) bank transfer to our German bank account. We manually" +
+	" check for new incoming payments every day. We will see your name and ba" +
+	"nk account number on our account statement. If you are making an interna" +
+	"tional wire transfer, please select the „OUR“ fee option.\x02Account hol" +
+	"der\x02IBAN\x02BIC (if required)\x02Bank name (if required)\x02%.2f EUR" +
+	"\x02Purpose\x02Or scan the EPC QR code:"
 
-	// Total table size 4333 bytes (4KiB); checksum: 108903D8
+	// Total table size 4397 bytes (4KiB); checksum: 4DD28B08
