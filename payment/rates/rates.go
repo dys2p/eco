@@ -28,7 +28,6 @@ func (h *History) RunDaemon() error {
 		if err := h.Repository.Insert(time.Now().Format("2006-01-02"), buyRates); err != nil {
 			log.Printf("\033[31m"+"error inserting rates: %v"+"\033[0m", err)
 		}
-		log.Printf("fetched rates from server")
 	}
 	return nil
 }
