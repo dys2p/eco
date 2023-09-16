@@ -1,4 +1,6 @@
-package country
+package countries
+
+import "sort"
 
 // Country Codes are ISO 3166-1.
 // VAT rates are from: https://europa.eu/youreurope/business/taxation/vat/vat-rules-rates/index_en.htm#shortcut-5.
@@ -150,3 +152,19 @@ var (
 )
 
 var All = []Country{AT, BE, BG, CH, CY, CZ, DE, DK, EE, ES, FI, FR, GB, GR, HR, HU, IE, IT, LT, LU, LV, MT, NL, PL, PT, RO, SE, SI, SK}
+
+func Get(id string) (Country, bool) {
+	for _, c := range All {
+		if c.ID == id {
+			return c, true
+		}
+	}
+	return Country{}, false
+}
+
+func SortByName(countries []Country) []Country {
+	sort.Slice(countries, func(i, j int) bool {
+		return countries[i].Name < countries[j].Name
+	})
+	return countries
+}

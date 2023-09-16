@@ -1,7 +1,5 @@
-// Package country contains European countries and their VAT rates from an European Union point of view.
-package country
-
-import "sort"
+// Package countries contains European countries and their VAT rates from an European Union point of view.
+package countries
 
 type Country struct {
 	ID       string // ISO 3166-1 code
@@ -38,20 +36,4 @@ func (c Country) Net(gross int, rateKey string) (int, bool) {
 	} else {
 		return int(float64(gross) / (1.0 + c.maxVATRate())), ok
 	}
-}
-
-func Get(id string) (Country, bool) {
-	for _, c := range All {
-		if c.ID == id {
-			return c, true
-		}
-	}
-	return Country{}, false
-}
-
-func SortByName(countries []Country) []Country {
-	sort.Slice(countries, func(i, j int) bool {
-		return countries[i].Name < countries[j].Name
-	})
-	return countries
 }

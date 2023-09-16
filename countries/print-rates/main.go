@@ -5,11 +5,11 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/dys2p/eco/country"
+	"github.com/dys2p/eco/countries"
 )
 
 func main() {
-	for _, c := range country.EuropeanUnion {
+	for _, c := range countries.EuropeanUnion {
 		// Country code
 		fmt.Print(c.ID, "\t")
 		// Standard rate
