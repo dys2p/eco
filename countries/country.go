@@ -10,13 +10,13 @@ type Country struct {
 // Gross returns the gross of the given net amount using the given VAT rate key. The boolean return value indicates if the rate has been found. If it is not found, the maximum rate is used.
 func (c Country) Gross(net float64, rateKey string) (float64, bool) {
 	rate, ok := c.VATRate(rateKey)
-	return float64(net) * (1.0 + rate), ok
+	return net * (1.0 + rate), ok
 }
 
 // Gross returns the net of the given gross amount using the given VAT rate key. The boolean return value indicates if the rate has been found. If it is not found, the maximum rate is used.
 func (c Country) Net(gross float64, rateKey string) (float64, bool) {
 	rate, ok := c.VATRate(rateKey)
-	return float64(gross) / (1.0 + rate), ok
+	return gross / (1.0 + rate), ok
 }
 
 // VATRate returns the VAT rate with the given key. The boolean return value indicates if the rate has been found. If it is not found, the maximum rate is used.

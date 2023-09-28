@@ -1,15 +1,18 @@
 package countries
 
 import (
+	"math"
 	"testing"
 )
+
+const epsilon = 1e-9
 
 func TestGrossNet(t *testing.T) {
 	tests := []struct {
 		country string
 		rate    string
-		net     int
-		gross   int
+		net     float64
+		gross   float64
 	}{
 		{"DE", "reduced-1", 100, 107},
 		{"DE", "standard", 100, 119},
@@ -24,11 +27,11 @@ func TestGrossNet(t *testing.T) {
 		if !ok {
 			t.Fatalf("country not found: %s", test.country)
 		}
-		if gross, _ := country.Gross(test.net, test.rate); gross != test.gross {
-			t.Fatalf("gross: got %d, want %d", gross, test.gross)
+		if gross, _ := country.Gross(test.net, test.rate); math.Abs(gross-test.gross) > epsilon {
+			t.Fatalf("gross: got %f, want %f", gross, test.gross)
 		}
-		if net, _ := country.Net(test.gross, test.rate); net != test.net {
-			t.Fatalf("net: got %d, want %d", net, test.net)
+		if net, _ := country.Net(test.gross, test.rate); math.Abs(net-test.net) > epsilon {
+			t.Fatalf("net: got %f, want %f", net, test.net)
 		}
 	}
 }
