@@ -1,3 +1,16 @@
+// Package health provides a widget which displays the synchronization status of payment methods. So far it only supports BTCPay Server.
+//
+// Register the health handler in your HTTP router:
+//
+//	router.Handler(http.MethodGet, "/payment-health", health.Server{btcpayStore})
+//
+// Parse the health template string along with your HTML templates:
+//
+//	t = template.Must(t.Parse(health.TemplateString))
+//
+// Execute the template:
+//
+//	{{template "health"}}
 package health
 
 import (
