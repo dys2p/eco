@@ -10,31 +10,30 @@ const backtick = "`"
 
 const TemplateString = `
 	{{define "health"}}
-		function updateHealth() {
-			var xhr = new XMLHttpRequest();
-			xhr.onreadystatechange = function() {
-				if(xhr.readyState == 4) {
-					let content;
-					if(xhr.status == 200) {
-						let data = JSON.parse(xhr.responseText);
-						for(item of data) {
-							content = += ` + backtick + `<span class="badge bg-${item.Synced ? 'success' : 'danger'}">${item.Name}: ${item.Synced ? 'synced' : 'out of sync'}</span> ` + backtick + `;
-						}
-					} else {
-						content = '<span class="badge bg-warning">could not connect</span>';
-					}
-					document.getElementById("health-widget").innerHTML = content;
-				}
-			}
-			xhr.open("GET", "/payment-health", true); // true for asynchronous
-			xhr.send(null);
-
-			setTimeout(function(){
-				updateHealth();
-			}, 10*1000); // 10 seconds
-		}
-
 		<script>
+			function updateHealth() {
+				var xhr = new XMLHttpRequest();
+				xhr.onreadystatechange = function() {
+					if(xhr.readyState == 4) {
+						let content = "";
+						if(xhr.status == 200) {
+							let data = JSON.parse(xhr.responseText);
+							for(item of data) {
+								content = content + ` + backtick + `<span class="badge bg-${item.Synced ? 'success' : 'danger'}">${item.Name}: ${item.Synced ? 'synced' : 'out of sync'}</span> ` + backtick + `;
+							}
+						} else {
+							content = '<span class="badge bg-warning">could not connect</span>';
+						}
+						document.getElementById("health-widget").innerHTML = content;
+					}
+				}
+				xhr.open("GET", "/payment-health", true); // true for asynchronous
+				xhr.send(null);
+
+				setTimeout(function(){
+					updateHealth();
+				}, 10*1000); // 10 seconds
+			}
 			document.write('<span id="health-widget"></span>');
 			updateHealth();
 		</script>
