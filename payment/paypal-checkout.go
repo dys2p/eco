@@ -76,7 +76,7 @@ func (p PayPal) createTransaction(w http.ResponseWriter, r *http.Request) error 
 		return err
 	}
 
-	generateOrderResponse, err := p.Config.CreateOrder(authResult, purchaseID+":"+paymentKey, sumCents)
+	generateOrderResponse, err := p.Config.CreateOrder(authResult, "Purchase "+purchaseID, purchaseID, paymentKey, sumCents)
 	if err != nil {
 		return err
 	}
