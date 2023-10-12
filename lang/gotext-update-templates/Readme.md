@@ -21,7 +21,7 @@ import (
 	"fmt"
 	"html/template"
 
-	"github.com/dys2p/eco/language"
+	"github.com/dys2p/eco/lang"
 )
 
 //go:embed hello.html
@@ -30,14 +30,14 @@ var fs embed.FS
 var hello = template.Must(template.ParseFS(fs, "hello.html"))
 
 type helloData struct {
-	language.Lang
+	lang.Lang
 }
 
 func main() {
-	for _, lang := range []string{"en", "de"} {
+	for _, l := range []string{"en", "de"} {
 		buf := &bytes.Buffer{}
 		_ = hello.Execute(buf, helloData{
-			Lang: language.Lang(lang),
+			Lang: lang.Lang(l),
 		})
 		fmt.Println(buf.String())
 	}

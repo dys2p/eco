@@ -1,4 +1,4 @@
-// Package language provides utilities for translating web services.
+// Package lang provides utilities for translating web services.
 package lang
 
 import (
