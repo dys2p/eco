@@ -5,13 +5,13 @@ import (
 	"html/template"
 	"net/http"
 
-	"github.com/dys2p/eco/language"
+	"github.com/dys2p/eco/lang"
 )
 
 var cashTmpl = template.Must(template.ParseFS(htmlfiles, "cash.html"))
 
 type cashTmplData struct {
-	language.Lang
+	lang.Lang
 	AddressHTML template.HTML
 	PurchaseID  string
 }
@@ -25,13 +25,13 @@ func (Cash) ID() string {
 }
 
 func (Cash) Name(r *http.Request) string {
-	return language.Get(r).Tr("Cash")
+	return lang.Get(r).Tr("Cash")
 }
 
 func (cash Cash) PayHTML(r *http.Request, purchaseID, paymentKey string) (template.HTML, error) {
 	buf := &bytes.Buffer{}
 	err := cashTmpl.Execute(buf, cashTmplData{
-		Lang:        language.Get(r),
+		Lang:        lang.Get(r),
 		AddressHTML: template.HTML(cash.AddressHTML),
 		PurchaseID:  purchaseID,
 	})

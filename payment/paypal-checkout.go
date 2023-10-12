@@ -10,14 +10,14 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/dys2p/eco/language"
+	"github.com/dys2p/eco/lang"
 	"github.com/dys2p/paypal"
 )
 
 var payPalTmpl = template.Must(template.ParseFS(htmlfiles, "paypal-checkout.html"))
 
 type paypalTmplData struct {
-	language.Lang
+	lang.Lang
 	ClientID  string
 	Reference string
 }
@@ -39,7 +39,7 @@ func (PayPal) Name(r *http.Request) string {
 func (p PayPal) PayHTML(r *http.Request, purchaseID, paymentKey string) (template.HTML, error) {
 	b := &bytes.Buffer{}
 	err := payPalTmpl.Execute(b, paypalTmplData{
-		Lang:      language.Get(r),
+		Lang:      lang.Get(r),
 		ClientID:  p.Config.ClientID,
 		Reference: purchaseID + ":" + paymentKey,
 	})

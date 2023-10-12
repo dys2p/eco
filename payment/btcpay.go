@@ -11,7 +11,7 @@ import (
 	"time"
 
 	"github.com/dys2p/btcpay"
-	"github.com/dys2p/eco/language"
+	"github.com/dys2p/eco/lang"
 )
 
 func init() {
@@ -21,7 +21,7 @@ func init() {
 var btcpayTmpl = template.Must(template.ParseFS(htmlfiles, "btcpay.html"))
 
 type btcpayTmplData struct {
-	language.Lang
+	lang.Lang
 	Reference string
 }
 
@@ -44,13 +44,13 @@ func (BTCPay) ID() string {
 }
 
 func (BTCPay) Name(r *http.Request) string {
-	return language.Get(r).Tr("Monero or Bitcoin")
+	return lang.Get(r).Tr("Monero or Bitcoin")
 }
 
 func (b BTCPay) PayHTML(r *http.Request, purchaseID, paymentKey string) (template.HTML, error) {
 	buf := &bytes.Buffer{}
 	err := btcpayTmpl.Execute(buf, btcpayTmplData{
-		Lang:      language.Get(r),
+		Lang:      lang.Get(r),
 		Reference: purchaseID + ":" + paymentKey,
 	})
 	return template.HTML(buf.String()), err
@@ -86,7 +86,7 @@ func (b BTCPay) createInvoice(w http.ResponseWriter, r *http.Request) error {
 		return fmt.Errorf("getting sum: %w", err)
 	}
 
-	defaultLanguage := strings.TrimPrefix(language.Get(r).Tr("btcpay:en"), "btcpay:") // see https://github.com/btcpayserver/btcpayserver/tree/master/BTCPayServer/wwwroot/locales
+	defaultLanguage := strings.TrimPrefix(lang.Get(r).Tr("btcpay:en"), "btcpay:") // see https://github.com/btcpayserver/btcpayserver/tree/master/BTCPayServer/wwwroot/locales
 
 	invoiceRequest := &btcpay.InvoiceRequest{
 		Amount:   float64(sumCents) / 100.0,

@@ -1,5 +1,5 @@
 // Package language provides utilities for translating web services.
-package language
+package lang
 
 import (
 	"net/http"

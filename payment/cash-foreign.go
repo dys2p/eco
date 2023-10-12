@@ -6,14 +6,14 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/dys2p/eco/language"
+	"github.com/dys2p/eco/lang"
 	"github.com/dys2p/eco/payment/rates"
 )
 
 var cashForeignTmpl = template.Must(template.ParseFS(htmlfiles, "cash-foreign.html"))
 
 type cashForeignTmplData struct {
-	language.Lang
+	lang.Lang
 	AddressHTML     template.HTML
 	CurrencyOptions []rates.Option
 	PurchaseID      string
@@ -30,7 +30,7 @@ func (CashForeign) ID() string {
 }
 
 func (CashForeign) Name(r *http.Request) string {
-	return language.Get(r).Tr("Cash in Foreign Currency")
+	return lang.Get(r).Tr("Cash in Foreign Currency")
 }
 
 func (cash CashForeign) PayHTML(r *http.Request, purchaseID, paymentKey string) (template.HTML, error) {
@@ -53,7 +53,7 @@ func (cash CashForeign) PayHTML(r *http.Request, purchaseID, paymentKey string) 
 
 	buf := &bytes.Buffer{}
 	err = cashForeignTmpl.Execute(buf, cashForeignTmplData{
-		Lang:            language.Get(r),
+		Lang:            lang.Get(r),
 		AddressHTML:     template.HTML(cash.AddressHTML),
 		CurrencyOptions: currencyOptions,
 		PurchaseID:      purchaseID,

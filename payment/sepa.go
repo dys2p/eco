@@ -10,14 +10,14 @@ import (
 	"strings"
 	"unicode"
 
-	"github.com/dys2p/eco/language"
+	"github.com/dys2p/eco/lang"
 	qrcode "github.com/skip2/go-qrcode"
 )
 
 var sepaTmpl = template.Must(template.ParseFS(htmlfiles, "sepa.html"))
 
 type sepaTmplData struct {
-	language.Lang
+	lang.Lang
 	Account     SEPAAccount
 	Amount      float64
 	EPCImageSrc string
@@ -41,7 +41,7 @@ func (SEPA) ID() string {
 }
 
 func (SEPA) Name(r *http.Request) string {
-	return language.Get(r).Tr("SEPA Bank Transfer")
+	return lang.Get(r).Tr("SEPA Bank Transfer")
 }
 
 func (sepa SEPA) PayHTML(r *http.Request, purchaseID, paymentKey string) (template.HTML, error) {
@@ -71,7 +71,7 @@ SEPA payment for purchase` // GDSV = Purchase & Sale of Goods and Services
 
 	buf := &bytes.Buffer{}
 	err = sepaTmpl.Execute(buf, sepaTmplData{
-		Lang:        language.Get(r),
+		Lang:        lang.Get(r),
 		Account:     sepa.Account,
 		Amount:      float64(eurocents) / 100.0,
 		EPCImageSrc: base64.StdEncoding.EncodeToString(epcPNG),

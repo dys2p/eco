@@ -6,7 +6,7 @@ import (
 	"log"
 	"time"
 
-	"github.com/dys2p/eco/language"
+	"github.com/dys2p/eco/lang"
 	"golang.org/x/exp/slices"
 	"golang.org/x/text/message"
 )
@@ -63,8 +63,8 @@ type Option struct {
 	Price    float64
 }
 
-func (opt Option) Tr(lang language.Lang) string {
-	printer := message.NewPrinter(message.MatchLanguage(string(lang)))
+func (opt Option) Tr(l lang.Lang) string {
+	printer := message.NewPrinter(message.MatchLanguage(string(l)))
 	switch opt.Currency {
 	case "AUD":
 		return printer.Sprintf("Australian dollars")
