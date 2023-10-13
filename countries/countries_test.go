@@ -36,6 +36,23 @@ func TestGrossNet(t *testing.T) {
 	}
 }
 
+func TestTranslateName(t *testing.T) {
+	tests := []struct {
+		country Country
+		langstr string
+		want    string
+	}{
+		{DE, "en", "Germany"},
+		{DE, "de", "Deutschland"},
+	}
+
+	for _, test := range tests {
+		if got := test.country.TranslateName(test.langstr); got != test.want {
+			t.Fatalf("TranslateName: got %s, want %s", got, test.want)
+		}
+	}
+}
+
 func TestVATRate(t *testing.T) {
 	tests := []struct {
 		country string

@@ -1,0 +1,208 @@
+{
+    "language": "en-US",
+    "messages": [
+        {
+            "id": "Austria",
+            "message": "Austria",
+            "translation": "Austria",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
+        },
+        {
+            "id": "Belgium",
+            "message": "Belgium",
+            "translation": "Belgium",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
+        },
+        {
+            "id": "Bulgaria",
+            "message": "Bulgaria",
+            "translation": "Bulgaria",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
+        },
+        {
+            "id": "Switzerland",
+            "message": "Switzerland",
+            "translation": "Switzerland",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
+        },
+        {
+            "id": "Cyprus",
+            "message": "Cyprus",
+            "translation": "Cyprus",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
+        },
+        {
+            "id": "Czechia",
+            "message": "Czechia",
+            "translation": "Czechia",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
+        },
+        {
+            "id": "Germany",
+            "message": "Germany",
+            "translation": "Germany",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
+        },
+        {
+            "id": "Denmark",
+            "message": "Denmark",
+            "translation": "Denmark",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
+        },
+        {
+            "id": "Estonia",
+            "message": "Estonia",
+            "translation": "Estonia",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
+        },
+        {
+            "id": "Spain",
+            "message": "Spain",
+            "translation": "Spain",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
+        },
+        {
+            "id": "Finland",
+            "message": "Finland",
+            "translation": "Finland",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
+        },
+        {
+            "id": "France",
+            "message": "France",
+            "translation": "France",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
+        },
+        {
+            "id": "United Kingdom",
+            "message": "United Kingdom",
+            "translation": "United Kingdom",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
+        },
+        {
+            "id": "Greece",
+            "message": "Greece",
+            "translation": "Greece",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
+        },
+        {
+            "id": "Croatia",
+            "message": "Croatia",
+            "translation": "Croatia",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
+        },
+        {
+            "id": "Hungary",
+            "message": "Hungary",
+            "translation": "Hungary",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
+        },
+        {
+            "id": "Ireland",
+            "message": "Ireland",
+            "translation": "Ireland",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
+        },
+        {
+            "id": "Italy",
+            "message": "Italy",
+            "translation": "Italy",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
+        },
+        {
+            "id": "Lithuania",
+            "message": "Lithuania",
+            "translation": "Lithuania",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
+        },
+        {
+            "id": "Luxembourg",
+            "message": "Luxembourg",
+            "translation": "Luxembourg",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
+        },
+        {
+            "id": "Latvia",
+            "message": "Latvia",
+            "translation": "Latvia",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
+        },
+        {
+            "id": "Malta",
+            "message": "Malta",
+            "translation": "Malta",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
+        },
+        {
+            "id": "Netherlands",
+            "message": "Netherlands",
+            "translation": "Netherlands",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
+        },
+        {
+            "id": "Poland",
+            "message": "Poland",
+            "translation": "Poland",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
+        },
+        {
+            "id": "Portugal",
+            "message": "Portugal",
+            "translation": "Portugal",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
+        },
+        {
+            "id": "Romania",
+            "message": "Romania",
+            "translation": "Romania",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
+        },
+        {
+            "id": "Sweden",
+            "message": "Sweden",
+            "translation": "Sweden",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
+        },
+        {
+            "id": "Slovenia",
+            "message": "Slovenia",
+            "translation": "Slovenia",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
+        },
+        {
+            "id": "Slovakia",
+            "message": "Slovakia",
+            "translation": "Slovakia",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
+        }
+    ]
+}
