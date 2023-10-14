@@ -47,8 +47,7 @@ func (p PayPal) PayHTML(purchaseID, paymentKey, langstr string) (template.HTML, 
 	return template.HTML(b.String()), err
 }
 
-func (p PayPal) ServeHTTP(w http.ResponseWriter, r *http.Request, langstr string) {
-	r.URL.Path = strings.TrimSuffix(r.URL.Path, "/")
+func (p PayPal) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	switch path.Base(r.URL.Path) {
 	case "create-order":
 		if err := p.createTransaction(w, r); err != nil {

@@ -22,7 +22,8 @@ var btcpayTmpl = template.Must(template.ParseFS(htmlfiles, "btcpay.html"))
 
 type btcpayTmplData struct {
 	lang.Lang
-	Reference string
+	DefaultLanguage string
+	Reference       string
 }
 
 type createdInvoice struct {
@@ -50,17 +51,18 @@ func (BTCPay) Name(langstr string) string {
 func (b BTCPay) PayHTML(purchaseID, paymentKey, langstr string) (template.HTML, error) {
 	buf := &bytes.Buffer{}
 	err := btcpayTmpl.Execute(buf, btcpayTmplData{
-		Lang:      lang.Lang(langstr),
-		Reference: purchaseID + ":" + paymentKey,
+		Lang:            lang.Lang(langstr),
+		DefaultLanguage: langstr,
+		Reference:       purchaseID + ":" + paymentKey,
 	})
 	return template.HTML(buf.String()), err
 }
 
-func (b BTCPay) ServeHTTP(w http.ResponseWriter, r *http.Request, langstr string) {
-	r.URL.Path = strings.TrimSuffix(r.URL.Path, "/")
+func (b BTCPay) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+
 	switch path.Base(r.URL.Path) {
 	case "create-invoice":
-		if err := b.createInvoice(w, r, langstr); err != nil {
+		if err := b.createInvoice(w, r); err != nil {
 			log.Printf("error creating btcpay invoice: %v", err)
 			w.WriteHeader(http.StatusInternalServerError)
 		}
@@ -72,7 +74,8 @@ func (b BTCPay) ServeHTTP(w http.ResponseWriter, r *http.Request, langstr string
 	}
 }
 
-func (b BTCPay) createInvoice(w http.ResponseWriter, r *http.Request, langstr string) error {
+func (b BTCPay) createInvoice(w http.ResponseWriter, r *http.Request) error {
+	defaultLanguage := r.PostFormValue("default-language")
 	purchaseID, paymentKey, _ := strings.Cut(r.PostFormValue("reference"), ":")
 
 	// redirect to existing invoice if it is younger than 15 minutes
@@ -85,8 +88,6 @@ func (b BTCPay) createInvoice(w http.ResponseWriter, r *http.Request, langstr st
 	if err != nil {
 		return fmt.Errorf("getting sum: %w", err)
 	}
-
-	defaultLanguage := langstr // or see https://github.com/btcpayserver/btcpayserver/tree/master/BTCPayServer/wwwroot/locales
 
 	invoiceRequest := &btcpay.InvoiceRequest{
 		Amount:   float64(sumCents) / 100.0,

@@ -1,10 +1,10 @@
 // Package payment implements payment methods.
 //
-// Register the http.Handler for POST requests under /id:
+// Register your payment methods for POST requests under /payment/{method}:
 //
 //	router.Handler(http.MethodPost, fmt.Sprintf("/payment/%s/*path", paymentMethod.ID()), paymentMethod)
 //
-// The handler will be publicly available.
+// Note that the handlers will be publicly available.
 package payment
 
 import (
@@ -23,10 +23,10 @@ import (
 // Even if a payment key is used, payment methods should store the purchase ID
 // because tax accounting may require a connection between payment and purchase.
 type Method interface {
+	http.Handler
 	ID() string
 	Name(langstr string) string
 	PayHTML(purchaseID, paymentKey, langstr string) (template.HTML, error)
-	ServeHTTP(w http.ResponseWriter, r *http.Request, langstr string)
 	VerifiesAdult() bool
 }
 
