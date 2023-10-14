@@ -8,6 +8,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"path"
 	"strings"
 
 	"github.com/dys2p/eco/lang"
@@ -32,29 +33,29 @@ func (PayPal) ID() string {
 	return "paypal-checkout"
 }
 
-func (PayPal) Name(r *http.Request) string {
+func (PayPal) Name(langstr string) string {
 	return "PayPal"
 }
 
-func (p PayPal) PayHTML(r *http.Request, purchaseID, paymentKey string) (template.HTML, error) {
+func (p PayPal) PayHTML(purchaseID, paymentKey, langstr string) (template.HTML, error) {
 	b := &bytes.Buffer{}
 	err := payPalTmpl.Execute(b, paypalTmplData{
-		Lang:      lang.Get(r),
+		Lang:      lang.Lang(langstr),
 		ClientID:  p.Config.ClientID,
 		Reference: purchaseID + ":" + paymentKey,
 	})
 	return template.HTML(b.String()), err
 }
 
-func (p PayPal) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (p PayPal) ServeHTTP(w http.ResponseWriter, r *http.Request, langstr string) {
 	r.URL.Path = strings.TrimSuffix(r.URL.Path, "/")
-	switch r.URL.Path {
-	case "/payment/paypal-checkout/create-order":
+	switch path.Base(r.URL.Path) {
+	case "create-order":
 		if err := p.createTransaction(w, r); err != nil {
 			log.Printf("error creating PayPal transaction: %v", err)
 			w.WriteHeader(http.StatusInternalServerError)
 		}
-	case "/payment/paypal-checkout/capture-order":
+	case "capture-order":
 		if err := p.captureTransaction(w, r); err != nil {
 			log.Printf("error capturing PayPal transaction: %v", err)
 			w.WriteHeader(http.StatusInternalServerError)

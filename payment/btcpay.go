@@ -43,28 +43,28 @@ func (BTCPay) ID() string {
 	return "btcpay"
 }
 
-func (BTCPay) Name(r *http.Request) string {
-	return lang.Get(r).Tr("Monero or Bitcoin")
+func (BTCPay) Name(langstr string) string {
+	return lang.Lang(langstr).Tr("Monero or Bitcoin")
 }
 
-func (b BTCPay) PayHTML(r *http.Request, purchaseID, paymentKey string) (template.HTML, error) {
+func (b BTCPay) PayHTML(purchaseID, paymentKey, langstr string) (template.HTML, error) {
 	buf := &bytes.Buffer{}
 	err := btcpayTmpl.Execute(buf, btcpayTmplData{
-		Lang:      lang.Get(r),
+		Lang:      lang.Lang(langstr),
 		Reference: purchaseID + ":" + paymentKey,
 	})
 	return template.HTML(buf.String()), err
 }
 
-func (b BTCPay) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (b BTCPay) ServeHTTP(w http.ResponseWriter, r *http.Request, langstr string) {
 	r.URL.Path = strings.TrimSuffix(r.URL.Path, "/")
-	switch r.URL.Path {
-	case "/payment/btcpay/create-invoice":
-		if err := b.createInvoice(w, r); err != nil {
+	switch path.Base(r.URL.Path) {
+	case "create-invoice":
+		if err := b.createInvoice(w, r, langstr); err != nil {
 			log.Printf("error creating btcpay invoice: %v", err)
 			w.WriteHeader(http.StatusInternalServerError)
 		}
-	case "/payment/btcpay/webhook":
+	case "webhook":
 		if err := b.webhook(w, r); err != nil {
 			log.Printf("error processing btcpay webhook: %v", err)
 			w.WriteHeader(http.StatusInternalServerError)
@@ -72,7 +72,7 @@ func (b BTCPay) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (b BTCPay) createInvoice(w http.ResponseWriter, r *http.Request) error {
+func (b BTCPay) createInvoice(w http.ResponseWriter, r *http.Request, langstr string) error {
 	purchaseID, paymentKey, _ := strings.Cut(r.PostFormValue("reference"), ":")
 
 	// redirect to existing invoice if it is younger than 15 minutes
@@ -86,7 +86,7 @@ func (b BTCPay) createInvoice(w http.ResponseWriter, r *http.Request) error {
 		return fmt.Errorf("getting sum: %w", err)
 	}
 
-	defaultLanguage := strings.TrimPrefix(lang.Get(r).Tr("btcpay:en"), "btcpay:") // see https://github.com/btcpayserver/btcpayserver/tree/master/BTCPayServer/wwwroot/locales
+	defaultLanguage := langstr // or see https://github.com/btcpayserver/btcpayserver/tree/master/BTCPayServer/wwwroot/locales
 
 	invoiceRequest := &btcpay.InvoiceRequest{
 		Amount:   float64(sumCents) / 100.0,

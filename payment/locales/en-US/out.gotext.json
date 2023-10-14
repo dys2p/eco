@@ -9,13 +9,6 @@
             "fuzzy": true
         },
         {
-            "id": "btcpay:en",
-            "message": "btcpay:en",
-            "translation": "btcpay:en",
-            "translatorComment": "Copied from source.",
-            "fuzzy": true
-        },
-        {
             "id": "Cash in Foreign Currency",
             "message": "Cash in Foreign Currency",
             "translation": "Cash in Foreign Currency",

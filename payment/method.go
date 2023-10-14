@@ -23,10 +23,10 @@ import (
 // Even if a payment key is used, payment methods should store the purchase ID
 // because tax accounting may require a connection between payment and purchase.
 type Method interface {
-	http.Handler
 	ID() string
-	Name(r *http.Request) string
-	PayHTML(r *http.Request, purchaseID, paymentKey string) (template.HTML, error)
+	Name(langstr string) string
+	PayHTML(purchaseID, paymentKey, langstr string) (template.HTML, error)
+	ServeHTTP(w http.ResponseWriter, r *http.Request, langstr string)
 	VerifiesAdult() bool
 }
 

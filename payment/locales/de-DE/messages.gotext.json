@@ -7,11 +7,6 @@
             "translation": "Monero oder Bitcoin"
         },
         {
-            "id": "btcpay:en",
-            "message": "btcpay:en",
-            "translation": "btcpay:de-DE"
-        },
-        {
             "id": "Cash in Foreign Currency",
             "message": "Cash in Foreign Currency",
             "translation": "Bargeld in Fremdwährung"

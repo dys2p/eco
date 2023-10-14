@@ -8,7 +8,6 @@ import (
 
 	"github.com/dys2p/eco/lang"
 	"golang.org/x/exp/slices"
-	"golang.org/x/text/message"
 )
 
 type History struct {
@@ -63,47 +62,47 @@ type Option struct {
 	Price    float64
 }
 
-func (opt Option) Tr(l lang.Lang) string {
-	printer := message.NewPrinter(message.MatchLanguage(string(l)))
+func (opt Option) Tr(langstr string) string {
+	l := lang.Lang(langstr)
 	switch opt.Currency {
 	case "AUD":
-		return printer.Sprintf("Australian dollars")
+		return l.Tr("Australian dollars")
 	case "BGN":
-		return printer.Sprintf("Bulgarian lev")
+		return l.Tr("Bulgarian lev")
 	case "CAD":
-		return printer.Sprintf("Canadian dollars")
+		return l.Tr("Canadian dollars")
 	case "CHF":
-		return printer.Sprintf("Swiss francs")
+		return l.Tr("Swiss francs")
 	case "CNY":
-		return printer.Sprintf("Chinese renminbi")
+		return l.Tr("Chinese renminbi")
 	case "CZK":
-		return printer.Sprintf("Czech koruna")
+		return l.Tr("Czech koruna")
 	case "DKK":
-		return printer.Sprintf("Danish krone")
+		return l.Tr("Danish krone")
 	case "GBP":
-		return printer.Sprintf("Pound sterling")
+		return l.Tr("Pound sterling")
 	case "ISK":
-		return printer.Sprintf("Icelandic króna")
+		return l.Tr("Icelandic króna")
 	case "JPY":
-		return printer.Sprintf("Japanese yen")
+		return l.Tr("Japanese yen")
 	case "ILS":
-		return printer.Sprintf("New Israeli shekel (NIS)")
+		return l.Tr("New Israeli shekel (NIS)")
 	case "NOK":
-		return printer.Sprintf("Norwegian krone")
+		return l.Tr("Norwegian krone")
 	case "NZD":
-		return printer.Sprintf("New Zealand dollars")
+		return l.Tr("New Zealand dollars")
 	case "PLN":
-		return printer.Sprintf("Polish złoty")
+		return l.Tr("Polish złoty")
 	case "RON":
-		return printer.Sprintf("Romanian leu")
+		return l.Tr("Romanian leu")
 	case "RSD":
-		return printer.Sprintf("Serbian dinar")
+		return l.Tr("Serbian dinar")
 	case "SEK":
-		return printer.Sprintf("Swedish krona")
+		return l.Tr("Swedish krona")
 	case "TWD":
-		return printer.Sprintf("New Taiwan dollars")
+		return l.Tr("New Taiwan dollars")
 	case "USD":
-		return printer.Sprintf("United States dollars")
+		return l.Tr("United States dollars")
 	default:
 		return ""
 	}
