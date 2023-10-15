@@ -44,22 +44,28 @@ func (langs Languages) getPrefix(reqpath string) (string, bool) {
 	return first, slices.Contains(langs, first)
 }
 
-// Get returns the language which matches the r.URL prefix or, if no prefix is present, the language which matches the Accept-Language header.
+// Get returns the language which matches the r.URL prefix.
 func (langs Languages) Get(r *http.Request) Lang {
 	langstr, ok := langs.getPrefix(r.URL.Path)
 	if !ok {
-		langstr = r.Header.Get("Accept-Language")
+		langstr = ""
 	}
+	return langs.get(langstr)
+}
+
+func (langs Languages) get(langstr string) Lang {
 	_, index := language.MatchStrings(message.DefaultCatalog.Matcher(), langstr)
 	return Lang(langs[index])
 }
 
-// Redirect redirects to the localized version of r.URL or, if it is already localized, responds with a "not found" error.
+// Redirect redirects to the localized version of r.URL according to the Accept-Language header.
+// If r.URL it is already localized, Redirect responds with a "not found" error.
 // It is recommended to chain Redirect behind your http router.
 func (langs Languages) Redirect(w http.ResponseWriter, r *http.Request) {
 	if _, ok := langs.getPrefix(r.URL.Path); ok {
 		http.NotFound(w, r) // url already starts with a supported language, prevent redirect loop
 	} else {
-		http.Redirect(w, r, langs.Get(r).Path(r.URL.Path), http.StatusSeeOther)
+		l := langs.get(r.Header.Get("Accept-Language"))
+		http.Redirect(w, r, l.Path(r.URL.Path), http.StatusSeeOther)
 	}
 }
