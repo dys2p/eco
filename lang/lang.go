@@ -22,14 +22,14 @@ import (
 
 type Lang string
 
-// Path formats a string and prepends l to it. Note that Path does not validate l.
+// Path formats a string and prepends l to it.
 func (l Lang) Path(format string, a ...any) string {
 	return path.Join("/", string(l), fmt.Sprintf(format, a...))
 }
 
 // Tr translates the given input text.
 //
-// l may be any language-like value because Tr calls MatchLanguage, which in turn calls MatchStrings.
+// l may be any BCP47-like string because Tr calls MatchLanguage, which in turn calls MatchStrings.
 func (l Lang) Tr(key message.Reference, a ...interface{}) string {
 	return message.NewPrinter(message.MatchLanguage(string(l))).Sprintf(key, a...)
 }
@@ -40,22 +40,19 @@ type Languages []string
 // getPrefix returns the first url segment and whether it is contained in langs.
 func (langs Languages) getPrefix(reqpath string) (string, bool) {
 	reqpath = strings.TrimLeft(reqpath, "/")
-	first, _, _ := strings.Cut(reqpath, "/")
-	return first, slices.Contains(langs, first)
+	prefix, _, _ := strings.Cut(reqpath, "/")
+	return prefix, slices.Contains(langs, prefix)
 }
 
-// Get returns the language which matches the r.URL prefix.
-func (langs Languages) Get(r *http.Request) Lang {
-	langstr, ok := langs.getPrefix(r.URL.Path)
-	if !ok {
-		langstr = ""
+// ByPath returns the language which matches the r.URL.Path prefix.
+func (langs Languages) ByPath(r *http.Request) Lang {
+	if langstr, ok := langs.getPrefix(r.URL.Path); ok {
+		return Lang(langstr)
 	}
-	return langs.get(langstr)
-}
-
-func (langs Languages) get(langstr string) Lang {
-	_, index := language.MatchStrings(message.DefaultCatalog.Matcher(), langstr)
-	return Lang(langs[index])
+	if len(langs) > 0 {
+		return Lang(langs[0])
+	}
+	return Lang("en")
 }
 
 // Redirect redirects to the localized version of r.URL according to the Accept-Language header.
@@ -65,7 +62,13 @@ func (langs Languages) Redirect(w http.ResponseWriter, r *http.Request) {
 	if _, ok := langs.getPrefix(r.URL.Path); ok {
 		http.NotFound(w, r) // url already starts with a supported language, prevent redirect loop
 	} else {
-		l := langs.get(r.Header.Get("Accept-Language"))
-		http.Redirect(w, r, l.Path(r.URL.Path), http.StatusSeeOther)
+		var supported = make([]language.Tag, len(langs))
+		for i := range langs {
+			supported[i] = language.Make(langs[i])
+		}
+		matcher := language.NewMatcher(supported)
+		_, index := language.MatchStrings(matcher, r.Header.Get("Accept-Language"))
+		prefix := langs[index]
+		http.Redirect(w, r, path.Join("/", prefix, r.URL.Path), http.StatusSeeOther)
 	}
 }
