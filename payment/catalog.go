@@ -39,12 +39,13 @@ func init() {
 }
 
 var messageKeyToIndex = map[string]int{
-	"%.2f EUR":                 38,
-	"Account holder":           34,
+	"%.2f":                     31,
+	"%.2f EUR":                 39,
+	"Account holder":           35,
 	"Amount":                   29,
 	"Australian dollars":       4,
-	"BIC (if required)":        36,
-	"Bank name (if required)":  37,
+	"BIC (if required)":        37,
+	"Bank name (if required)":  38,
 	"Bulgarian lev":            5,
 	"Canadian dollars":         6,
 	"Cash":                     2,
@@ -53,17 +54,17 @@ var messageKeyToIndex = map[string]int{
 	"Currency":                 30,
 	"Czech koruna":             9,
 	"Danish krone":             10,
-	"IBAN":                     35,
+	"IBAN":                     36,
 	"Icelandic króna":          12,
-	"If you use TOR or a VPN: The payment options displayed depend on the country of your IP address. In addition, PayPal blocks some TOR exit nodes. In that case, try „New Circuit for this Site“.": 32,
+	"If you use TOR or a VPN: The payment options displayed depend on the country of your IP address. In addition, PayPal blocks some TOR exit nodes. In that case, try „New Circuit for this Site“.": 33,
 	"Japanese yen": 13,
-	"Make a SEPA (Single Euro Payments Area) bank transfer to our German bank account. We manually check for new incoming payments every day. We will see your name and bank account number on our account statement. If you are making an international wire transfer, please select the „OUR“ fee option.": 33,
+	"Make a SEPA (Single Euro Payments Area) bank transfer to our German bank account. We manually check for new incoming payments every day. We will see your name and bank account number on our account statement. If you are making an international wire transfer, please select the „OUR“ fee option.": 34,
 	"Monero or Bitcoin":        0,
 	"New Israeli shekel (NIS)": 14,
 	"New Taiwan dollars":       21,
 	"New Zealand dollars":      16,
 	"Norwegian krone":          15,
-	"Or scan the EPC QR code:": 40,
+	"Or scan the EPC QR code:": 41,
 	"Pay the specified amount in one of the following currencies.": 27,
 	"Pay using Monero or Bitcoin":                                  24,
 	"Pay with Monero (XMR) or Bitcoin (BTC). The full amount must be paid with a single transaction to the given address within 60 minutes. If your payment arrives too late, we have to confirm it manually. If in doubt, please contact us.": 23,
@@ -71,7 +72,7 @@ var messageKeyToIndex = map[string]int{
 	"Please send banknotes only and round up if necessary. We do not accept coins.": 28,
 	"Polish złoty":       17,
 	"Pound sterling":     11,
-	"Purpose":            39,
+	"Purpose":            40,
 	"Romanian leu":       18,
 	"SEPA Bank Transfer": 3,
 	"Send cash in an insured letter or package to our store address in Germany. After we take out the money, we shred the letter. Please check the cash shipment limits of your postal company (e. g. Deutsche Post „Einschreiben Wert“ up to 100 Euros within Germany, DHL Parcel up to 500 Euros). Send it to:": 25,
@@ -79,10 +80,10 @@ var messageKeyToIndex = map[string]int{
 	"Swedish krona":         20,
 	"Swiss francs":          7,
 	"United States dollars": 22,
-	"We only send the order number to PayPal. Your ordered items and delivery or pickup details will not be sent to PayPal.": 31,
+	"We only send the order number to PayPal. Your ordered items and delivery or pickup details will not be sent to PayPal.": 32,
 }
 
-var de_DEIndex = []uint32{ // 42 elements
+var de_DEIndex = []uint32{ // 43 elements
 	// Entry 0 - 1F
 	0x00000000, 0x00000014, 0x0000002d, 0x00000035,
 	0x0000004b, 0x0000005f, 0x0000006f, 0x00000081,
@@ -93,12 +94,12 @@ var de_DEIndex = []uint32{ // 42 elements
 	0x000002cd, 0x000002f3, 0x00000436, 0x00000468,
 	0x000004a8, 0x000004fd, 0x00000504, 0x0000050d,
 	// Entry 20 - 3F
-	0x000005a6, 0x000006a0, 0x000007da, 0x000007e7,
-	0x000007ec, 0x000007ff, 0x00000813, 0x0000081c,
-	0x0000082f, 0x0000084c,
-} // Size: 192 bytes
+	0x00000512, 0x000005ab, 0x000006a5, 0x000007df,
+	0x000007ec, 0x000007f1, 0x00000804, 0x00000818,
+	0x00000821, 0x00000834, 0x00000851,
+} // Size: 196 bytes
 
-const de_DEData string = "" + // Size: 2124 bytes
+const de_DEData string = "" + // Size: 2129 bytes
 	"\x02Monero oder Bitcoin\x02Bargeld in Fremdwährung\x02Bargeld\x02SEPA-Ba" +
 	"nküberweisung\x02Australische Dollar\x02Bulgarische Lew\x02Kanadische Do" +
 	"llar\x02Schweizer Franken\x02Chinesische Renminbi\x02Tschechische Kronen" +
@@ -118,20 +119,20 @@ const de_DEData string = "" + // Size: 2124 bytes
 	"ge einen Zettel mit der Bestellnummer bei\x02Zahle den angegebenen Betra" +
 	"g in einer der folgenden Währungen.\x02Bitte sende nur Banknoten und run" +
 	"de gegebenenfalls auf. Wir nehmen keine Münzen an.\x02Betrag\x02Währung" +
-	"\x02Wir übermitteln nur die Bestellnummer an PayPal. Deine bestellten Ar" +
-	"tikel sowie die Details zu Lieferung oder Abholung werden nicht an PayPa" +
-	"l gesendet.\x02Falls du TOR oder einen VPN benutzt: Die angezeigten Beza" +
-	"hlmöglichkeiten sind von der Länderzuordnung deiner IP-Adresse abhängig." +
-	" Darüber hinaus blockiert PayPal manche TOR Exit Nodes. In dem Fall vers" +
-	"uche es mit „New Circuit for this Site“.\x02Führe eine SEPA-Überweisung " +
-	"(einheitlicher Euro-Zahlungsverkehrsraum) auf unser deutsches Bankkonto " +
-	"aus. Wir prüfen es täglich manuell auf neue Zahlungseingänge. Wir werden" +
-	" deinen Namen und deine IBAN auf unserem Kontoauszug sehen. Bei einer Au" +
-	"slandsüberweisung wähle bitte die Gebührenregelung „OUR“.\x02Kontoinhabe" +
-	"r\x02IBAN\x02BIC (falls nötig)\x02Bank (falls nötig)\x02%.2f €\x02Überwe" +
-	"isungszweck\x02Oder scanne den EPC-QR-Code:"
+	"\x02%.2f\x02Wir übermitteln nur die Bestellnummer an PayPal. Deine beste" +
+	"llten Artikel sowie die Details zu Lieferung oder Abholung werden nicht " +
+	"an PayPal gesendet.\x02Falls du TOR oder einen VPN benutzt: Die angezeig" +
+	"ten Bezahlmöglichkeiten sind von der Länderzuordnung deiner IP-Adresse a" +
+	"bhängig. Darüber hinaus blockiert PayPal manche TOR Exit Nodes. In dem F" +
+	"all versuche es mit „New Circuit for this Site“.\x02Führe eine SEPA-Über" +
+	"weisung (einheitlicher Euro-Zahlungsverkehrsraum) auf unser deutsches Ba" +
+	"nkkonto aus. Wir prüfen es täglich manuell auf neue Zahlungseingänge. Wi" +
+	"r werden deinen Namen und deine IBAN auf unserem Kontoauszug sehen. Bei " +
+	"einer Auslandsüberweisung wähle bitte die Gebührenregelung „OUR“.\x02Kon" +
+	"toinhaber\x02IBAN\x02BIC (falls nötig)\x02Bank (falls nötig)\x02%.2f €" +
+	"\x02Überweisungszweck\x02Oder scanne den EPC-QR-Code:"
 
-var en_USIndex = []uint32{ // 42 elements
+var en_USIndex = []uint32{ // 43 elements
 	// Entry 0 - 1F
 	0x00000000, 0x00000012, 0x0000002b, 0x00000030,
 	0x00000043, 0x00000056, 0x00000064, 0x00000075,
@@ -142,12 +143,12 @@ var en_USIndex = []uint32{ // 42 elements
 	0x00000260, 0x0000027c, 0x000003ac, 0x000003d9,
 	0x00000416, 0x00000464, 0x0000046b, 0x00000474,
 	// Entry 20 - 3F
-	0x000004eb, 0x000005af, 0x000006da, 0x000006e9,
-	0x000006ee, 0x00000700, 0x00000718, 0x00000721,
-	0x00000729, 0x00000742,
-} // Size: 192 bytes
+	0x00000479, 0x000004f0, 0x000005b4, 0x000006df,
+	0x000006ee, 0x000006f3, 0x00000705, 0x0000071d,
+	0x00000726, 0x0000072e, 0x00000747,
+} // Size: 196 bytes
 
-const en_USData string = "" + // Size: 1858 bytes
+const en_USData string = "" + // Size: 1863 bytes
 	"\x02Monero or Bitcoin\x02Cash in Foreign Currency\x02Cash\x02SEPA Bank T" +
 	"ransfer\x02Australian dollars\x02Bulgarian lev\x02Canadian dollars\x02Sw" +
 	"iss francs\x02Chinese renminbi\x02Czech koruna\x02Danish krone\x02Pound " +
@@ -165,16 +166,16 @@ const en_USData string = "" + // Size: 1858 bytes
 	"t to:\x02Please include a note with this order number\x02Pay the specifi" +
 	"ed amount in one of the following currencies.\x02Please send banknotes o" +
 	"nly and round up if necessary. We do not accept coins.\x02Amount\x02Curr" +
-	"ency\x02We only send the order number to PayPal. Your ordered items and " +
-	"delivery or pickup details will not be sent to PayPal.\x02If you use TOR" +
-	" or a VPN: The payment options displayed depend on the country of your I" +
-	"P address. In addition, PayPal blocks some TOR exit nodes. In that case," +
-	" try „New Circuit for this Site“.\x02Make a SEPA (Single Euro Payments A" +
-	"rea) bank transfer to our German bank account. We manually check for new" +
-	" incoming payments every day. We will see your name and bank account num" +
-	"ber on our account statement. If you are making an international wire tr" +
-	"ansfer, please select the „OUR“ fee option.\x02Account holder\x02IBAN" +
-	"\x02BIC (if required)\x02Bank name (if required)\x02%.2f EUR\x02Purpose" +
-	"\x02Or scan the EPC QR code:"
+	"ency\x02%.2f\x02We only send the order number to PayPal. Your ordered it" +
+	"ems and delivery or pickup details will not be sent to PayPal.\x02If you" +
+	" use TOR or a VPN: The payment options displayed depend on the country o" +
+	"f your IP address. In addition, PayPal blocks some TOR exit nodes. In th" +
+	"at case, try „New Circuit for this Site“.\x02Make a SEPA (Single Euro Pa" +
+	"yments Area) bank transfer to our German bank account. We manually check" +
+	" for new incoming payments every day. We will see your name and bank acc" +
+	"ount number on our account statement. If you are making an international" +
+	" wire transfer, please select the „OUR“ fee option.\x02Account holder" +
+	"\x02IBAN\x02BIC (if required)\x02Bank name (if required)\x02%.2f EUR\x02" +
+	"Purpose\x02Or scan the EPC QR code:"
 
-	// Total table size 4366 bytes (4KiB); checksum: FBB913C4
+	// Total table size 4384 bytes (4KiB); checksum: CE9C890F

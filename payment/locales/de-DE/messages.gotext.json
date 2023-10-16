@@ -157,6 +157,11 @@
             "translation": "Währung"
         },
         {
+            "id": "%.2f",
+            "message": "%.2f",
+            "translation": "%.2f"
+        },
+        {
             "id": "We only send the order number to PayPal. Your ordered items and delivery or pickup details will not be sent to PayPal.",
             "message": "We only send the order number to PayPal. Your ordered items and delivery or pickup details will not be sent to PayPal.",
             "translation": "Wir übermitteln nur die Bestellnummer an PayPal. Deine bestellten Artikel sowie die Details zu Lieferung oder Abholung werden nicht an PayPal gesendet."

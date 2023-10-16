@@ -219,6 +219,13 @@
             "fuzzy": true
         },
         {
+            "id": "%.2f",
+            "message": "%.2f",
+            "translation": "%.2f",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
+        },
+        {
             "id": "We only send the order number to PayPal. Your ordered items and delivery or pickup details will not be sent to PayPal.",
             "message": "We only send the order number to PayPal. Your ordered items and delivery or pickup details will not be sent to PayPal.",
             "translation": "We only send the order number to PayPal. Your ordered items and delivery or pickup details will not be sent to PayPal.",

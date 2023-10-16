@@ -15,7 +15,7 @@
 		{{range .CurrencyOptions}}
 			<tr>
 				<td>{{$.Tr "%.2f" .Price}}</td>
-				<td>{{.Currency}} {{with .Tr $.Lang}}({{.}}){{end}}</td>
+				<td>{{.Currency}} {{with .Tr $.Lang.String}}({{.}}){{end}}</td>
 			</tr>
 		{{end}}
 	</tbody>
