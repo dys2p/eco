@@ -58,6 +58,7 @@ func main() {
 
 func (config Config) Run() error {
 	var templateMessages = []pipeline.Message{}
+
 	err := filepath.Walk(".", func(path string, info fs.FileInfo, err error) error {
 		if err != nil {
 			return err
@@ -70,41 +71,16 @@ func (config Config) Run() error {
 			if err != nil {
 				return err
 			}
-			// similar to parse.Parse but wirh SkipFuncCheck
+			// similar to parse.Parse but with SkipFuncCheck
 			trees := make(map[string]*parse.Tree)
 			t := parse.New("name")
 			t.Mode |= parse.SkipFuncCheck
 			if _, err := t.Parse(string(file), "", "", trees); err != nil {
 				return err
 			}
-			// this ignores nested nodes, like *parse.RangeNode
+
 			for _, tree := range trees {
-				for _, node := range tree.Root.Nodes {
-					if node.Type() == parse.NodeAction {
-						if actionNode, ok := node.(*parse.ActionNode); ok {
-							for _, cmd := range actionNode.Pipe.Cmds {
-								if !containsIdentifier(cmd, config.TranslateFuncName) {
-									continue
-								}
-								for _, arg := range cmd.Args {
-									if arg.Type() == parse.NodeString {
-										if stringNode, ok := arg.(*parse.StringNode); ok {
-											text := stringNode.Text
-											message := pipeline.Message{
-												ID:  pipeline.IDList{text},
-												Key: text,
-												Message: pipeline.Text{
-													Msg: text,
-												},
-											}
-											templateMessages = append(templateMessages, message)
-										}
-									}
-								}
-							}
-						}
-					}
-				}
+				config.processNode(&templateMessages, tree.Root)
 			}
 		}
 		return nil
@@ -145,6 +121,56 @@ func (config Config) Run() error {
 		return err
 	}
 	return nil
+}
+
+func (config Config) processNode(templateMessages *[]pipeline.Message, node parse.Node) {
+	if node.Type() == parse.NodeList {
+		if listNode, ok := node.(*parse.ListNode); ok {
+			for _, childNode := range listNode.Nodes {
+				config.processNode(templateMessages, childNode)
+			}
+		}
+	}
+	if node.Type() == parse.NodeIf {
+		if ifNode, ok := node.(*parse.IfNode); ok {
+			config.processNode(templateMessages, ifNode.List)
+			if ifNode.ElseList != nil {
+				config.processNode(templateMessages, ifNode.ElseList)
+			}
+		}
+	}
+	if node.Type() == parse.NodeRange {
+		if rangeNode, ok := node.(*parse.RangeNode); ok {
+			config.processNode(templateMessages, rangeNode.List)
+			if rangeNode.ElseList != nil {
+				config.processNode(templateMessages, rangeNode.ElseList)
+			}
+		}
+	}
+	if node.Type() == parse.NodeAction {
+		if actionNode, ok := node.(*parse.ActionNode); ok {
+			for _, cmd := range actionNode.Pipe.Cmds {
+				if !containsIdentifier(cmd, config.TranslateFuncName) {
+					continue
+				}
+				for _, arg := range cmd.Args {
+					if arg.Type() == parse.NodeString {
+						if stringNode, ok := arg.(*parse.StringNode); ok {
+							text := stringNode.Text
+							message := pipeline.Message{
+								ID:  pipeline.IDList{text},
+								Key: text,
+								Message: pipeline.Text{
+									Msg: text,
+								},
+							}
+							*templateMessages = append(*templateMessages, message)
+						}
+					}
+				}
+			}
+		}
+	}
 }
 
 func containsIdentifier(cmd *parse.CommandNode, identifier string) bool {
