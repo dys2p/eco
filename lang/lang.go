@@ -27,6 +27,11 @@ func (l Lang) Path(format string, a ...any) string {
 	return path.Join("/", string(l), fmt.Sprintf(format, a...))
 }
 
+// String returns l as a string.
+func (l Lang) String() string {
+	return string(l)
+}
+
 // Tr translates the given input text.
 //
 // l may be any BCP47-like string because Tr calls MatchLanguage, which in turn calls MatchStrings.
