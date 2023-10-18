@@ -1,6 +1,11 @@
 package countries
 
-import "sort"
+import (
+	"sort"
+
+	"golang.org/x/text/collate"
+	"golang.org/x/text/language"
+)
 
 // Country Codes are ISO 3166-1.
 // VAT rates are from: https://europa.eu/youreurope/business/taxation/vat/vat-rules-rates/index_en.htm#shortcut-5.
@@ -170,8 +175,10 @@ func TranslateAndSort(langstr string, countries []Country) []CountryWithName {
 			Name:    countries[i].TranslateName(langstr),
 		}
 	}
+
+	collator := collate.New(language.Make(langstr), collate.IgnoreCase)
 	sort.Slice(result, func(i, j int) bool {
-		return result[i].Name < result[j].Name
+		return collator.CompareString(result[i].Name, result[j].Name) < 0
 	})
 	return result
 }
