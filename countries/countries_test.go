@@ -23,14 +23,11 @@ func TestGrossNet(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		country, ok := Get(test.country)
-		if !ok {
-			t.Fatalf("country not found: %s", test.country)
-		}
-		if gross, _ := country.Gross(test.net, test.rate); math.Abs(gross-test.gross) > epsilon {
+		country := Country(test.country)
+		if gross, _ := country.VAT().Gross(test.net, test.rate); math.Abs(gross-test.gross) > epsilon {
 			t.Fatalf("gross: got %f, want %f", gross, test.gross)
 		}
-		if net, _ := country.Net(test.gross, test.rate); math.Abs(net-test.net) > epsilon {
+		if net, _ := country.VAT().Net(test.gross, test.rate); math.Abs(net-test.net) > epsilon {
 			t.Fatalf("net: got %f, want %f", net, test.net)
 		}
 	}
@@ -68,11 +65,8 @@ func TestVATRate(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		country, ok := Get(test.country)
-		if !ok {
-			t.Fatalf("country not found: %s", test.country)
-		}
-		if got, _ := country.VATRate(test.rate); got != test.want {
+		country := Country(test.country)
+		if got, _ := country.VAT().Rate(test.rate); got != test.want {
 			t.Fatalf("VATRate: got %f, want %f", got, test.want)
 		}
 	}

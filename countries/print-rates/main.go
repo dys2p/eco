@@ -11,28 +11,28 @@ import (
 func main() {
 	for _, c := range countries.EuropeanUnion {
 		// Country code
-		fmt.Print(c.ID, "\t")
+		fmt.Print(c, "\t")
 		// Standard rate
-		fmt.Print(fmtPercent(c.VATRates["standard"]), "\t")
+		fmt.Print(fmtPercent(c.VAT()["standard"]), "\t")
 		// Reduced rate
-		if r1 := c.VATRates["reduced-1"]; r1 > 0 {
+		if r1 := c.VAT()["reduced-1"]; r1 > 0 {
 			fmt.Print(fmtPercent(r1))
 		} else {
 			fmt.Print("-")
 		}
-		if r2 := c.VATRates["reduced-2"]; r2 > 0 {
+		if r2 := c.VAT()["reduced-2"]; r2 > 0 {
 			fmt.Print(" / ", fmtPercent(r2))
 		}
 		fmt.Print("\t")
 		// Super reduced rate
-		if sr := c.VATRates["super-reduced"]; sr > 0 {
+		if sr := c.VAT()["super-reduced"]; sr > 0 {
 			fmt.Print(fmtPercent(sr))
 		} else {
 			fmt.Print("-")
 		}
 		fmt.Print("\t")
 		// Parking rate
-		if pr := c.VATRates["parking"]; pr > 0 {
+		if pr := c.VAT()["parking"]; pr > 0 {
 			fmt.Print(fmtPercent(pr))
 		} else {
 			fmt.Print("-")
