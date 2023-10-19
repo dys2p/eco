@@ -8,7 +8,7 @@ import (
 	"golang.org/x/exp/maps"
 )
 
-type detector func(r *http.Request) ([]countries.Country, error)
+type detectorFn func(r *http.Request) ([]countries.Country, error)
 
 // Countries returns all possible countries for a given HTTP request, based on the client's Accept-Language header and IP address.
 //
@@ -16,10 +16,10 @@ type detector func(r *http.Request) ([]countries.Country, error)
 func Countries(r *http.Request) ([]countries.Country, bool, error) {
 	var eu = make(map[countries.Country]any)
 	var nonEU = false
-	for _, f := range []detector{acceptLanguage, ipAddress} {
-		detectedCountries, err := f(r)
+	for _, detector := range []detectorFn{acceptLanguage, ipAddress} {
+		detectedCountries, err := detector(r)
 		if err != nil {
-			return nil, false, err
+			return countries.EuropeanUnion, true, err
 		}
 		// check if user can be anywhere
 		if detectedCountries == nil {
