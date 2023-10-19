@@ -110,7 +110,7 @@ func (c Country) TranslateName(langstr string) string {
 	case SK:
 		return l.Tr("Slovakia")
 	default:
-		return ""
+		return string(c)
 	}
 }
 
