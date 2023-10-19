@@ -28,7 +28,7 @@ func init() {
 
 // ipAddress returns zero or one country. The country can be outside of the European Union.
 func ipAddress(r *http.Request) ([]countries.Country, error) {
-	// TOR
+	// Tor users can be anywhere
 	if strings.HasSuffix(r.Host, ".onion") || strings.Contains(r.Host, ".onion:") {
 		return nil, nil
 	}

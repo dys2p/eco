@@ -2,6 +2,7 @@
 package countries
 
 import (
+	"slices"
 	"sort"
 
 	"github.com/dys2p/eco/lang"
@@ -47,6 +48,10 @@ const (
 )
 
 var EuropeanUnion = []Country{AT, BE, BG, CY, CZ, DE, DK, EE, ES, FI, FR, GR, HR, HU, IE, IT, LT, LU, LV, MT, NL, PL, PT, RO, SE, SI, SK}
+
+func InEuropeanUnion(country Country) bool {
+	return slices.Contains(EuropeanUnion, country)
+}
 
 func (c Country) TranslateName(langstr string) string {
 	l := lang.Lang(langstr)
