@@ -40,3 +40,8 @@ func Countries(r *http.Request) ([]countries.Country, error) {
 	}
 	return maps.Keys(available), nil
 }
+
+// Valid returns whether the given country is a European Union country or the NonEU constant.
+func Valid(c countries.Country) bool {
+	return c == countries.NonEU || slices.Contains(countries.EuropeanUnion, c)
+}
