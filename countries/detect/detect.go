@@ -6,13 +6,14 @@ import (
 	"slices"
 
 	"github.com/dys2p/eco/countries"
+	"golang.org/x/exp/maps"
 )
 
 // Countries returns the union of possible countries for a given HTTP request, based on the client's Accept-Language header and IP address.
 //
-// The returned set can contain ISO 3166-1 country codes of European Union countries and the NonEU constant.
+// The result can contain ISO 3166-1 country codes of European Union countries and the NonEU constant.
 // A nil return value means that the client can be anywhere.
-func Countries(r *http.Request) (map[countries.Country]any, error) {
+func Countries(r *http.Request) ([]countries.Country, error) {
 	accept, err := acceptLanguage(r)
 	if err != nil {
 		return nil, err
@@ -37,5 +38,5 @@ func Countries(r *http.Request) (map[countries.Country]any, error) {
 		}
 		available[country] = struct{}{}
 	}
-	return available, nil
+	return maps.Keys(available), nil
 }
