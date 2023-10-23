@@ -22,7 +22,7 @@ func Countries(r *http.Request) ([]countries.Country, bool, error) {
 			return countries.EuropeanUnion, true, err
 		}
 		// check if user can be anywhere
-		if detectedCountries == nil {
+		if len(detectedCountries) == 0 {
 			return countries.EuropeanUnion, true, nil
 		}
 		// merge EU countries
