@@ -47,7 +47,18 @@ const (
 	GB Country = "GB"
 )
 
+var All = []Country{AT, BE, BG, CH, CY, CZ, DE, DK, EE, ES, FI, FR, GB, GR, HR, HU, IE, IT, LT, LU, LV, MT, NL, PL, PT, RO, SE, SI, SK}
+
 var EuropeanUnion = []Country{AT, BE, BG, CY, CZ, DE, DK, EE, ES, FI, FR, GR, HR, HU, IE, IT, LT, LU, LV, MT, NL, PL, PT, RO, SE, SI, SK}
+
+func Get(id string) (Country, bool) {
+	for _, c := range All {
+		if string(c) == id {
+			return c, true
+		}
+	}
+	return "", false
+}
 
 func InEuropeanUnion(country Country) bool {
 	return slices.Contains(EuropeanUnion, country)
