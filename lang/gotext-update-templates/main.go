@@ -130,6 +130,14 @@ func (config Config) processNode(templateMessages *[]pipeline.Message, node pars
 			}
 		}
 	}
+	if node.Type() == parse.NodeWith {
+		if withNode, ok := node.(*parse.WithNode); ok {
+			config.processNode(templateMessages, withNode.List)
+			if withNode.ElseList != nil {
+				config.processNode(templateMessages, withNode.ElseList)
+			}
+		}
+	}
 	if node.Type() == parse.NodeRange {
 		if rangeNode, ok := node.(*parse.RangeNode); ok {
 			config.processNode(templateMessages, rangeNode.List)
