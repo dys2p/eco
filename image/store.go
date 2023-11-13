@@ -111,9 +111,12 @@ func (store Store) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// filepaths
-	fp := filepath.FromSlash(path.Join("/", r.URL.Path)) // "/" ensures the path is absolute, preventing directory traversal
-	orig := filepath.Join(store.Dir, fp)
+	reqpath := filepath.FromSlash(path.Join("/", r.URL.Path)) // "/" ensures the path is absolute, preventing directory traversal
+	orig := filepath.Join(store.Dir, reqpath)
 	cached := filepath.Join(store.CacheDir, orig, "max-side", strconv.Itoa(maxSide)) // path element order makes cache invalidation easy
+	if filepath.Ext(cached) != ".jpg" {
+		cached = cached + ".jpg" // imagemagick determines file format from extension
+	}
 
 	// check if original exists
 	if _, err := os.Lstat(orig); err == nil {
@@ -142,7 +145,7 @@ func (store Store) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	if err := exec.Command("convert", "-resize", fmt.Sprintf("%dx%d>", maxSide, maxSide), "-quality", store.jpegQuality(), "-format", "jpeg", orig, cached).Run(); err != nil {
+	if err := exec.Command("convert", "-resize", fmt.Sprintf("%dx%d>", maxSide, maxSide), "-quality", store.jpegQuality(), orig, cached).Run(); err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
