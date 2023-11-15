@@ -145,7 +145,7 @@ func (store Store) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	if err := exec.Command("convert", "-resize", fmt.Sprintf("%dx%d>", maxSide, maxSide), "-quality", store.jpegQuality(), orig, cached).Run(); err != nil {
+	if err := exec.Command("convert", "-resize", fmt.Sprintf("%dx%d>", maxSide, maxSide), "-quality", store.jpegQuality(), "-alpha", "remove", "-background", "white", orig, cached).Run(); err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
