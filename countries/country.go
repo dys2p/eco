@@ -51,8 +51,8 @@ var All = []Country{AT, BE, BG, CH, CY, CZ, DE, DK, EE, ES, FI, FR, GB, GR, HR, 
 
 var EuropeanUnion = []Country{AT, BE, BG, CY, CZ, DE, DK, EE, ES, FI, FR, GR, HR, HU, IE, IT, LT, LU, LV, MT, NL, PL, PT, RO, SE, SI, SK}
 
-func Get(id string) (Country, bool) {
-	for _, c := range All {
+func Get(cs []Country, id string) (Country, bool) {
+	for _, c := range cs {
 		if string(c) == id {
 			return c, true
 		}
