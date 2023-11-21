@@ -18,7 +18,7 @@ type History struct {
 
 // RunDaemon starts a loop which fetches the rates every hour and inserts them into the repository. The function blocks.
 func (h *History) RunDaemon() error {
-	for ; true; <-time.Tick(1 * time.Hour) {
+	for ; true; <-time.Tick(6 * time.Hour) {
 		buyRates, err := h.GetBuyRates(h.Currencies)
 		if err != nil {
 			log.Printf("\033[31m"+"error getting rates: %v"+"\033[0m", err)
