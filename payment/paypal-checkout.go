@@ -3,6 +3,7 @@ package payment
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"html/template"
 	"io"
@@ -114,7 +115,13 @@ func (p PayPal) captureTransaction(w http.ResponseWriter, r *http.Request) error
 		return fmt.Errorf("capturing response: %w", err)
 	}
 
-	purchaseID, paymentKey, _ := strings.Cut(captureResponse.PurchaseUnits[0].ReferenceID, ":")
+	var purchaseID string
+	if captures := captureResponse.PurchaseUnits[0].Payments.Captures; len(captures) > 0 {
+		purchaseID = captures[0].InvoiceID
+	} else {
+		return errors.New("no captures")
+	}
+	paymentKey := captureResponse.PurchaseUnits[0].ReferenceID
 
 	log.Printf("[%s] captured transaction: order: %s, capture: %s", purchaseID+":"+paymentKey, captureReq.OrderID, captureResponse.PurchaseUnits[0].Payments.Captures[0].ID)
 
