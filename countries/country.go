@@ -135,167 +135,167 @@ func (c Country) TranslateName(langstr string) string {
 func (c Country) VAT() VATRates {
 	switch c {
 	case AT:
-		return map[string]float64{
-			"standard":  0.20,
-			"reduced-1": 0.10,
-			"reduced-2": 0.13,
-			"parking":   0.13,
+		return map[Rate]float64{
+			RateStandard: 0.20,
+			RateReduced1: 0.10,
+			RateReduced2: 0.13,
+			RateParking:  0.13,
 		}
 	case BE:
-		return map[string]float64{
-			"standard":  0.21,
-			"reduced-1": 0.06,
-			"reduced-2": 0.12,
-			"parking":   0.12,
+		return map[Rate]float64{
+			RateStandard: 0.21,
+			RateReduced1: 0.06,
+			RateReduced2: 0.12,
+			RateParking:  0.12,
 		}
 	case BG:
-		return map[string]float64{
-			"standard":  0.20,
-			"reduced-1": 0.09,
+		return map[Rate]float64{
+			RateStandard: 0.20,
+			RateReduced1: 0.09,
 		}
 	case CY:
-		return map[string]float64{
-			"standard":  0.19,
-			"reduced-1": 0.05,
-			"reduced-2": 0.09,
+		return map[Rate]float64{
+			RateStandard: 0.19,
+			RateReduced1: 0.05,
+			RateReduced2: 0.09,
 		}
 	case CZ:
-		return map[string]float64{
-			"standard":  0.21,
-			"reduced-1": 0.10,
-			"reduced-2": 0.15,
+		return map[Rate]float64{
+			RateStandard: 0.21,
+			RateReduced1: 0.10,
+			RateReduced2: 0.15,
 		}
 	case DE:
-		return map[string]float64{
-			"standard":  0.19,
-			"reduced-1": 0.07,
+		return map[Rate]float64{
+			RateStandard: 0.19,
+			RateReduced1: 0.07,
 		}
 	case DK:
-		return map[string]float64{
-			"standard": 0.25,
+		return map[Rate]float64{
+			RateStandard: 0.25,
 		}
 	case EE:
-		return map[string]float64{
-			"standard":  0.20,
-			"reduced-1": 0.09,
+		return map[Rate]float64{
+			RateStandard: 0.20,
+			RateReduced1: 0.09,
 		}
 	case ES:
-		return map[string]float64{
-			"standard":      0.21,
-			"reduced-1":     0.10,
-			"super-reduced": 0.04,
+		return map[Rate]float64{
+			RateStandard:     0.21,
+			RateReduced1:     0.10,
+			RateSuperReduced: 0.04,
 		}
 	case FI:
-		return map[string]float64{
-			"standard":  0.24,
-			"reduced-1": 0.10,
-			"reduced-2": 0.14,
+		return map[Rate]float64{
+			RateStandard: 0.24,
+			RateReduced1: 0.10,
+			RateReduced2: 0.14,
 		}
 	case FR:
-		return map[string]float64{
-			"standard":      0.20,
-			"reduced-1":     0.055,
-			"reduced-2":     0.10,
-			"super-reduced": 0.021,
+		return map[Rate]float64{
+			RateStandard:     0.20,
+			RateReduced1:     0.055,
+			RateReduced2:     0.10,
+			RateSuperReduced: 0.021,
 		}
 	case GR:
-		return map[string]float64{
-			"standard":  0.24,
-			"reduced-1": 0.06,
-			"reduced-2": 0.13,
+		return map[Rate]float64{
+			RateStandard: 0.24,
+			RateReduced1: 0.06,
+			RateReduced2: 0.13,
 		}
 	case HR:
-		return map[string]float64{
-			"standard":  0.25,
-			"reduced-1": 0.05,
-			"reduced-2": 0.13,
+		return map[Rate]float64{
+			RateStandard: 0.25,
+			RateReduced1: 0.05,
+			RateReduced2: 0.13,
 		}
 	case HU:
-		return map[string]float64{
-			"standard":  0.27,
-			"reduced-1": 0.05,
-			"reduced-2": 0.18,
+		return map[Rate]float64{
+			RateStandard: 0.27,
+			RateReduced1: 0.05,
+			RateReduced2: 0.18,
 		}
 	case IE:
-		return map[string]float64{
-			"standard":      0.23,
-			"reduced-1":     0.09,
-			"reduced-2":     0.135,
-			"super-reduced": 0.048,
-			"parking":       0.135,
+		return map[Rate]float64{
+			RateStandard:     0.23,
+			RateReduced1:     0.09,
+			RateReduced2:     0.135,
+			RateSuperReduced: 0.048,
+			RateParking:      0.135,
 		}
 	case IT:
-		return map[string]float64{
-			"standard":      0.22,
-			"reduced-1":     0.05,
-			"reduced-2":     0.10,
-			"super-reduced": 0.04,
+		return map[Rate]float64{
+			RateStandard:     0.22,
+			RateReduced1:     0.05,
+			RateReduced2:     0.10,
+			RateSuperReduced: 0.04,
 		}
 	case LT:
-		return map[string]float64{
-			"standard":  0.21,
-			"reduced-1": 0.05,
-			"reduced-2": 0.09,
+		return map[Rate]float64{
+			RateStandard: 0.21,
+			RateReduced1: 0.05,
+			RateReduced2: 0.09,
 		}
 	case LU:
-		return map[string]float64{
-			"standard":      0.17,
-			"reduced-1":     0.08,
-			"super-reduced": 0.03,
-			"parking":       0.14,
+		return map[Rate]float64{
+			RateStandard:     0.17,
+			RateReduced1:     0.08,
+			RateSuperReduced: 0.03,
+			RateParking:      0.14,
 		}
 	case LV:
-		return map[string]float64{
-			"standard":  0.21,
-			"reduced-1": 0.12,
-			"reduced-2": 0.05,
+		return map[Rate]float64{
+			RateStandard: 0.21,
+			RateReduced1: 0.12,
+			RateReduced2: 0.05,
 		}
 	case MT:
-		return map[string]float64{
-			"standard":  0.18,
-			"reduced-1": 0.05,
-			"reduced-2": 0.07,
+		return map[Rate]float64{
+			RateStandard: 0.18,
+			RateReduced1: 0.05,
+			RateReduced2: 0.07,
 		}
 	case NL:
-		return map[string]float64{
-			"standard":  0.21,
-			"reduced-1": 0.09,
+		return map[Rate]float64{
+			RateStandard: 0.21,
+			RateReduced1: 0.09,
 		}
 	case PL:
-		return map[string]float64{
-			"standard":  0.23,
-			"reduced-1": 0.05,
-			"reduced-2": 0.08,
+		return map[Rate]float64{
+			RateStandard: 0.23,
+			RateReduced1: 0.05,
+			RateReduced2: 0.08,
 		}
 	case PT:
-		return map[string]float64{
-			"standard":  0.23,
-			"reduced-1": 0.06,
-			"reduced-2": 0.13,
-			"parking":   0.13,
+		return map[Rate]float64{
+			RateStandard: 0.23,
+			RateReduced1: 0.06,
+			RateReduced2: 0.13,
+			RateParking:  0.13,
 		}
 	case RO:
-		return map[string]float64{
-			"standard":  0.19,
-			"reduced-1": 0.05,
-			"reduced-2": 0.09,
+		return map[Rate]float64{
+			RateStandard: 0.19,
+			RateReduced1: 0.05,
+			RateReduced2: 0.09,
 		}
 	case SE:
-		return map[string]float64{
-			"standard":  0.25,
-			"reduced-1": 0.06,
-			"reduced-2": 0.12,
+		return map[Rate]float64{
+			RateStandard: 0.25,
+			RateReduced1: 0.06,
+			RateReduced2: 0.12,
 		}
 	case SI:
-		return map[string]float64{
-			"standard":  0.22,
-			"reduced-1": 0.05,
-			"reduced-2": 0.095,
+		return map[Rate]float64{
+			RateStandard: 0.22,
+			RateReduced1: 0.05,
+			RateReduced2: 0.095,
 		}
 	case SK:
-		return map[string]float64{
-			"standard":  0.20,
-			"reduced-1": 0.10,
+		return map[Rate]float64{
+			RateStandard: 0.20,
+			RateReduced1: 0.10,
 		}
 	default:
 		return nil

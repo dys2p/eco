@@ -10,16 +10,16 @@ const epsilon = 1e-9
 func TestGrossNet(t *testing.T) {
 	tests := []struct {
 		country string
-		rate    string
+		rate    Rate
 		net     float64
 		gross   float64
 	}{
-		{"DE", "reduced-1", 100, 107},
-		{"DE", "standard", 100, 119},
-		{"DE", "unknown", 100, 119},
-		{"IE", "reduced-1", 100, 109},
-		{"IE", "standard", 100, 123},
-		{"IE", "unknown", 100, 123},
+		{"DE", RateReduced1, 100, 107},
+		{"DE", RateStandard, 100, 119},
+		{"DE", Rate("unknown"), 100, 119},
+		{"IE", RateReduced1, 100, 109},
+		{"IE", RateStandard, 100, 123},
+		{"IE", Rate("unknown"), 100, 123},
 	}
 
 	for _, test := range tests {
@@ -53,15 +53,15 @@ func TestTranslateName(t *testing.T) {
 func TestVATRate(t *testing.T) {
 	tests := []struct {
 		country string
-		rate    string
+		rate    Rate
 		want    float64
 	}{
-		{"DE", "reduced-1", 0.07},
-		{"DE", "standard", 0.19},
-		{"DE", "unknown", 0.19},
-		{"IE", "reduced-1", 0.09},
-		{"IE", "standard", 0.23},
-		{"IE", "unknown", 0.23},
+		{"DE", RateReduced1, 0.07},
+		{"DE", RateStandard, 0.19},
+		{"DE", Rate("unknown"), 0.19},
+		{"IE", RateReduced1, 0.09},
+		{"IE", RateStandard, 0.23},
+		{"IE", Rate("unknown"), 0.23},
 	}
 
 	for _, test := range tests {
