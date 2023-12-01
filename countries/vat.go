@@ -1,5 +1,7 @@
 package countries
 
+import "math"
+
 type Rate string
 
 const (
@@ -11,6 +13,16 @@ const (
 )
 
 type VATRates map[Rate]float64
+
+func Convert(value int, src Country, srcRate Rate, dst Country, dstRate Rate) int {
+	if src == dst && srcRate == dstRate {
+		return value
+	}
+	srcVal := float64(value)
+	netVal, _ := src.VAT().Net(srcVal, srcRate)
+	dstVal, _ := dst.VAT().Gross(netVal, dstRate)
+	return int(math.Round(dstVal))
+}
 
 // Gross returns the gross of the given net amount using the given VAT rate key. The boolean return value indicates if the rate has been found. If it is not found, the maximum rate is used.
 func (vr VATRates) Gross(net float64, rateKey Rate) (float64, bool) {

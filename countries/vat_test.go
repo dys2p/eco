@@ -7,6 +7,26 @@ import (
 
 const epsilon = 1e-9
 
+func TestConvert(t *testing.T) {
+	tests := []struct {
+		value   int
+		src     Country
+		srcRate Rate
+		dst     Country
+		dstRate Rate
+		want    int
+	}{
+		{100, DE, RateStandard, DE, RateStandard, 100},
+		{100, DE, RateReduced1, DK, RateStandard, 117},
+	}
+
+	for _, test := range tests {
+		if got := Convert(test.value, test.src, test.srcRate, test.dst, test.dstRate); got != test.want {
+			t.Fatalf("convert: got %d, want %d", got, test.want)
+		}
+	}
+}
+
 func TestGrossNet(t *testing.T) {
 	tests := []struct {
 		country string
