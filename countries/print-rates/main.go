@@ -13,26 +13,26 @@ func main() {
 		// Country code
 		fmt.Print(c, "\t")
 		// Standard rate
-		fmt.Print(fmtPercent(c.VAT()["standard"]), "\t")
+		fmt.Print(fmtPercent(c.VAT()[countries.RateStandard]), "\t")
 		// Reduced rate
-		if r1 := c.VAT()["reduced-1"]; r1 > 0 {
+		if r1 := c.VAT()[countries.RateReduced1]; r1 > 0 {
 			fmt.Print(fmtPercent(r1))
 		} else {
 			fmt.Print("-")
 		}
-		if r2 := c.VAT()["reduced-2"]; r2 > 0 {
+		if r2 := c.VAT()[countries.RateReduced2]; r2 > 0 {
 			fmt.Print(" / ", fmtPercent(r2))
 		}
 		fmt.Print("\t")
 		// Super reduced rate
-		if sr := c.VAT()["super-reduced"]; sr > 0 {
+		if sr := c.VAT()[countries.RateSuperReduced]; sr > 0 {
 			fmt.Print(fmtPercent(sr))
 		} else {
 			fmt.Print("-")
 		}
 		fmt.Print("\t")
 		// Parking rate
-		if pr := c.VAT()["parking"]; pr > 0 {
+		if pr := c.VAT()[countries.RateParking]; pr > 0 {
 			fmt.Print(fmtPercent(pr))
 		} else {
 			fmt.Print("-")

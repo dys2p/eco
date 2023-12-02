@@ -29,25 +29,24 @@ func TestConvert(t *testing.T) {
 
 func TestGrossNet(t *testing.T) {
 	tests := []struct {
-		country string
+		country Country
 		rate    Rate
 		net     float64
 		gross   float64
 	}{
-		{"DE", RateReduced1, 100, 107},
-		{"DE", RateStandard, 100, 119},
-		{"DE", Rate("unknown"), 100, 119},
-		{"IE", RateReduced1, 100, 109},
-		{"IE", RateStandard, 100, 123},
-		{"IE", Rate("unknown"), 100, 123},
+		{DE, RateReduced1, 100, 107},
+		{DE, RateStandard, 100, 119},
+		{DE, Rate("unknown"), 100, 119},
+		{IE, RateReduced1, 100, 109},
+		{IE, RateStandard, 100, 123},
+		{IE, Rate("unknown"), 100, 123},
 	}
 
 	for _, test := range tests {
-		country := Country(test.country)
-		if gross, _ := country.VAT().Gross(test.net, test.rate); math.Abs(gross-test.gross) > epsilon {
+		if gross, _ := test.country.VAT().Gross(test.net, test.rate); math.Abs(gross-test.gross) > epsilon {
 			t.Fatalf("gross: got %f, want %f", gross, test.gross)
 		}
-		if net, _ := country.VAT().Net(test.gross, test.rate); math.Abs(net-test.net) > epsilon {
+		if net, _ := test.country.VAT().Net(test.gross, test.rate); math.Abs(net-test.net) > epsilon {
 			t.Fatalf("net: got %f, want %f", net, test.net)
 		}
 	}
@@ -72,21 +71,20 @@ func TestTranslateName(t *testing.T) {
 
 func TestVATRate(t *testing.T) {
 	tests := []struct {
-		country string
+		country Country
 		rate    Rate
 		want    float64
 	}{
-		{"DE", RateReduced1, 0.07},
-		{"DE", RateStandard, 0.19},
-		{"DE", Rate("unknown"), 0.19},
-		{"IE", RateReduced1, 0.09},
-		{"IE", RateStandard, 0.23},
-		{"IE", Rate("unknown"), 0.23},
+		{DE, RateReduced1, 0.07},
+		{DE, RateStandard, 0.19},
+		{DE, Rate("unknown"), 0.19},
+		{IE, RateReduced1, 0.09},
+		{IE, RateStandard, 0.23},
+		{IE, Rate("unknown"), 0.23},
 	}
 
 	for _, test := range tests {
-		country := Country(test.country)
-		if got, _ := country.VAT().Rate(test.rate); got != test.want {
+		if got, _ := test.country.VAT().Rate(test.rate); got != test.want {
 			t.Fatalf("VATRate: got %f, want %f", got, test.want)
 		}
 	}
