@@ -12,17 +12,28 @@ import (
 
 type History struct {
 	Currencies  []string // ISO 4217
-	GetBuyRates func(currencies []string) (map[string]float64, error)
+	GetBuyRates func(currencies []string, lastUpdateDate string) (map[string]float64, error)
 	Repository  *SQLiteDB
 }
 
 // RunDaemon starts a loop which fetches the rates every hour and inserts them into the repository. The function blocks.
 func (h *History) RunDaemon() error {
-	for ; true; <-time.Tick(6 * time.Hour) {
-		buyRates, err := h.GetBuyRates(h.Currencies)
+	for ; true; <-time.Tick(time.Hour) {
+		lastUpdateDate, err := h.Repository.LatestDate()
+		if err != nil {
+			log.Printf("\033[31m"+"error getting latest date: %v"+"\033[0m", err)
+			continue
+		}
+		if lastUpdateDate == time.Now().Format("2006-01-02") {
+			continue // already updated today
+		}
+		buyRates, err := h.GetBuyRates(h.Currencies, lastUpdateDate)
 		if err != nil {
 			log.Printf("\033[31m"+"error getting rates: %v"+"\033[0m", err)
 			continue
+		}
+		if len(buyRates) == 0 {
+			continue // nothing to insert
 		}
 		if err := h.Repository.Insert(time.Now().Format("2006-01-02"), buyRates); err != nil {
 			log.Printf("\033[31m"+"error inserting rates: %v"+"\033[0m", err)
@@ -55,6 +66,16 @@ func (h *History) Get(date string, value float64) ([]Option, error) {
 	}
 
 	return nil, errors.New("no rates found")
+}
+
+// Synced returns whether rates have been updated since three days ago.
+func (h *History) Synced() bool {
+	lastUpdateDate, err := h.Repository.LatestDate()
+	if err != nil {
+		return false
+	}
+	min := time.Now().AddDate(0, 0, -3).Format("2006-01-02")
+	return lastUpdateDate >= min
 }
 
 type Option struct {

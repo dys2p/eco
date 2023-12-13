@@ -18,10 +18,12 @@ import (
 	"net/http"
 
 	"github.com/dys2p/btcpay"
+	"github.com/dys2p/eco/payment/rates"
 )
 
 type Server struct {
 	BTCPay btcpay.Store
+	Rates  *rates.History
 }
 
 func (srv Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -39,6 +41,13 @@ func (srv Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				Synced: syncStatus.ChainHeight == syncStatus.SyncHeight,
 			})
 		}
+	}
+
+	if srv.Rates != nil {
+		response = append(response, Item{
+			Name:   "Foreign Cash",
+			Synced: srv.Rates.Synced(),
+		})
 	}
 
 	responseData, _ := json.Marshal(response)

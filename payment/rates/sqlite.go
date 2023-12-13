@@ -11,6 +11,7 @@ type SQLiteDB struct {
 	sqldb  *sql.DB
 	get    *sql.Stmt
 	insert *sql.Stmt
+	latest *sql.Stmt
 }
 
 func OpenDB(fpath string) (*SQLiteDB, error) {
@@ -26,6 +27,7 @@ func OpenDB(fpath string) (*SQLiteDB, error) {
 			rate     real not null,
 			primary key (date, currency)
 		);
+		create index if not exists date_index on rates (date);
 	`); err != nil {
 		return nil, err
 	}
@@ -38,11 +40,16 @@ func OpenDB(fpath string) (*SQLiteDB, error) {
 	if err != nil {
 		return nil, err
 	}
+	latest, err := sqldb.Prepare("select max(date) from rates")
+	if err != nil {
+		return nil, err
+	}
 
 	return &SQLiteDB{
 		sqldb:  sqldb,
 		get:    get,
 		insert: insert,
+		latest: latest,
 	}, nil
 }
 
@@ -77,4 +84,9 @@ func (db *SQLiteDB) Insert(date string, rates map[string]float64) error {
 		}
 	}
 	return tx.Commit()
+}
+
+func (db *SQLiteDB) LatestDate() (string, error) {
+	var latest string
+	return latest, db.latest.QueryRow().Scan(&latest)
 }
