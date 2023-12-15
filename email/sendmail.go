@@ -35,6 +35,10 @@ type Sendmail struct {
 }
 
 func (mailer Sendmail) Send(to string, subject string, body []byte) error {
+	if !AddressValid(to) {
+		return ErrInvalidAddress
+	}
+
 	mail, err := MakeEmail(mailer.From, to, subject, body)
 	if err != nil {
 		return err

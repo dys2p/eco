@@ -3,6 +3,7 @@ package email
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"mime"
 	"net/mail"
@@ -12,10 +13,14 @@ import (
 	"github.com/dys2p/eco/id"
 )
 
+var ErrInvalidAddress = errors.New("invalid address")
+
 type Emailer interface {
 	Send(to string, subject string, body []byte) error
 }
 
+// AddressValid returns true if addr is a well-formed email address, and if it exactly one email address and not a list.
+// Use AddressValid to check the email address in your application.
 func AddressValid(addr string) bool {
 	_, err := mail.ParseAddress(addr)
 	return err == nil
