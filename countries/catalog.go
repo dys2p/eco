@@ -57,54 +57,55 @@ var messageKeyToIndex = map[string]int{
 	"Latvia":         20,
 	"Lithuania":      18,
 	"Luxembourg":     19,
-	"Malta":          21,
-	"Netherlands":    22,
-	"Poland":         23,
-	"Portugal":       24,
-	"Romania":        25,
-	"Slovakia":       28,
-	"Slovenia":       27,
+	"Malta":          22,
+	"Montenegro":     21,
+	"Netherlands":    23,
+	"Poland":         24,
+	"Portugal":       25,
+	"Romania":        26,
+	"Slovakia":       29,
+	"Slovenia":       28,
 	"Spain":          9,
-	"Sweden":         26,
+	"Sweden":         27,
 	"Switzerland":    3,
 	"United Kingdom": 12,
 }
 
-var de_DEIndex = []uint32{ // 30 elements
+var de_DEIndex = []uint32{ // 31 elements
 	0x00000000, 0x0000000c, 0x00000014, 0x0000001e,
 	0x00000026, 0x0000002d, 0x00000038, 0x00000044,
 	0x0000004e, 0x00000056, 0x0000005e, 0x00000067,
 	0x00000072, 0x0000008a, 0x00000097, 0x000000a0,
 	0x000000a7, 0x000000ae, 0x000000b6, 0x000000be,
-	0x000000c8, 0x000000d1, 0x000000d7, 0x000000e3,
-	0x000000e9, 0x000000f2, 0x000000fc, 0x00000105,
-	0x0000010f, 0x00000118,
-} // Size: 144 bytes
+	0x000000c8, 0x000000d1, 0x000000dc, 0x000000e2,
+	0x000000ee, 0x000000f4, 0x000000fd, 0x00000107,
+	0x00000110, 0x0000011a, 0x00000123,
+} // Size: 148 bytes
 
-const de_DEData string = "" + // Size: 280 bytes
+const de_DEData string = "" + // Size: 291 bytes
 	"\x02Österreich\x02Belgien\x02Bulgarien\x02Schweiz\x02Zypern\x02Tschechie" +
 	"n\x02Deutschland\x02Dänemark\x02Estland\x02Spanien\x02Finnland\x02Frankr" +
 	"eich\x02Vereinigtes Königreich\x02Griechenland\x02Kroatien\x02Ungarn\x02" +
-	"Irland\x02Italien\x02Litauen\x02Luxemburg\x02Lettland\x02Malta\x02Nieder" +
-	"lande\x02Polen\x02Portugal\x02Rumänien\x02Schweden\x02Slowenien\x02Slowa" +
-	"kei"
+	"Irland\x02Italien\x02Litauen\x02Luxemburg\x02Lettland\x02Montenegro\x02M" +
+	"alta\x02Niederlande\x02Polen\x02Portugal\x02Rumänien\x02Schweden\x02Slow" +
+	"enien\x02Slowakei"
 
-var en_USIndex = []uint32{ // 30 elements
+var en_USIndex = []uint32{ // 31 elements
 	0x00000000, 0x00000008, 0x00000010, 0x00000019,
 	0x00000025, 0x0000002c, 0x00000034, 0x0000003c,
 	0x00000044, 0x0000004c, 0x00000052, 0x0000005a,
 	0x00000061, 0x00000070, 0x00000077, 0x0000007f,
 	0x00000087, 0x0000008f, 0x00000095, 0x0000009f,
-	0x000000aa, 0x000000b1, 0x000000b7, 0x000000c3,
-	0x000000ca, 0x000000d3, 0x000000db, 0x000000e2,
-	0x000000eb, 0x000000f4,
-} // Size: 144 bytes
+	0x000000aa, 0x000000b1, 0x000000bc, 0x000000c2,
+	0x000000ce, 0x000000d5, 0x000000de, 0x000000e6,
+	0x000000ed, 0x000000f6, 0x000000ff,
+} // Size: 148 bytes
 
-const en_USData string = "" + // Size: 244 bytes
+const en_USData string = "" + // Size: 255 bytes
 	"\x02Austria\x02Belgium\x02Bulgaria\x02Switzerland\x02Cyprus\x02Czechia" +
 	"\x02Germany\x02Denmark\x02Estonia\x02Spain\x02Finland\x02France\x02Unite" +
 	"d Kingdom\x02Greece\x02Croatia\x02Hungary\x02Ireland\x02Italy\x02Lithuan" +
-	"ia\x02Luxembourg\x02Latvia\x02Malta\x02Netherlands\x02Poland\x02Portugal" +
-	"\x02Romania\x02Sweden\x02Slovenia\x02Slovakia"
+	"ia\x02Luxembourg\x02Latvia\x02Montenegro\x02Malta\x02Netherlands\x02Pola" +
+	"nd\x02Portugal\x02Romania\x02Sweden\x02Slovenia\x02Slovakia"
 
-	// Total table size 812 bytes (0KiB); checksum: 5D1D57B9
+	// Total table size 842 bytes (0KiB); checksum: 42E40902

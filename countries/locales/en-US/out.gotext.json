@@ -149,6 +149,13 @@
             "fuzzy": true
         },
         {
+            "id": "Montenegro",
+            "message": "Montenegro",
+            "translation": "Montenegro",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
+        },
+        {
             "id": "Malta",
             "message": "Malta",
             "translation": "Malta",

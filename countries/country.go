@@ -32,6 +32,7 @@ const (
 	LT Country = "LT"
 	LU Country = "LU"
 	LV Country = "LV"
+	ME Country = "ME"
 	MT Country = "MT"
 	NL Country = "NL"
 	PL Country = "PL"
@@ -47,7 +48,7 @@ const (
 	GB Country = "GB"
 )
 
-var All = []Country{AT, BE, BG, CH, CY, CZ, DE, DK, EE, ES, FI, FR, GB, GR, HR, HU, IE, IT, LT, LU, LV, MT, NL, PL, PT, RO, SE, SI, SK}
+var All = []Country{AT, BE, BG, CH, CY, CZ, DE, DK, EE, ES, FI, FR, GB, GR, HR, HU, IE, IT, LT, LU, LV, ME, MT, NL, PL, PT, RO, SE, SI, SK}
 
 var EuropeanUnion = []Country{AT, BE, BG, CY, CZ, DE, DK, EE, ES, FI, FR, GR, HR, HU, IE, IT, LT, LU, LV, MT, NL, PL, PT, RO, SE, SI, SK}
 
@@ -109,6 +110,8 @@ func (c Country) TranslateName(langstr string) string {
 		return l.Tr("Luxembourg")
 	case LV:
 		return l.Tr("Latvia")
+	case ME:
+		return l.Tr("Montenegro")
 	case MT:
 		return l.Tr("Malta")
 	case NL:
