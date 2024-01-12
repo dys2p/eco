@@ -2,8 +2,8 @@
 package main
 
 import (
+	"errors"
 	"flag"
-	"io/fs"
 	"log"
 	"os"
 	"path/filepath"
@@ -13,6 +13,7 @@ import (
 	"golang.org/x/exp/slices"
 	"golang.org/x/text/language"
 	"golang.org/x/text/message/pipeline"
+	"golang.org/x/tools/go/packages"
 )
 
 type Config struct {
@@ -22,6 +23,7 @@ type Config struct {
 	Packages          []string
 	SrcLang           string
 	TranslateFuncName string
+	Verbose           bool
 }
 
 func main() {
@@ -32,6 +34,7 @@ func main() {
 	out := fs.String("out", "catalog.go", "output file to write to")
 	srcLang := fs.String("srclang", "en-US", "the source-code language")
 	trFunc := fs.String("trfunc", "Tr", "name of translate method which is used in templates")
+	verbose := fs.Bool("v", false, "output list of processed template files")
 	fs.Parse(os.Args[1:])
 
 	config := Config{
@@ -41,6 +44,7 @@ func main() {
 		Packages:          fs.Args(),
 		SrcLang:           *srcLang,
 		TranslateFuncName: *trFunc,
+		Verbose:           *verbose,
 	}
 	if err := config.Run(); err != nil {
 		log.Fatalln(err)
@@ -48,36 +52,38 @@ func main() {
 }
 
 func (config Config) Run() error {
+	log.SetFlags(0)
+
 	var templateMessages = []pipeline.Message{}
-
-	err := filepath.Walk(".", func(path string, info fs.FileInfo, err error) error {
-		if err != nil {
-			return err
-		}
-		if info.IsDir() {
-			return nil
-		}
-		if ext := filepath.Ext(info.Name()); ext == ".html" || ext == ".txt" {
-			file, err := os.ReadFile(path)
-			if err != nil {
-				return err
-			}
-			// similar to parse.Parse but with SkipFuncCheck
-			trees := make(map[string]*parse.Tree)
-			t := parse.New("name")
-			t.Mode |= parse.SkipFuncCheck
-			if _, err := t.Parse(string(file), "", "", trees); err != nil {
-				return err
-			}
-
-			for _, tree := range trees {
-				config.processNode(&templateMessages, tree.Root)
-			}
-		}
-		return nil
-	})
+	pkgs, err := packages.Load(&packages.Config{Mode: packages.NeedFiles | packages.NeedEmbedFiles}, config.Packages...)
 	if err != nil {
 		return err
+	}
+	for _, pkg := range pkgs {
+		if len(pkg.Errors) > 0 {
+			return errors.New(pkg.Errors[0].Msg)
+		}
+		for _, embedFile := range pkg.EmbedFiles {
+			if ext := filepath.Ext(embedFile); ext == ".html" || ext == ".txt" {
+				if config.Verbose {
+					log.Println(embedFile)
+				}
+				file, err := os.ReadFile(embedFile)
+				if err != nil {
+					return err
+				}
+				// similar to parse.Parse but with SkipFuncCheck
+				trees := make(map[string]*parse.Tree)
+				t := parse.New("name")
+				t.Mode |= parse.SkipFuncCheck
+				if _, err := t.Parse(string(file), "", "", trees); err != nil {
+					return err
+				}
+				for _, tree := range trees {
+					config.processNode(&templateMessages, tree.Root)
+				}
+			}
+		}
 	}
 
 	supported := []language.Tag{}

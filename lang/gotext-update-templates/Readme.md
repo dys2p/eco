@@ -73,3 +73,18 @@ $ ./example
 <p>Hello World</p>
 <p>Hallo Welt</p>
 ```
+
+## Crossing module boundaries
+
+The Go translation framework is currently using a global variable `golang.org/x/text/message.DefaultCatalog` which makes it nearly impossible to use multiple catalogs. We can, at least for local modules, work around this by extracting messages from other modules and defining their translations in our code:
+
+`gotext-update-templates -srclang=en-US -lang=en-US,de-DE -out=catalog.go . ./html ../other-module`
+
+This will fail with the error: `directory ../other-module outside main module or its selected dependencies`.
+
+To fix this, create a [Go workspace](https://go.dev/blog/get-familiar-with-workspaces) which contains your main module and the other module, because "each module within a workspace is treated as a main module when resolving dependencies". For example:
+
+```
+go work init .
+go work use ../other-module
+```
