@@ -25,3 +25,9 @@ func TestValidateAddress(t *testing.T) {
 		}
 	}
 }
+
+func TestPublish(t *testing.T) {
+	if err := Publish("https://example.com/test", "test", "test"); err != nil {
+		t.Fatalf("publishing: %v", err)
+	}
+}
