@@ -1,3 +1,4 @@
+// Package ntfysh implements publishing to ntfsyh servers.
 package ntfysh
 
 import (
