@@ -4,7 +4,6 @@ package filecache
 import (
 	"crypto/tls"
 	"errors"
-	"fmt"
 	"io"
 	"net/http"
 	"os"
