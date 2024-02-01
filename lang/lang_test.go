@@ -3,6 +3,7 @@ package lang
 import (
 	"net/http"
 	"net/http/httptest"
+	"slices"
 	"testing"
 
 	"golang.org/x/text/language"
@@ -21,6 +22,14 @@ func init() {
 	message.DefaultCatalog = b
 
 	langs = MakeLanguages("en", "de")
+}
+
+func TestPrefixes(t *testing.T) {
+	want := []string{"en", "de"}
+	got := langs.Prefixes()
+	if !slices.Equal(got, want) {
+		t.Fatalf("got %v, want %v", got, want)
+	}
 }
 
 func TestRedirect(t *testing.T) {

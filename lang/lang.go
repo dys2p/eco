@@ -73,6 +73,14 @@ func (langs Languages) FromPath(r *http.Request) (string, *message.Printer, bool
 	return prefix, fallback, false
 }
 
+func (langs Languages) Prefixes() []string {
+	var prefixes = make([]string, len(langs))
+	for i := range langs {
+		prefixes[i] = langs[i].Prefix
+	}
+	return prefixes
+}
+
 // Redirect redirects to the localized version of r.URL according to the Accept-Language header.
 // If r.URL it is already localized, Redirect responds with a "not found" error.
 // It is recommended to chain Redirect behind your http router.
