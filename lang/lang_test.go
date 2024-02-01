@@ -58,7 +58,7 @@ func TestRedirect(t *testing.T) {
 }
 
 func TestTranslate(t *testing.T) {
-	for _, prefix := range []string{"en", "de"} {
+	for _, prefix := range langs.Prefixes() {
 		http.HandleFunc("/"+prefix, func(w http.ResponseWriter, r *http.Request) {
 			_, printer, _ := langs.FromPath(r)
 			printer.Fprintf(w, "Hello World")
@@ -66,8 +66,8 @@ func TestTranslate(t *testing.T) {
 	}
 
 	tests := map[string]string{
-		"en": "Hello World",
 		"de": "Hallo Welt",
+		"en": "Hello World",
 	}
 
 	for prefix, want := range tests {

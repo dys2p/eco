@@ -8,7 +8,8 @@
 //
 // Adding routes for each language is recommended over using route parameters with possibly conflicting rules. Example:
 //
-//	for _, prefix := range []string{"en", "de"} {
+//	langs := lang.MakeLanguages("de", "en")
+//	for _, prefix := range langs.Prefixes() {
 //		http.HandleFunc("/"+prefix, func(w http.ResponseWriter, r *http.Request) {
 //			_, printer, _ := langs.FromPath(r)
 //			printer.Fprintf(w, "Hello World")
@@ -17,7 +18,7 @@
 //
 // Then generate the translations with:
 //
-//	gotext-update-templates -srclang=en-US -lang=en-US,de-DE -out=catalog.go .
+//	gotext-update-templates -srclang=en-US -lang=de-DE,en-US -out=catalog.go .
 //
 // [Google's advice]: https://developers.google.com/search/docs/specialty/international/managing-multi-regional-sites
 package lang
@@ -39,8 +40,8 @@ type Languages []struct {
 	Printer *message.Printer
 }
 
-// MakeLanguages takes a list of URL path prefixes used in your application (e. g. "en", "de").
-// Their order must match the default catalog (message.DefaultCatalog).
+// MakeLanguages takes a list of URL path prefixes used in your application (e. g.  "de", "en")
+// in the alphabetical order of the dictionary keys in the default catalog (message.DefaultCatalog).
 // MakeLanguages panics if len(prefixes) does not equal the number of languages in the default catalog.
 func MakeLanguages(prefixes ...string) Languages {
 	tags := message.DefaultCatalog.Languages()
