@@ -59,9 +59,9 @@ func MakeLanguages(prefixes ...string) Languages {
 
 // FromPath returns the language prefix of r.URL.Path and a message printer for it.
 // The boolean return value indicates whether the path has a known prefix. If it has not, the returned prefix is the fallback prefix.
-func (langs Languages) FromPath(r *http.Request) (string, *message.Printer, bool) {
-	reqpath := strings.TrimLeft(r.URL.Path, "/")
-	prefix, _, _ := strings.Cut(reqpath, "/")
+func (langs Languages) FromPath(path string) (string, *message.Printer, bool) {
+	path = strings.TrimLeft(path, "/")
+	prefix, _, _ := strings.Cut(path, "/")
 	for _, l := range langs {
 		if l.Prefix == prefix {
 			return prefix, l.Printer, true
@@ -87,7 +87,7 @@ func (langs Languages) Prefixes() []string {
 // It is recommended to chain Redirect behind your http router.
 // Matching is done with message.DefaultCatalog.Matcher().
 func (langs Languages) Redirect(w http.ResponseWriter, r *http.Request) {
-	if _, _, ok := langs.FromPath(r); ok {
+	if _, _, ok := langs.FromPath(r.URL.Path); ok {
 		// url already starts with a supported language, prevent redirect loop
 		http.NotFound(w, r)
 	} else {
