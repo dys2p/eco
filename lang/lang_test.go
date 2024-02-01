@@ -3,13 +3,27 @@ package lang
 import (
 	"net/http"
 	"net/http/httptest"
-
 	"testing"
+
+	"golang.org/x/text/language"
+	"golang.org/x/text/message"
+	"golang.org/x/text/message/catalog"
 )
 
-func TestRedirect(t *testing.T) {
-	var langs = Languages([]string{"en", "de"})
+var langs Languages
 
+func init() {
+	english := language.MustParse("en-US")
+	german := language.MustParse("de-DE")
+	var b = catalog.NewBuilder(catalog.Fallback(english))
+	b.SetString(english, "Hello World", "Hello World")
+	b.SetString(german, "Hello World", "Hallo Welt")
+	message.DefaultCatalog = b
+
+	langs = MakeLanguages("en", "de")
+}
+
+func TestRedirect(t *testing.T) {
 	tests := map[string]string{
 		"de":                    "/de",
 		"de-CH":                 "/de",
@@ -20,15 +34,40 @@ func TestRedirect(t *testing.T) {
 	}
 
 	for accept, want := range tests {
-		req := httptest.NewRequest(http.MethodGet, "/", nil)
-		req.Header.Set("Accept-Language", accept)
-		rec := httptest.NewRecorder()
-		langs.Redirect(rec, req)
-		result := rec.Result()
+		r := httptest.NewRequest(http.MethodGet, "/", nil)
+		r.Header.Set("Accept-Language", accept)
+		w := httptest.NewRecorder()
+		langs.Redirect(w, r)
+		result := w.Result()
 		if result.StatusCode != http.StatusSeeOther {
 			t.Fatalf("got status %d, want %d", result.StatusCode, http.StatusSeeOther)
 		}
 		if got := result.Header.Get("Location"); got != want {
+			t.Fatalf("got %s, want %s", got, want)
+		}
+	}
+}
+
+func TestTranslate(t *testing.T) {
+	for _, prefix := range []string{"en", "de"} {
+		http.HandleFunc("/"+prefix, func(w http.ResponseWriter, r *http.Request) {
+			_, printer, _ := langs.FromPath(r)
+			printer.Fprintf(w, "Hello World")
+		})
+	}
+
+	tests := map[string]string{
+		"en": "Hello World",
+		"de": "Hallo Welt",
+	}
+
+	for prefix, want := range tests {
+		r := httptest.NewRequest(http.MethodGet, "/"+prefix, nil)
+		w := httptest.NewRecorder()
+		http.DefaultServeMux.ServeHTTP(w, r)
+		got := w.Body.String()
+
+		if got != want {
 			t.Fatalf("got %s, want %s", got, want)
 		}
 	}
