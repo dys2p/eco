@@ -83,8 +83,7 @@ type Option struct {
 	Price    float64
 }
 
-func (opt Option) Tr(langstr string) string {
-	l := lang.Lang(langstr)
+func (opt Option) Tr(l lang.Lang) string {
 	switch opt.Currency {
 	case "AUD":
 		return l.Tr("Australian dollars")

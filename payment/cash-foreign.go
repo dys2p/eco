@@ -29,11 +29,11 @@ func (CashForeign) ID() string {
 	return "cash-foreign"
 }
 
-func (CashForeign) Name(langstr string) string {
-	return lang.Lang(langstr).Tr("Cash in Foreign Currency")
+func (CashForeign) Name(l lang.Lang) string {
+	return l.Tr("Cash in Foreign Currency")
 }
 
-func (cash CashForeign) PayHTML(purchaseID, paymentKey, langstr string) (template.HTML, error) {
+func (cash CashForeign) PayHTML(purchaseID, paymentKey string, l lang.Lang) (template.HTML, error) {
 	date, err := cash.Purchases.PurchaseCreationDate(purchaseID, paymentKey)
 	if err != nil {
 		log.Printf("error getting purchase creation date from database: %v", err)
@@ -53,7 +53,7 @@ func (cash CashForeign) PayHTML(purchaseID, paymentKey, langstr string) (templat
 
 	buf := &bytes.Buffer{}
 	err = cashForeignTmpl.Execute(buf, cashForeignTmplData{
-		Lang:            lang.Lang(langstr),
+		Lang:            l,
 		AddressHTML:     template.HTML(cash.AddressHTML),
 		CurrencyOptions: currencyOptions,
 		PurchaseID:      purchaseID,

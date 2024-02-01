@@ -19,7 +19,7 @@ Templates are read recursively from the working directory. If you use go generat
 ```
 package main
 
-//go:generate gotext-update-templates -srclang=en-US -lang=en-US,de-DE -out=catalog.go .
+//go:generate gotext-update-templates -srclang=en-US -lang=de-DE,en-US -out=catalog.go .
 
 import (
 	"bytes"
@@ -35,16 +35,11 @@ var fs embed.FS
 
 var hello = template.Must(template.ParseFS(fs, "hello.html"))
 
-type helloData struct {
-	lang.Lang
-}
-
 func main() {
-	for _, l := range []string{"en", "de"} {
+	langs := lang.MakeLanguages("de", "en")
+	for _, l := range langs {
 		buf := &bytes.Buffer{}
-		_ = hello.Execute(buf, helloData{
-			Lang: lang.Lang(l),
-		})
+		hello.Execute(buf, l)
 		fmt.Println(buf.String())
 	}
 }

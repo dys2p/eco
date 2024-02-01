@@ -34,14 +34,14 @@ func (PayPal) ID() string {
 	return "paypal-checkout"
 }
 
-func (PayPal) Name(langstr string) string {
+func (PayPal) Name(l lang.Lang) string {
 	return "PayPal"
 }
 
-func (p PayPal) PayHTML(purchaseID, paymentKey, langstr string) (template.HTML, error) {
+func (p PayPal) PayHTML(purchaseID, paymentKey string, l lang.Lang) (template.HTML, error) {
 	b := &bytes.Buffer{}
 	err := payPalTmpl.Execute(b, paypalTmplData{
-		Lang:      lang.Lang(langstr),
+		Lang:      l,
 		ClientID:  p.Config.ClientID,
 		Reference: purchaseID + ":" + paymentKey,
 	})

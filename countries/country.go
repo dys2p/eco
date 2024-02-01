@@ -6,8 +6,6 @@ import (
 	"sort"
 
 	"github.com/dys2p/eco/lang"
-	"golang.org/x/text/collate"
-	"golang.org/x/text/language"
 )
 
 type Country string // ISO 3166-1 code
@@ -65,8 +63,7 @@ func InEuropeanUnion(country Country) bool {
 	return slices.Contains(EuropeanUnion, country)
 }
 
-func (c Country) TranslateName(langstr string) string {
-	l := lang.Lang(langstr)
+func (c Country) TranslateName(l lang.Lang) string {
 	switch c {
 	case AT:
 		return l.Tr("Austria")
@@ -310,18 +307,17 @@ type CountryWithName struct {
 	Name string
 }
 
-func TranslateAndSort(langstr string, countries []Country) []CountryWithName {
+func TranslateAndSort(l lang.Lang, countries []Country) []CountryWithName {
 	var result = make([]CountryWithName, len(countries))
 	for i := range countries {
 		result[i] = CountryWithName{
 			Country: countries[i],
-			Name:    countries[i].TranslateName(langstr),
+			Name:    countries[i].TranslateName(l),
 		}
 	}
 
-	collator := collate.New(language.Make(langstr), collate.IgnoreCase)
 	sort.Slice(result, func(i, j int) bool {
-		return collator.CompareString(result[i].Name, result[j].Name) < 0
+		return l.Collator.CompareString(result[i].Name, result[j].Name) < 0
 	})
 	return result
 }

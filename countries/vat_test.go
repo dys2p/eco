@@ -3,6 +3,8 @@ package countries
 import (
 	"math"
 	"testing"
+
+	"github.com/dys2p/eco/lang"
 )
 
 const epsilon = 1e-9
@@ -53,9 +55,11 @@ func TestGrossNet(t *testing.T) {
 }
 
 func TestTranslateName(t *testing.T) {
+	langs := lang.MakeLanguages("de", "en")
+
 	tests := []struct {
 		country Country
-		langstr string
+		path    string
 		want    string
 	}{
 		{DE, "en", "Germany"},
@@ -63,7 +67,8 @@ func TestTranslateName(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		if got := test.country.TranslateName(test.langstr); got != test.want {
+		l, _ := langs.FromPath(test.path)
+		if got := test.country.TranslateName(l); got != test.want {
 			t.Fatalf("TranslateName: got %s, want %s", got, test.want)
 		}
 	}

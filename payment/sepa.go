@@ -40,11 +40,11 @@ func (SEPA) ID() string {
 	return "sepa"
 }
 
-func (SEPA) Name(langstr string) string {
-	return lang.Lang(langstr).Tr("SEPA Bank Transfer")
+func (SEPA) Name(l lang.Lang) string {
+	return l.Tr("SEPA Bank Transfer")
 }
 
-func (sepa SEPA) PayHTML(purchaseID, paymentKey, langstr string) (template.HTML, error) {
+func (sepa SEPA) PayHTML(purchaseID, paymentKey string, l lang.Lang) (template.HTML, error) {
 	eurocents, err := sepa.Purchases.PurchaseSumCents(purchaseID, paymentKey)
 	if err != nil {
 		log.Printf("error getting purchase sum from database: %v", err)
@@ -71,7 +71,7 @@ SEPA payment for purchase` // GDSV = Purchase & Sale of Goods and Services
 
 	buf := &bytes.Buffer{}
 	err = sepaTmpl.Execute(buf, sepaTmplData{
-		Lang:        lang.Lang(langstr),
+		Lang:        l,
 		Account:     sepa.Account,
 		Amount:      float64(eurocents) / 100.0,
 		EPCImageSrc: base64.StdEncoding.EncodeToString(epcPNG),

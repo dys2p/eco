@@ -24,14 +24,14 @@ func (Cash) ID() string {
 	return "cash"
 }
 
-func (Cash) Name(langstr string) string {
-	return lang.Lang(langstr).Tr("Cash")
+func (Cash) Name(l lang.Lang) string {
+	return l.Tr("Cash")
 }
 
-func (cash Cash) PayHTML(purchaseID, paymentKey, langstr string) (template.HTML, error) {
+func (cash Cash) PayHTML(purchaseID, paymentKey string, l lang.Lang) (template.HTML, error) {
 	buf := &bytes.Buffer{}
 	err := cashTmpl.Execute(buf, cashTmplData{
-		Lang:        lang.Lang(langstr),
+		Lang:        l,
 		AddressHTML: template.HTML(cash.AddressHTML),
 		PurchaseID:  purchaseID,
 	})

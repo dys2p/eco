@@ -11,6 +11,8 @@ import (
 	"errors"
 	"html/template"
 	"net/http"
+
+	"github.com/dys2p/eco/lang"
 )
 
 // Method is the interface that wraps payment methods.
@@ -25,8 +27,8 @@ import (
 type Method interface {
 	http.Handler
 	ID() string
-	Name(langstr string) string
-	PayHTML(purchaseID, paymentKey, langstr string) (template.HTML, error)
+	Name(l lang.Lang) string
+	PayHTML(purchaseID, paymentKey string, l lang.Lang) (template.HTML, error)
 	VerifiesAdult() bool
 }
 

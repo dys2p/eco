@@ -44,15 +44,15 @@ func (BTCPay) ID() string {
 	return "btcpay"
 }
 
-func (BTCPay) Name(langstr string) string {
-	return lang.Lang(langstr).Tr("Monero or Bitcoin")
+func (BTCPay) Name(l lang.Lang) string {
+	return l.Tr("Monero or Bitcoin")
 }
 
-func (b BTCPay) PayHTML(purchaseID, paymentKey, langstr string) (template.HTML, error) {
+func (b BTCPay) PayHTML(purchaseID, paymentKey string, l lang.Lang) (template.HTML, error) {
 	buf := &bytes.Buffer{}
 	err := btcpayTmpl.Execute(buf, btcpayTmplData{
-		Lang:            lang.Lang(langstr),
-		DefaultLanguage: langstr,
+		Lang:            l,
+		DefaultLanguage: l.Prefix,
 		Reference:       purchaseID + ":" + paymentKey,
 	})
 	return template.HTML(buf.String()), err
