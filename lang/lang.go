@@ -40,6 +40,7 @@ var (
 )
 
 type Lang struct {
+	BCP47    string
 	Collator *collate.Collator // case-insensitive
 	Prefix   string
 	Printer  *message.Printer
@@ -62,6 +63,7 @@ func MakeLanguages(prefixes ...string) Languages {
 
 	var langs = make(Languages, len(prefixes))
 	for i, prefix := range prefixes {
+		langs[i].BCP47 = tags[i].String()
 		langs[i].Collator = collate.New(tags[i], collate.IgnoreCase)
 		langs[i].Prefix = prefix
 		langs[i].Printer = message.NewPrinter(tags[i])
