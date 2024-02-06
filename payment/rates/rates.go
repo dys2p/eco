@@ -2,12 +2,13 @@
 package rates
 
 import (
+	"cmp"
 	"errors"
 	"log"
+	"slices"
 	"time"
 
 	"github.com/dys2p/eco/lang"
-	"golang.org/x/exp/slices"
 )
 
 type History struct {
@@ -58,8 +59,8 @@ func (h *History) Get(date string, value float64) ([]Option, error) {
 					Price:    value * rate,
 				})
 			}
-			slices.SortFunc(options, func(i, j Option) bool {
-				return i.Currency < j.Currency
+			slices.SortFunc(options, func(a, b Option) int {
+				return cmp.Compare(a.Currency, b.Currency)
 			})
 			return options, nil
 		}
