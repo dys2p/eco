@@ -1,10 +1,8 @@
 # gotext-update-templates
 
-Command gotext-update-templates merge translations and generates a catalog.
+Command gotext-update-templates extracts and merges translations and generates a catalog.
 
-Unlike gotext update, it also extracts messages for translation from HTML templates. For that purpose it accepts an additional flag `trfunc`, which defaults to `Tr`. It extracts strings from pipelines `.Tr` and `$.Tr`.
-
-Templates are read recursively from the working directory. If you use go generate, note that "the generator is run in the package's source directory".
+Unlike `gotext update`, it also extracts messages for translation from HTML templates. For that purpose it accepts an additional flag `trfunc`, which defaults to `Tr`. It extracts strings from pipelines `.Tr` and `$.Tr`.
 
 ## Example
 
@@ -45,7 +43,7 @@ func main() {
 }
 ```
 
-Run `go generate` (or run `gotext-update-templates` directly), then build your program and run it:
+Run `go generate`, then build your program and run it:
 
 ```
 $ go generate
@@ -58,7 +56,7 @@ $ ./example
 
 Now copy `locales/de-DE/out.gotext.json` to `locales/de-DE/messages.gotext.json` and insert the translation. Do not edit `out.gotext.json`. Do not remove `messages.gotext.json` afterwards.
 
-Run `go generate`, build your program and run it again:
+Run `go generate` again, build your program and run it again:
 
 ```
 $ go generate

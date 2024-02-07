@@ -6,7 +6,11 @@
 // using the "Subdirectories with gTLD" URL structure where localized URLs start
 // with e.g. "/en/".
 //
-// Adding routes for each language is recommended over using route parameters with possibly conflicting rules. Example:
+// Generate translations with:
+//
+//	gotext-update-templates -srclang=en-US -lang=de-DE,en-US -out=catalog.go .
+//
+// Then use them in your code:
 //
 //	langs := lang.MakeLanguages("de", "en")
 //	for _, l := range langs {
@@ -15,10 +19,9 @@
 //			l.Printer.Fprintf(w, "Hello World")
 //		})
 //	}
+//	http.HandleFunc("/", langs.Redirect)
 //
-// Then generate the translations with:
-//
-//	gotext-update-templates -srclang=en-US -lang=de-DE,en-US -out=catalog.go .
+// As in the example, adding routes for each language is recommended over using route parameters with possibly conflicting rules.
 //
 // [Google's advice]: https://developers.google.com/search/docs/specialty/international/managing-multi-regional-sites
 package lang
@@ -71,8 +74,8 @@ func MakeLanguages(prefixes ...string) Languages {
 	return langs
 }
 
-// FromPath returns the language prefix of r.URL.Path and a message printer for it.
-// The boolean return value indicates whether the path has a known prefix. If it has not, the returned prefix is the fallback prefix.
+// FromPath returns the language whose prefix matches the first segment of r.URL.Path,
+// or a fallback language and false.
 func (langs Languages) FromPath(path string) (Lang, bool) {
 	path = strings.TrimLeft(path, "/")
 	prefix, _, _ := strings.Cut(path, "/")
@@ -93,9 +96,10 @@ func (langs Languages) FromPath(path string) (Lang, bool) {
 }
 
 // Redirect redirects to the localized version of r.URL according to the Accept-Language header.
-// If r.URL it is already localized, Redirect responds with a "not found" error.
-// It is recommended to chain Redirect behind your http router.
 // Matching is done with message.DefaultCatalog.Matcher().
+//
+// If r.URL it is already localized, Redirect responds with a "not found" error in order to prevent a redirect loop.
+// It is recommended to chain Redirect behind your http router.
 func (langs Languages) Redirect(w http.ResponseWriter, r *http.Request) {
 	if _, ok := langs.FromPath(r.URL.Path); ok {
 		// url already starts with a supported language, prevent redirect loop

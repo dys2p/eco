@@ -1,9 +1,10 @@
-// Command gotext-update-templates merge translations and generates a catalog.
+// Command gotext-update-templates extracts and merges translations and generates a catalog.
 package main
 
 import (
 	"errors"
 	"flag"
+	"fmt"
 	"log"
 	"os"
 	"path/filepath"
@@ -27,7 +28,7 @@ type Config struct {
 }
 
 func main() {
-	// own FlagSet because the global one is polluted
+	// own FlagSet because the global one is already in use
 	fs := flag.NewFlagSet(os.Args[0], flag.ExitOnError)
 	dir := fs.String("dir", "locales", "default subdirectory to store translation files")
 	lang := fs.String("lang", "en-US", "comma-separated list of languages to process")
@@ -35,6 +36,10 @@ func main() {
 	srcLang := fs.String("srclang", "en-US", "the source-code language")
 	trFunc := fs.String("trfunc", "Tr", "name of translate method which is used in templates")
 	verbose := fs.Bool("v", false, "output list of processed template files")
+	fs.Usage = func() {
+		fmt.Fprintf(os.Stderr, "Usage: %s <package>* [flags]\n", os.Args[0])
+		fs.PrintDefaults()
+	}
 	fs.Parse(os.Args[1:])
 
 	config := Config{
