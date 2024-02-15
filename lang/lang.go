@@ -37,16 +37,18 @@ import (
 	"golang.org/x/text/message"
 )
 
-var (
-	fallbackCollator = collate.New(language.English, collate.IgnoreCase)
-	fallbackPrinter  = message.NewPrinter(language.English)
-)
+var fallbackPrinter = message.NewPrinter(language.English)
 
 type Lang struct {
-	BCP47    string
-	Collator *collate.Collator // case-insensitive
-	Prefix   string
-	Printer  *message.Printer
+	BCP47   string
+	Prefix  string
+	Printer *message.Printer
+	Tag     language.Tag
+}
+
+// Collator creates a case-insensitive collator for l.Tag. The collator is not stored in Lang because it is not thread-safe (see https://github.com/golang/go/issues/57314).
+func (l Lang) Collator() *collate.Collator {
+	return collate.New(l.Tag, collate.IgnoreCase)
 }
 
 func (l Lang) Tr(key message.Reference, a ...interface{}) string {
@@ -67,9 +69,9 @@ func MakeLanguages(prefixes ...string) Languages {
 	var langs = make(Languages, len(prefixes))
 	for i, prefix := range prefixes {
 		langs[i].BCP47 = tags[i].String()
-		langs[i].Collator = collate.New(tags[i], collate.IgnoreCase)
 		langs[i].Prefix = prefix
 		langs[i].Printer = message.NewPrinter(tags[i])
+		langs[i].Tag = tags[i]
 	}
 	return langs
 }
@@ -89,9 +91,9 @@ func (langs Languages) FromPath(path string) (Lang, bool) {
 		prefix = langs[0].Prefix
 	}
 	return Lang{
-		Collator: fallbackCollator,
-		Prefix:   prefix,
-		Printer:  fallbackPrinter,
+		Prefix:  prefix,
+		Printer: fallbackPrinter,
+		Tag:     language.English,
 	}, false
 }
 

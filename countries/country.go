@@ -316,8 +316,9 @@ func TranslateAndSort(l lang.Lang, countries []Country) []CountryWithName {
 		}
 	}
 
+	collator := l.Collator()
 	sort.Slice(result, func(i, j int) bool {
-		return l.Collator.CompareString(result[i].Name, result[j].Name) < 0
+		return collator.CompareString(result[i].Name, result[j].Name) < 0
 	})
 	return result
 }
