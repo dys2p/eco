@@ -37,7 +37,7 @@ func TestRedirect(t *testing.T) {
 		r := httptest.NewRequest(http.MethodGet, "/", nil)
 		r.Header.Set("Accept-Language", accept)
 		w := httptest.NewRecorder()
-		langs.Redirect(w, r)
+		langs.RedirectHandler()(w, r)
 		result := w.Result()
 		if result.StatusCode != http.StatusSeeOther {
 			t.Fatalf("got status %d, want %d", result.StatusCode, http.StatusSeeOther)

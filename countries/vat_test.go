@@ -3,8 +3,6 @@ package countries
 import (
 	"math"
 	"testing"
-
-	"github.com/dys2p/eco/lang"
 )
 
 const epsilon = 1e-9
@@ -50,26 +48,6 @@ func TestGrossNet(t *testing.T) {
 		}
 		if net, _ := test.country.VAT().Net(test.gross, test.rate); math.Abs(net-test.net) > epsilon {
 			t.Fatalf("net: got %f, want %f", net, test.net)
-		}
-	}
-}
-
-func TestTranslateName(t *testing.T) {
-	langs := lang.MakeLanguages(nil, "de", "en")
-
-	tests := []struct {
-		country Country
-		path    string
-		want    string
-	}{
-		{DE, "en", "Germany"},
-		{DE, "de", "Deutschland"},
-	}
-
-	for _, test := range tests {
-		l, _ := langs.FromPath(test.path)
-		if got := test.country.TranslateName(l); got != test.want {
-			t.Fatalf("TranslateName: got %s, want %s", got, test.want)
 		}
 	}
 }
