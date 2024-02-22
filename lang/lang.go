@@ -35,6 +35,7 @@ import (
 	"golang.org/x/text/collate"
 	"golang.org/x/text/language"
 	"golang.org/x/text/message"
+	"golang.org/x/text/message/catalog"
 )
 
 var fallbackPrinter = message.NewPrinter(language.English)
@@ -58,26 +59,34 @@ func (l Lang) Tr(key message.Reference, a ...interface{}) string {
 type Languages []Lang
 
 // MakeLanguages takes a list of URL path prefixes used in your application (e. g.  "de", "en")
-// in the alphabetical order of the dictionary keys in the default catalog (message.DefaultCatalog).
-// MakeLanguages panics if len(prefixes) does not equal the number of languages in the default catalog.
-func MakeLanguages(prefixes ...string) Languages {
-	tags := message.DefaultCatalog.Languages()
+// in the alphabetical order of the dictionary keys in the catalog.
+// If catalog is nil, then message.DefaultCatalog is used.
+// MakeLanguages panics if len(prefixes) does not equal the number of languages in the catalog.
+func MakeLanguages(catalog catalog.Catalog, prefixes ...string) Languages {
+	if catalog == nil {
+		catalog = message.DefaultCatalog
+	}
+	if len(prefixes) == 0 {
+		panic("need at least one language prefix")
+	}
+
+	tags := catalog.Languages()
 	if len(prefixes) != len(tags) {
-		panic(fmt.Sprintf("MakeLanguages got %d prefixes but catalog has %d languages", len(prefixes), len(tags)))
+		panic(fmt.Sprintf("got %d prefixes but catalog has %d languages", len(prefixes), len(tags)))
 	}
 
 	var langs = make(Languages, len(prefixes))
 	for i, prefix := range prefixes {
 		langs[i].BCP47 = tags[i].String()
 		langs[i].Prefix = prefix
-		langs[i].Printer = message.NewPrinter(tags[i])
+		langs[i].Printer = message.NewPrinter(tags[i], message.Catalog(catalog))
 		langs[i].Tag = tags[i]
 	}
 	return langs
 }
 
 // FromPath returns the language whose prefix matches the first segment of r.URL.Path,
-// or a fallback language and false.
+// or langs[0] and false.
 func (langs Languages) FromPath(path string) (Lang, bool) {
 	path = strings.TrimLeft(path, "/")
 	prefix, _, _ := strings.Cut(path, "/")
@@ -86,28 +95,26 @@ func (langs Languages) FromPath(path string) (Lang, bool) {
 			return l, true
 		}
 	}
-	// fix prefix if possible
-	if len(langs) > 0 {
-		prefix = langs[0].Prefix
-	}
-	return Lang{
-		Prefix:  prefix,
-		Printer: fallbackPrinter,
-		Tag:     language.English,
-	}, false
+	return langs[0], false
 }
 
-// Redirect redirects to the localized version of r.URL according to the Accept-Language header.
-// Matching is done with message.DefaultCatalog.Matcher().
-//
-// If r.URL it is already localized, Redirect responds with a "not found" error in order to prevent a redirect loop.
-// It is recommended to chain Redirect behind your http router.
-func (langs Languages) Redirect(w http.ResponseWriter, r *http.Request) {
-	if _, ok := langs.FromPath(r.URL.Path); ok {
-		// url already starts with a supported language, prevent redirect loop
-		http.NotFound(w, r)
-	} else {
-		_, index := language.MatchStrings(message.DefaultCatalog.Matcher(), r.Header.Get("Accept-Language"))
-		http.Redirect(w, r, path.Join("/", langs[index].Prefix, r.URL.Path), http.StatusSeeOther)
+// RedirectHandler returns an http handler which redirects to the localized version of r.URL according to the Accept-Language header.
+// If r.URL it is already localized, the handler responds with a "not found" error in order to prevent a redirect loop.
+// It is recommended to chain the handler behind your http router.
+func (langs Languages) RedirectHandler() http.HandlerFunc {
+	var tags = make([]language.Tag, len(langs))
+	for i := range tags {
+		tags[i] = langs[i].Tag
+	}
+	matcher := language.NewMatcher(tags)
+
+	return func(w http.ResponseWriter, r *http.Request) {
+		if _, ok := langs.FromPath(r.URL.Path); ok {
+			// url already starts with a supported language, prevent redirect loop
+			http.NotFound(w, r)
+		} else {
+			_, index := language.MatchStrings(matcher, r.Header.Get("Accept-Language"))
+			http.Redirect(w, r, path.Join("/", langs[index].Prefix, r.URL.Path), http.StatusSeeOther)
+		}
 	}
 }

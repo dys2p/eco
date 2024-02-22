@@ -55,7 +55,7 @@ func TestGrossNet(t *testing.T) {
 }
 
 func TestTranslateName(t *testing.T) {
-	langs := lang.MakeLanguages("de", "en")
+	langs := lang.MakeLanguages(nil, "de", "en")
 
 	tests := []struct {
 		country Country

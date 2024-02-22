@@ -20,7 +20,7 @@ func init() {
 	b.SetString(german, "Hello World", "Hallo Welt")
 	message.DefaultCatalog = b
 
-	langs = MakeLanguages("en", "de")
+	langs = MakeLanguages(nil, "en", "de")
 }
 
 func TestRedirect(t *testing.T) {
