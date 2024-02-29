@@ -34,7 +34,7 @@ var fs embed.FS
 var hello = template.Must(template.ParseFS(fs, "hello.html"))
 
 func main() {
-	langs := lang.MakeLanguages("de", "en")
+	langs := lang.MakeLanguages(nil, "de", "en")
 	for _, l := range langs {
 		buf := &bytes.Buffer{}
 		hello.Execute(buf, l)
