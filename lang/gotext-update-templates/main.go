@@ -5,6 +5,7 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"io/fs"
 	"log"
 	"os"
 	"path/filepath"
@@ -19,12 +20,17 @@ import (
 
 type Config struct {
 	Dir               string
+	Dirs              []string
 	Lang              string
 	Out               string
 	Packages          []string
 	SrcLang           string
 	TranslateFuncName string
 	Verbose           bool
+}
+
+func init() {
+	log.SetFlags(0)
 }
 
 func main() {
@@ -36,6 +42,8 @@ func main() {
 	srcLang := fs.String("srclang", "en-US", "the source-code language")
 	trFunc := fs.String("trfunc", "Tr", "name of translate method which is used in templates")
 	verbose := fs.Bool("v", false, "output list of processed template files")
+	var dirs sliceFlag
+	fs.Var(&dirs, "d", "read additional .html and .txt files recursively from this directory (does not follows symlinks in subdirs)")
 	fs.Usage = func() {
 		fmt.Fprintf(os.Stderr, "Usage: %s <package>* [flags]\n", os.Args[0])
 		fs.PrintDefaults()
@@ -44,6 +52,7 @@ func main() {
 
 	config := Config{
 		Dir:               *dir,
+		Dirs:              dirs,
 		Lang:              *lang,
 		Out:               *out,
 		Packages:          fs.Args(),
@@ -57,9 +66,9 @@ func main() {
 }
 
 func (config Config) Run() error {
-	log.SetFlags(0)
-
-	var templateMessages = []pipeline.Message{}
+	// collect html and txt file paths
+	var filepaths []string
+	// from packages
 	pkgs, err := packages.Load(&packages.Config{Mode: packages.NeedFiles | packages.NeedEmbedFiles}, config.Packages...)
 	if err != nil {
 		return err
@@ -70,24 +79,48 @@ func (config Config) Run() error {
 		}
 		for _, embedFile := range pkg.EmbedFiles {
 			if ext := filepath.Ext(embedFile); ext == ".html" || ext == ".txt" {
-				if config.Verbose {
-					log.Println(embedFile)
-				}
-				file, err := os.ReadFile(embedFile)
-				if err != nil {
-					return err
-				}
-				// similar to parse.Parse but with SkipFuncCheck
-				trees := make(map[string]*parse.Tree)
-				t := parse.New("name")
-				t.Mode |= parse.SkipFuncCheck
-				if _, err := t.Parse(string(file), "", "", trees); err != nil {
-					return err
-				}
-				for _, tree := range trees {
-					config.processNode(&templateMessages, tree.Root)
-				}
+				filepaths = append(filepaths, embedFile)
 			}
+		}
+	}
+	// from other dirs
+	for _, dir := range config.Dirs {
+		err := fs.WalkDir(os.DirFS(dir), ".", func(path string, d fs.DirEntry, err error) error {
+			if err != nil {
+				return err
+			}
+			if d.IsDir() {
+				return nil
+			}
+			if ext := filepath.Ext(d.Name()); ext == ".html" || ext == ".txt" {
+				filepaths = append(filepaths, filepath.Join(dir, path))
+			}
+			return nil
+		})
+		if err != nil {
+			return err
+		}
+	}
+
+	// collect messages from files
+	var templateMessages = []pipeline.Message{}
+	for _, fp := range filepaths {
+		if config.Verbose {
+			log.Println(fp)
+		}
+		file, err := os.ReadFile(fp)
+		if err != nil {
+			return err
+		}
+		// similar to parse.Parse but with SkipFuncCheck
+		trees := make(map[string]*parse.Tree)
+		t := parse.New("name")
+		t.Mode |= parse.SkipFuncCheck
+		if _, err := t.Parse(string(file), "", "", trees); err != nil {
+			return err
+		}
+		for _, tree := range trees {
+			config.processNode(&templateMessages, tree.Root)
 		}
 	}
 
