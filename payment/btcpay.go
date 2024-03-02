@@ -138,11 +138,7 @@ func (b BTCPay) webhook(w http.ResponseWriter, r *http.Request) error {
 	if err != nil {
 		return fmt.Errorf("getting event: %w", err)
 	}
-	invoice, err := b.Store.GetInvoice(event.InvoiceID)
-	if err != nil {
-		return fmt.Errorf("getting invoice %s: %w", event.InvoiceID, err)
-	}
-	purchaseID, paymentKey, _ := strings.Cut(invoice.InvoiceMetadata.OrderID, ":")
+	purchaseID, paymentKey, _ := strings.Cut(event.InvoiceMetadata.OrderID, ":")
 
 	switch event.Type {
 	case btcpay.EventInvoiceProcessing:
