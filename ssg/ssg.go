@@ -271,7 +271,11 @@ func generate(fsys fs.FS, add *template.Template, serve func(path string), execu
 		// make matcher for available translations
 		var haveTags []language.Tag
 		for _, have := range bcp47 {
-			haveTags = append(haveTags, language.MustParse(have))
+			haveTag, err := language.Parse(have)
+			if err != nil {
+				return fmt.Errorf("parsing language %s: %w", have, err)
+			}
+			haveTags = append(haveTags, haveTag)
 		}
 		matcher := language.NewMatcher(haveTags)
 
