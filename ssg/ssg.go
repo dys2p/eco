@@ -88,7 +88,7 @@ func (td TemplateData) Hreflangs() template.HTML {
 }
 
 // Handler returns a HTTP handler which serves content from fsys.
-// It accepts an additional HTML template and a function which makes custom template data.
+// It optionally accepts an additional HTML template and a function which makes custom template data.
 // For compatibility with StaticHTML, the custom template data struct should embed TemplateData.
 //
 // Note that embed.FS does not support symlinks. If you use symlinks to share content,
@@ -107,8 +107,14 @@ func Handler(fsys fs.FS, add *template.Template, makeTemplateData func(*http.Req
 		func(path string, t *template.Template, data TemplateData) {
 			path = paths.Join("/", path)
 			handler.HandleFunc(path, func(w http.ResponseWriter, r *http.Request) {
-				err := t.ExecuteTemplate(w, "html", makeTemplateData(r, data))
-				if err != nil {
+				var customData any
+				if makeTemplateData != nil {
+					customData = makeTemplateData(r, data)
+				} else {
+					customData = data
+				}
+
+				if err := t.ExecuteTemplate(w, "html", customData); err != nil {
 					log.Printf("error executing ssg template %s: %v", path, err)
 				}
 			})
