@@ -95,14 +95,14 @@ type Website struct {
 	Static []string
 }
 
-func MakeWebsite(fsys fs.FS, add *template.Template) (*Website, error) {
+func MakeWebsite(fsys fs.FS, add *template.Template, langPrefixes ...string) (*Website, error) {
 	var dynamic = make(map[string]struct {
 		Template *template.Template
 		Data     TemplateData
 	})
 	var static []string
 
-	langs := lang.MakeLanguages(nil, "de", "en")
+	langs := lang.MakeLanguages(nil, langPrefixes...)
 
 	// collect static content and sites
 	var sites []string
@@ -291,8 +291,8 @@ func (ws Website) StaticHTML(outDir string) {
 	}
 }
 
-func Handler(fsys fs.FS, add *template.Template, makeTemplateData func(*http.Request, TemplateData) any) (http.Handler, error) {
-	ws, err := MakeWebsite(fsys, add)
+func Handler(fsys fs.FS, add *template.Template, makeTemplateData func(*http.Request, TemplateData) any, langPrefixes ...string) (http.Handler, error) {
+	ws, err := MakeWebsite(fsys, add, langPrefixes...)
 	if err != nil {
 		return nil, err
 	}
@@ -313,8 +313,8 @@ func Handler(fsys fs.FS, add *template.Template, makeTemplateData func(*http.Req
 //		ssg.StaticHTML("./example.com", "/tmp/build/example.com")
 //		ssg.ListenAndServe("/tmp/build/example.com")
 //	}
-func StaticHTML(srcDir, outDir string) {
-	ws, err := MakeWebsite(os.DirFS(srcDir), nil)
+func StaticHTML(srcDir, outDir string, langPrefixes ...string) {
+	ws, err := MakeWebsite(os.DirFS(srcDir), nil, langPrefixes...)
 	if err != nil {
 		log.Fatalln(err)
 	}
