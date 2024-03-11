@@ -8,10 +8,12 @@ import (
 	"path/filepath"
 )
 
-// like https://github.com/golang/go/issues/62484#issue-1884498794 but with custom walk root and follows symlinks
+// like https://github.com/golang/go/issues/62484#issue-1884498794 but with error handling, custom walk root, and follows symlinks
 func CopyFS(dst string, fsys fs.FS, fspath string) error {
 	return fs.WalkDir(fsys, fspath, func(path string, d fs.DirEntry, err error) error {
-		targ := filepath.Join(dst, filepath.FromSlash(path))
+		if err != nil {
+			return err
+		}
 
 		// follow symlink
 		var isDir = d.IsDir()
@@ -25,6 +27,7 @@ func CopyFS(dst string, fsys fs.FS, fspath string) error {
 			}
 		}
 
+		targ := filepath.Join(dst, filepath.FromSlash(path))
 		if isDir {
 			if err := os.MkdirAll(targ, 0777); err != nil {
 				return err
