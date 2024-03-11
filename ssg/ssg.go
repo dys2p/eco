@@ -291,39 +291,16 @@ func (ws Website) StaticHTML(outDir string) {
 	}
 }
 
-func Handler(fsys fs.FS, add *template.Template, makeTemplateData func(*http.Request, TemplateData) any, langPrefixes ...string) (http.Handler, error) {
-	ws, err := MakeWebsite(fsys, add, langPrefixes...)
-	if err != nil {
-		return nil, err
-	}
-	return ws.Handler(makeTemplateData), nil
-}
-
-// StaticHTML makes a Website and calls StaticHTML on it.
-//
-// # Example
-//
-//	package main
-//
-//	import "github.com/dys2p/eco/ssg"
-//
-//	//go:generate gotext-update-templates -srclang=en-US -lang=de-DE,en-US -out=catalog.go -d . -d ./example.com
-//
-//	func main() {
-//		ssg.StaticHTML("./example.com", "/tmp/build/example.com")
-//		ssg.ListenAndServe("/tmp/build/example.com")
-//	}
-func StaticHTML(srcDir, outDir string, langPrefixes ...string) {
-	ws, err := MakeWebsite(os.DirFS(srcDir), nil, langPrefixes...)
-	if err != nil {
-		log.Fatalln(err)
-	}
-	ws.StaticHTML(outDir)
-}
-
 // ListenAndServe provides an easy way to preview a static site with absolute src and href paths.
 func ListenAndServe(dir string) {
 	log.Println("listening to 127.0.0.1:8080")
 	http.Handle("/", http.FileServer(http.Dir(dir)))
 	http.ListenAndServe("127.0.0.1:8080", nil)
+}
+
+func Must(ws *Website, err error) *Website {
+	if err != nil {
+		panic(err)
+	}
+	return ws
 }
