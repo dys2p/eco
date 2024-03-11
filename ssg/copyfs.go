@@ -16,9 +16,12 @@ func CopyFS(dst string, fsys fs.FS, fspath string) error {
 		// follow symlink
 		var isDir = d.IsDir()
 		if d.Type()&fs.ModeSymlink != 0 {
-			info, _ := fs.Stat(fsys, d.Name()) // fs.Stat returns symlink target FileInfo
-			if info.Mode()&fs.ModeDir != 0 {
-				isDir = true
+			// get symlink target FileInfo with fs.Stat
+			info, err := fs.Stat(fsys, filepath.Join(fspath, d.Name()))
+			if err == nil {
+				if info.Mode()&fs.ModeDir != 0 {
+					isDir = true
+				}
 			}
 		}
 

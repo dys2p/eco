@@ -114,9 +114,12 @@ func MakeWebsite(fsys fs.FS, add *template.Template, langPrefixes ...string) (*W
 		// follow symlink
 		var isDir = entry.IsDir()
 		if entry.Type()&fs.ModeSymlink != 0 {
-			info, _ := fs.Stat(fsys, entry.Name()) // fs.Stat returns symlink target FileInfo
-			if info.Mode()&fs.ModeDir != 0 {
-				isDir = true
+			// get symlink target FileInfo with fs.Stat
+			info, err := fs.Stat(fsys, entry.Name())
+			if err == nil {
+				if info.Mode()&fs.ModeDir != 0 {
+					isDir = true
+				}
 			}
 		}
 
