@@ -1,6 +1,6 @@
 module github.com/dys2p/eco
 
-go 1.20
+go 1.22
 
 require (
 	github.com/abh/geoip v0.0.0-20160510155516-07cea4480daa

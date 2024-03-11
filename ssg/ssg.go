@@ -253,6 +253,7 @@ func (ws Website) Handler(makeTemplateData func(*http.Request, TemplateData) any
 	}
 
 	for _, path := range ws.Static {
+		path = paths.Join("/", path)
 		handler.HandleFunc(path, func(w http.ResponseWriter, r *http.Request) {
 			http.ServeFileFS(w, r, ws.Fsys, path) // works for dirs and files
 		})
