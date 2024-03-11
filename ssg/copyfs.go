@@ -15,20 +15,19 @@ func CopyFS(dst string, fsys fs.FS, fspath string) error {
 			return err
 		}
 
-		// follow symlink
-		var isDir = d.IsDir()
+		// follow symlink to directory
 		if d.Type()&fs.ModeSymlink != 0 {
 			// get symlink target FileInfo with fs.Stat
 			info, err := fs.Stat(fsys, filepath.Join(fspath, d.Name()))
 			if err == nil {
 				if info.Mode()&fs.ModeDir != 0 {
-					isDir = true
+					return CopyFS(dst, fsys, filepath.Join(fspath, d.Name())) // this works because CopyFS calls fs.WalkDir, which says: "if root itself is a symbolic link, its target will be walked"
 				}
 			}
 		}
 
 		targ := filepath.Join(dst, filepath.FromSlash(path))
-		if isDir {
+		if d.IsDir() {
 			if err := os.MkdirAll(targ, 0777); err != nil {
 				return err
 			}
