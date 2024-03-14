@@ -231,7 +231,7 @@ func MakeWebsite(fsys fs.FS, add *template.Template, langs []lang.Lang) (*Websit
 //
 // Note that embed.FS does not support symlinks. If you use symlinks to share content,
 // consider building a go:generate workflow which calls "cp --dereference".
-func (ws Website) Handler(makeTemplateData func(*http.Request, TemplateData) any) http.Handler {
+func (ws Website) Handler(makeTemplateData func(*http.Request, TemplateData) any, next http.Handler) http.Handler {
 	handler := http.NewServeMux()
 
 	for path, dynamic := range ws.Dynamic {
@@ -255,6 +255,10 @@ func (ws Website) Handler(makeTemplateData func(*http.Request, TemplateData) any
 		handler.HandleFunc(path, func(w http.ResponseWriter, r *http.Request) {
 			http.ServeFileFS(w, r, ws.Fsys, path) // works for dirs and files
 		})
+	}
+
+	if next != nil {
+		handler.Handle("/", next)
 	}
 
 	return handler
