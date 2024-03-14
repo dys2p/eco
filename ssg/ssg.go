@@ -95,14 +95,12 @@ type Website struct {
 	Static []string
 }
 
-func MakeWebsite(fsys fs.FS, add *template.Template, langPrefixes ...string) (*Website, error) {
+func MakeWebsite(fsys fs.FS, add *template.Template, langs []lang.Lang) (*Website, error) {
 	var dynamic = make(map[string]struct {
 		Template *template.Template
 		Data     TemplateData
 	})
 	var static []string
-
-	langs := lang.MakeLanguages(nil, langPrefixes...)
 
 	// collect static content and sites
 	var sites []string
