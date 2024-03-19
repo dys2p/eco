@@ -15,7 +15,7 @@
 //	langs := lang.MakeLanguages("de", "en")
 //	for _, l := range langs {
 //		http.HandleFunc("/"+l.Prefix, func(w http.ResponseWriter, r *http.Request) {
-//			l, _ := langs.FromPath(r)
+//			l, _, _ := langs.FromPath(r)
 //			l.Printer.Fprintf(w, "Hello World")
 //		})
 //	}
@@ -37,8 +37,6 @@ import (
 	"golang.org/x/text/message"
 	"golang.org/x/text/message/catalog"
 )
-
-var fallbackPrinter = message.NewPrinter(language.English)
 
 type Lang struct {
 	BCP47   string
@@ -85,17 +83,17 @@ func MakeLanguages(catalog catalog.Catalog, prefixes ...string) Languages {
 	return langs
 }
 
-// FromPath returns the language whose prefix matches the first segment of r.URL.Path,
-// or langs[0] and false.
-func (langs Languages) FromPath(path string) (Lang, bool) {
+// FromPath returns the language whose prefix matches the first segment of r.URL.Path and the remaining path.
+// If no language matches, it returns langs[0], the full path and false.
+func (langs Languages) FromPath(path string) (Lang, string, bool) {
 	path = strings.TrimLeft(path, "/")
-	prefix, _, _ := strings.Cut(path, "/")
+	prefix, remainder, _ := strings.Cut(path, "/")
 	for _, l := range langs {
 		if l.Prefix == prefix {
-			return l, true
+			return l, remainder, true
 		}
 	}
-	return langs[0], false
+	return langs[0], path, false
 }
 
 // RedirectHandler returns an http handler which redirects to the localized version of r.URL according to the Accept-Language header.
@@ -109,7 +107,7 @@ func (langs Languages) RedirectHandler() http.HandlerFunc {
 	matcher := language.NewMatcher(tags)
 
 	return func(w http.ResponseWriter, r *http.Request) {
-		if _, ok := langs.FromPath(r.URL.Path); ok {
+		if _, _, ok := langs.FromPath(r.URL.Path); ok {
 			// url already starts with a supported language, prevent redirect loop
 			http.NotFound(w, r)
 		} else {
