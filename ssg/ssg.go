@@ -251,9 +251,9 @@ func (ws Website) Handler(makeTemplateData func(*http.Request, TemplateData) any
 	}
 
 	for _, path := range ws.Static {
-		path = paths.Join("/", path)
-		handler.HandleFunc(path, func(w http.ResponseWriter, r *http.Request) {
-			http.ServeFileFS(w, r, ws.Fsys, path) // works for dirs and files
+		pattern := paths.Join("/", path) + "/" // trailing slash means prefix match
+		handler.HandleFunc(pattern, func(w http.ResponseWriter, r *http.Request) {
+			http.ServeFileFS(w, r, ws.Fsys, r.URL.Path) // works for dirs and files
 		})
 	}
 
