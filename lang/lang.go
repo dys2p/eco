@@ -12,7 +12,7 @@
 //
 // Then use them in your code:
 //
-//	langs := lang.MakeLanguages("de", "en")
+//	langs := lang.MakeLanguages(nil, "de", "en")
 //	for _, l := range langs {
 //		http.HandleFunc("/"+l.Prefix, func(w http.ResponseWriter, r *http.Request) {
 //			l, _, _ := langs.FromPath(r)
