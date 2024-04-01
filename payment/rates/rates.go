@@ -75,7 +75,7 @@ func (h *History) Synced() bool {
 	if err != nil {
 		return false
 	}
-	min := time.Now().AddDate(0, 0, -3).Format("2006-01-02")
+	min := time.Now().AddDate(0, 0, -4).Format("2006-01-02")
 	return lastUpdateDate >= min
 }
 
