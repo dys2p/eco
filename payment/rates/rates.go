@@ -43,14 +43,14 @@ func (h *History) RunDaemon() error {
 	return nil
 }
 
-// Get tries the given date and three previous days.
+// Get tries the given date and four previous days.
 func (h *History) Get(date string, value float64) ([]Option, error) {
 	t, err := time.Parse("2006-01-02", date)
 	if err != nil {
 		return nil, err
 	}
 
-	for _, days := range []int{0, -1, -2, -3} {
+	for _, days := range []int{0, -1, -2, -3, -4} {
 		if rates, err := h.Repository.Get(t.AddDate(0, 0, days).Format("2006-01-02")); err == nil {
 			var options []Option
 			for currency, rate := range rates {
@@ -69,7 +69,7 @@ func (h *History) Get(date string, value float64) ([]Option, error) {
 	return nil, errors.New("no rates found")
 }
 
-// Synced returns whether rates have been updated since three days ago.
+// Synced returns whether rates have been updated since four days ago.
 func (h *History) Synced() bool {
 	lastUpdateDate, err := h.Repository.LatestDate()
 	if err != nil {
