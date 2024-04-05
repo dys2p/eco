@@ -44,8 +44,8 @@ var Keep = []string{
 
 var md = markdown.New(markdown.HTML(true), markdown.Linkify(false))
 
-// Language can be used in templates.
-type Language struct {
+// LangOption should be used in templates.
+type LangOption struct {
 	BCP47    string
 	Name     string
 	Prefix   string
@@ -53,11 +53,11 @@ type Language struct {
 }
 
 // SelectLanguage returns a [Language] slice. If if only one language is present, the slice will be empty.
-func SelectLanguage(langs []lang.Lang, selected lang.Lang) []Language {
-	var languages []Language
+func LangOptions(langs []lang.Lang, selected lang.Lang) []LangOption {
+	var languages []LangOption
 	if len(langs) > 1 {
 		for _, l := range langs {
-			languages = append(languages, Language{
+			languages = append(languages, LangOption{
 				BCP47:    l.BCP47,
 				Name:     strings.ToUpper(l.Prefix),
 				Prefix:   l.Prefix,
@@ -70,8 +70,8 @@ func SelectLanguage(langs []lang.Lang, selected lang.Lang) []Language {
 
 type TemplateData struct {
 	lang.Lang
-	Languages []Language // usually empty if only one language is defined
-	Path      string     // without language prefix, use for language buttons and hreflang
+	Languages []LangOption // usually empty if only one language is defined
+	Path      string       // without language prefix, use for language buttons and hreflang
 }
 
 // Hreflangs returns <link hreflang> elements for every td.Language, including the selected language.
@@ -211,7 +211,7 @@ func MakeWebsite(fsys fs.FS, add *template.Template, langs []lang.Lang) (*Websit
 				Template: tt,
 				Data: TemplateData{
 					Lang:      lang,
-					Languages: SelectLanguage(langs, lang),
+					Languages: LangOptions(langs, lang),
 					Path:      site + ".html",
 				},
 			}
