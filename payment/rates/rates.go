@@ -12,15 +12,14 @@ import (
 )
 
 type History struct {
-	Currencies  []string // ISO 4217
-	GetBuyRates func(currencies []string, lastUpdateDate string) (map[string]float64, error)
-	Repository  *SQLiteDB
+	Database    *SQLiteDB
+	GetBuyRates func(lastUpdateDate string) (map[string]float64, error)
 }
 
-// RunDaemon starts a loop which fetches the rates every hour and inserts them into the repository. The function blocks.
+// RunDaemon starts a loop which fetches the rates every hour and inserts them into the database. The function blocks.
 func (h *History) RunDaemon() error {
 	for ; true; <-time.Tick(time.Hour) {
-		lastUpdateDate, err := h.Repository.LatestDate()
+		lastUpdateDate, err := h.Database.LatestDate()
 		if err != nil {
 			log.Printf("\033[31m"+"error getting latest date: %v"+"\033[0m", err)
 			continue
@@ -28,7 +27,7 @@ func (h *History) RunDaemon() error {
 		if lastUpdateDate == time.Now().Format("2006-01-02") {
 			continue // already updated today
 		}
-		buyRates, err := h.GetBuyRates(h.Currencies, lastUpdateDate)
+		buyRates, err := h.GetBuyRates(lastUpdateDate)
 		if err != nil {
 			log.Printf("\033[31m"+"error getting rates: %v"+"\033[0m", err)
 			continue
@@ -36,7 +35,7 @@ func (h *History) RunDaemon() error {
 		if len(buyRates) == 0 {
 			continue // nothing to insert
 		}
-		if err := h.Repository.Insert(time.Now().Format("2006-01-02"), buyRates); err != nil {
+		if err := h.Database.Insert(time.Now().Format("2006-01-02"), buyRates); err != nil {
 			log.Printf("\033[31m"+"error inserting rates: %v"+"\033[0m", err)
 		}
 	}
@@ -44,16 +43,16 @@ func (h *History) RunDaemon() error {
 }
 
 // Get tries the given date and four previous days.
-func (h *History) Get(date string, value float64) ([]Option, error) {
+func (h *History) Options(date string, value float64) ([]Option, error) {
 	t, err := time.Parse("2006-01-02", date)
 	if err != nil {
 		return nil, err
 	}
 
 	for _, days := range []int{0, -1, -2, -3, -4} {
-		if rates, err := h.Repository.Get(t.AddDate(0, 0, days).Format("2006-01-02")); err == nil {
+		if rs, err := h.Database.Get(t.AddDate(0, 0, days).Format("2006-01-02")); err == nil {
 			var options []Option
-			for currency, rate := range rates {
+			for currency, rate := range rs {
 				options = append(options, Option{
 					Currency: currency,
 					Price:    value * rate,
@@ -71,7 +70,7 @@ func (h *History) Get(date string, value float64) ([]Option, error) {
 
 // Synced returns whether rates have been updated since four days ago.
 func (h *History) Synced() bool {
-	lastUpdateDate, err := h.Repository.LatestDate()
+	lastUpdateDate, err := h.Database.LatestDate()
 	if err != nil {
 		return false
 	}
@@ -80,10 +79,11 @@ func (h *History) Synced() bool {
 }
 
 type Option struct {
-	Currency string // ISO 4217
+	Currency string // from GetBuyRates result
 	Price    float64
 }
 
+// ISO 4217
 func (opt Option) Tr(l lang.Lang) string {
 	switch opt.Currency {
 	case "AUD":
