@@ -45,7 +45,7 @@ func (cash CashForeign) PayHTML(purchaseID, paymentKey string, l lang.Lang) (tem
 		return template.HTML("Error getting purchase information from database"), nil
 	}
 	euros := float64(eurocents) / 100.0
-	currencyOptions, err := cash.History.Get(date, euros)
+	currencyOptions, err := cash.History.Options(date, euros)
 	if err != nil {
 		log.Printf("error getting currency options: %v", err)
 		return template.HTML("Error getting exchange rates. Please try again in a minute."), nil
