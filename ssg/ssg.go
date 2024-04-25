@@ -72,6 +72,7 @@ type TemplateData struct {
 	lang.Lang
 	Languages []LangOption // usually empty if only one language is defined
 	Path      string       // without language prefix, use for language buttons and hreflang
+	Title     string
 }
 
 // Hreflangs returns <link hreflang> elements for every td.Language, including the selected language.
@@ -151,6 +152,7 @@ func MakeWebsite(fsys fs.FS, add *template.Template, langs []lang.Lang) (*Websit
 	for _, site := range sites {
 		// read markdown files
 		var bcp47 []string
+		var title []string   // same indices
 		var content []string // same indices
 		entries, err := fs.ReadDir(fsys, site)
 		if err != nil {
@@ -166,14 +168,17 @@ func MakeWebsite(fsys fs.FS, add *template.Template, langs []lang.Lang) (*Websit
 			ext := filepath.Ext(entry.Name())
 			root := strings.TrimSuffix(entry.Name(), ext)
 			if ext == ".html" || ext == ".md" {
+				var filetitle string
 				filecontent, err := fs.ReadFile(fsys, filepath.Join(site, entry.Name()))
 				if err != nil {
 					return nil, fmt.Errorf("reading file: %w", err)
 				}
 				if ext == ".md" {
+					filetitle = getTitleFromMarkdown(string(filecontent))
 					filecontent = []byte(md.RenderToString(filecontent))
 				}
 				bcp47 = append(bcp47, root)
+				title = append(title, string(filetitle))
 				content = append(content, string(filecontent))
 			}
 		}
@@ -201,7 +206,7 @@ func MakeWebsite(fsys fs.FS, add *template.Template, langs []lang.Lang) (*Websit
 			}
 			tt, err = tt.Parse(`{{define "content"}}` + content[index] + `{{end}}`) // or parse content into t and then call AddParseTree(content, t.Tree)
 			if err != nil {
-				return nil, fmt.Errorf("executing site %s: %w", site, err)
+				return nil, fmt.Errorf("adding content of %s: %w", site, err)
 			}
 			outpath := filepath.Join(lang.Prefix, site+".html")
 			dynamic[outpath] = struct {
@@ -213,6 +218,7 @@ func MakeWebsite(fsys fs.FS, add *template.Template, langs []lang.Lang) (*Websit
 					Lang:      lang,
 					Languages: LangOptions(langs, lang),
 					Path:      site + ".html",
+					Title:     title[index],
 				},
 			}
 		}
@@ -295,6 +301,15 @@ func (ws Website) StaticHTML(outDir string) {
 			log.Fatalf("error copying %s to %s: %v", path, outDir, err)
 		}
 	}
+}
+
+func getTitleFromMarkdown(filecontent string) string {
+	filecontent = strings.TrimSpace(filecontent)
+	firstLine, _, _ := strings.Cut(filecontent, "\n")
+	if title, ok := strings.CutPrefix(firstLine, "# "); ok {
+		return title
+	}
+	return ""
 }
 
 // ListenAndServe provides an easy way to preview a static site with absolute src and href paths.
