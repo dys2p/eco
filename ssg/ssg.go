@@ -71,7 +71,8 @@ func LangOptions(langs []lang.Lang, selected lang.Lang) []LangOption {
 type TemplateData struct {
 	lang.Lang
 	Languages []LangOption // usually empty if only one language is defined
-	Path      string       // without language prefix, use for language buttons and hreflang
+	Onion     bool
+	Path      string // without language prefix, use for language buttons and hreflang
 	Title     string
 }
 
@@ -93,7 +94,7 @@ type Website struct {
 		Data     TemplateData
 	}
 	Fsys   fs.FS
-	Static []string
+	Static []string // filesystem paths
 }
 
 func MakeWebsite(fsys fs.FS, add *template.Template, langs []lang.Lang) (*Website, error) {
@@ -219,6 +220,7 @@ func MakeWebsite(fsys fs.FS, add *template.Template, langs []lang.Lang) (*Websit
 					Languages: LangOptions(langs, lang),
 					Path:      site + ".html",
 					Title:     title[index],
+					// Onion is not known yet
 				},
 			}
 		}
@@ -243,6 +245,7 @@ func (ws Website) Handler(makeTemplateData func(*http.Request, TemplateData) any
 	for path, dynamic := range ws.Dynamic {
 		path = paths.Join("/", path)
 		handler.HandleFunc(path, func(w http.ResponseWriter, r *http.Request) {
+			dynamic.Data.Onion = strings.HasSuffix(r.Host, ".onion") || strings.Contains(r.Host, ".onion:")
 			var data any
 			if makeTemplateData != nil {
 				data = makeTemplateData(r, dynamic.Data)
@@ -271,7 +274,7 @@ func (ws Website) Handler(makeTemplateData func(*http.Request, TemplateData) any
 }
 
 // StaticHTML creates static HTML files. Templates are executed with TemplateData. Symlinks are dereferenced.
-func (ws Website) StaticHTML(outDir string) {
+func (ws Website) StaticHTML(outDir string, onion bool) {
 	if realOutDir, err := filepath.EvalSymlinks(outDir); err == nil {
 		outDir = realOutDir
 	}
@@ -290,6 +293,8 @@ func (ws Website) StaticHTML(outDir string) {
 			log.Fatalf("error opening outfile %s: %v", dst, err)
 		}
 		defer outfile.Close()
+
+		dynamic.Data.Onion = onion
 		err = dynamic.Template.ExecuteTemplate(outfile, "html", dynamic.Data)
 		if err != nil {
 			log.Fatalf("error executing template for %s: %v%s", dst, err, dynamic.Template.DefinedTemplates())
