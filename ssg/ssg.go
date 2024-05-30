@@ -72,8 +72,8 @@ type TemplateData struct {
 	lang.Lang
 	Languages []LangOption // usually empty if only one language is defined
 	Onion     bool
-	Path      string // without language prefix, use for language buttons and hreflang
-	Title     string
+	Path      string // without language prefix, for language buttons and hreflang
+	Title     string // for <title>
 }
 
 // Hreflangs returns <link hreflang> elements for every td.Language, including the selected language.
@@ -89,12 +89,12 @@ func (td TemplateData) Hreflangs() template.HTML {
 }
 
 type Website struct {
-	Dynamic map[string]struct {
+	Fsys    fs.FS
+	Dynamic map[string]struct { // url path
 		Template *template.Template
 		Data     TemplateData
 	}
-	Fsys   fs.FS
-	Static []string // filesystem paths
+	Static []string // url and filesystem paths
 }
 
 func MakeWebsite(fsys fs.FS, add *template.Template, langs []lang.Lang) (*Website, error) {
