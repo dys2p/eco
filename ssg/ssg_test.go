@@ -12,7 +12,7 @@ import (
 func ExampleWebsite_StaticHTML() {
 	langs := lang.MakeLanguages(nil, "de", "en")
 	ws := ssg.Must(ssg.MakeWebsite(os.DirFS("./example.com"), nil, langs))
-	ws.StaticHTML("/tmp/build/example.com")
+	ws.StaticHTML("/tmp/build/example.com", false)
 
 	ssg.ListenAndServe("/tmp/build/example.com")
 }
