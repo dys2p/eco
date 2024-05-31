@@ -221,7 +221,7 @@ func MakeWebsite(fsys fs.FS, add *template.Template, langs lang.Languages) (*Web
 				return nil, fmt.Errorf("adding content of %s: %w", site, err)
 			}
 			outpath := filepath.Join(lang.Prefix, site+".html")
-			data := MakeTemplateData(langs, httptest.NewRequest(http.MethodGet, outpath, nil))
+			data := MakeTemplateData(langs, httptest.NewRequest(http.MethodGet, "/"+outpath, nil))
 			data.Title = title[index]
 			// data.Onion is not known yet
 
