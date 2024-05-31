@@ -20,6 +20,7 @@ import (
 	"io/fs"
 	"log"
 	"net/http"
+	"net/http/httptest"
 	"os"
 	paths "path"
 	"path/filepath"
@@ -53,7 +54,7 @@ type LangOption struct {
 }
 
 // SelectLanguage returns a [Language] slice. If if only one language is present, the slice will be empty.
-func LangOptions(langs []lang.Lang, selected lang.Lang) []LangOption {
+func LangOptions(langs lang.Languages, selected lang.Lang) []LangOption {
 	var languages []LangOption
 	if len(langs) > 1 {
 		for _, l := range langs {
@@ -76,7 +77,7 @@ type TemplateData struct {
 	Title     string // for <title>
 }
 
-func MakeTemplateData(langs []lang.Langs, r *http.Request) TemplateData {
+func MakeTemplateData(langs lang.Languages, r *http.Request) TemplateData {
 	l, path, _ := langs.FromPath(r.URL.Path)
 	return TemplateData{
 		Lang:      l,
@@ -107,7 +108,7 @@ type Website struct {
 	Static []string // url and filesystem paths
 }
 
-func MakeWebsite(fsys fs.FS, add *template.Template, langs []lang.Lang) (*Website, error) {
+func MakeWebsite(fsys fs.FS, add *template.Template, langs lang.Languages) (*Website, error) {
 	var dynamic = make(map[string]struct {
 		Template *template.Template
 		Data     TemplateData
