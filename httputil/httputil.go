@@ -52,7 +52,7 @@ func InternalServerError(err error) http.Handler {
 //	defer shutdown()
 //
 //	<-stop
-func ListenAndServe(addr string, handler http.Handler, stop chan os.Signal) func() {
+func ListenAndServe(addr string, handler http.Handler, stop chan<- os.Signal) func() {
 	// "You should set Read, Write and Idle timeouts when dealing with untrusted clients and/or networks"
 	// https://blog.cloudflare.com/exposing-go-on-the-internet/
 	srv := &http.Server{
