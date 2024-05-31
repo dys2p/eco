@@ -76,6 +76,16 @@ type TemplateData struct {
 	Title     string // for <title>
 }
 
+func MakeTemplateData(langs []lang.Langs, r *http.Request) TemplateData {
+	l, path, _ := langs.FromPath(r.URL.Path)
+	return TemplateData{
+		Lang:      l,
+		Languages: LangOptions(langs, l),
+		Onion:     strings.HasSuffix(r.Host, ".onion") || strings.Contains(r.Host, ".onion:"),
+		Path:      path,
+	}
+}
+
 // Hreflangs returns <link hreflang> elements for every td.Language, including the selected language.
 //
 // See also: https://developers.google.com/search/blog/2011/12/new-markup-for-multilingual-content
@@ -210,18 +220,16 @@ func MakeWebsite(fsys fs.FS, add *template.Template, langs []lang.Lang) (*Websit
 				return nil, fmt.Errorf("adding content of %s: %w", site, err)
 			}
 			outpath := filepath.Join(lang.Prefix, site+".html")
+			data := MakeTemplateData(langs, httptest.NewRequest(http.MethodGet, outpath, nil))
+			data.Title = title[index]
+			// data.Onion is not known yet
+
 			dynamic[outpath] = struct {
 				Template *template.Template
 				Data     TemplateData
 			}{
 				Template: tt,
-				Data: TemplateData{
-					Lang:      lang,
-					Languages: LangOptions(langs, lang),
-					Path:      site + ".html",
-					Title:     title[index],
-					// Onion is not known yet
-				},
+				Data:     data,
 			}
 		}
 	}
