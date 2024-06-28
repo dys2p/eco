@@ -2,8 +2,8 @@
 package productfeed
 
 import (
+	"bytes"
 	"encoding/xml"
-	"io"
 	"strings"
 
 	"golang.org/x/net/html"
@@ -19,14 +19,20 @@ type Feed struct {
 	Products  []Product `xml:"entry"`
 }
 
-func (feed Feed) WriteTo(w io.Writer) {
+func (feed Feed) Bytes() ([]byte, error) {
 	feed.Namespace = "http://base.google.com/ns/1.0"
 
-	w.Write([]byte(xml.Header))
-	enc := xml.NewEncoder(w)
+	var buf bytes.Buffer
+	buf.Write([]byte(xml.Header))
+	enc := xml.NewEncoder(&buf)
 	enc.Indent("", "\t")
-	_ = enc.Encode(feed)
-	_ = enc.Close()
+	if err := enc.Encode(feed); err != nil {
+		return nil, err
+	}
+	if err := enc.Close(); err != nil {
+		return nil, err
+	}
+	return buf.Bytes(), nil
 }
 
 // subset of https://pkg.go.dev/google.golang.org/api/content/v2#Product but with xml
