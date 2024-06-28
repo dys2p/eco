@@ -14,6 +14,7 @@ require (
 	github.com/skip2/go-qrcode v0.0.0-20200617195104-da1b6568686e
 	gitlab.com/golang-commonmark/markdown v0.0.0-20211110145824-bf3e522c626a
 	golang.org/x/exp v0.0.0-20230321023759-10a507213a29
+	golang.org/x/net v0.6.0
 	golang.org/x/text v0.8.0
 	golang.org/x/tools v0.6.0
 )

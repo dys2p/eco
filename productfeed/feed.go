@@ -4,6 +4,9 @@ package productfeed
 import (
 	"encoding/xml"
 	"io"
+	"strings"
+
+	"golang.org/x/net/html"
 )
 
 type Feed struct {
@@ -52,4 +55,19 @@ type Link struct {
 	HrefLang string `xml:"hreflang,attr,omitempty"`
 	Title    string `xml:"title,attr,omitempty"`
 	Length   uint   `xml:"length,attr,omitempty"`
+}
+
+func HTMLtoText(htm string) string {
+	var result strings.Builder
+	tokenizer := html.NewTokenizerFragment(strings.NewReader(htm), "div")
+	for {
+		tt := tokenizer.Next()
+		if tt == html.ErrorToken {
+			break
+		}
+		if tt == html.TextToken {
+			result.Write(tokenizer.Text())
+		}
+	}
+	return result.String()
 }
