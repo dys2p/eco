@@ -11,6 +11,7 @@ import (
 type Country string // ISO 3166-1 code
 
 const (
+	// European Union
 	AT Country = "AT"
 	BE Country = "BE"
 	BG Country = "BG"
@@ -30,7 +31,6 @@ const (
 	LT Country = "LT"
 	LU Country = "LU"
 	LV Country = "LV"
-	ME Country = "ME"
 	MT Country = "MT"
 	NL Country = "NL"
 	PL Country = "PL"
@@ -42,8 +42,10 @@ const (
 
 	NonEU Country = "non-EU"
 
+	// selected Non-EU countries
 	CH Country = "CH"
 	GB Country = "GB"
+	ME Country = "ME"
 )
 
 var All = []Country{AT, BE, BG, CH, CY, CZ, DE, DK, EE, ES, FI, FR, GB, GR, HR, HU, IE, IT, LT, LU, LV, ME, MT, NL, PL, PT, RO, SE, SI, SK}
