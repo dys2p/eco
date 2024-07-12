@@ -164,7 +164,7 @@ func (c Country) VAT() VATRates {
 	case CZ:
 		return map[Rate]float64{
 			RateStandard: 0.21,
-			RateReduced1: 0.10,
+			RateReduced1: 0.12,
 			RateReduced2: 0.15,
 		}
 	case DE:
@@ -178,14 +178,13 @@ func (c Country) VAT() VATRates {
 		}
 	case EE:
 		return map[Rate]float64{
-			RateStandard: 0.20,
+			RateStandard: 0.22,
 			RateReduced1: 0.09,
 		}
 	case ES:
 		return map[Rate]float64{
-			RateStandard:     0.21,
-			RateReduced1:     0.10,
-			RateSuperReduced: 0.04,
+			RateStandard: 0.21,
+			RateReduced1: 0.10,
 		}
 	case FI:
 		return map[Rate]float64{
@@ -220,11 +219,9 @@ func (c Country) VAT() VATRates {
 		}
 	case IE:
 		return map[Rate]float64{
-			RateStandard:     0.23,
-			RateReduced1:     0.09,
-			RateReduced2:     0.135,
-			RateSuperReduced: 0.048,
-			RateParking:      0.135,
+			RateStandard: 0.23,
+			RateReduced1: 0.09,
+			RateReduced2: 0.135,
 		}
 	case IT:
 		return map[Rate]float64{
@@ -249,14 +246,15 @@ func (c Country) VAT() VATRates {
 	case LV:
 		return map[Rate]float64{
 			RateStandard: 0.21,
-			RateReduced1: 0.12,
-			RateReduced2: 0.05,
+			RateReduced1: 0.05,
+			RateReduced2: 0.12,
 		}
 	case MT:
 		return map[Rate]float64{
 			RateStandard: 0.18,
 			RateReduced1: 0.05,
 			RateReduced2: 0.07,
+			RateParking:  0.12,
 		}
 	case NL:
 		return map[Rate]float64{
