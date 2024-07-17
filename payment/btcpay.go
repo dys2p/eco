@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/dys2p/btcpay"
+	"github.com/dys2p/eco/httputil"
 	"github.com/dys2p/eco/lang"
 )
 
@@ -38,6 +39,9 @@ type BTCPay struct {
 	RedirectPath      string
 	Store             btcpay.Store
 	Purchases         PurchaseRepo
+
+	CreateInvoiceError func(err error, msg string) http.Handler
+	WebhookError       func(err error) http.Handler
 }
 
 func (BTCPay) ID() string {
@@ -59,34 +63,26 @@ func (b BTCPay) PayHTML(purchaseID, paymentKey string, l lang.Lang) (template.HT
 }
 
 func (b BTCPay) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-
 	switch path.Base(r.URL.Path) {
 	case "create-invoice":
-		if err := b.createInvoice(w, r); err != nil {
-			log.Printf("error creating btcpay invoice: %v", err)
-			w.WriteHeader(http.StatusInternalServerError)
-		}
+		httputil.HandlerFunc(b.createInvoice).ServeHTTP(w, r)
 	case "webhook":
-		if err := b.webhook(w, r); err != nil {
-			log.Printf("error processing btcpay webhook: %v", err)
-			w.WriteHeader(http.StatusInternalServerError)
-		}
+		httputil.HandlerFunc(b.webhook).ServeHTTP(w, r)
 	}
 }
 
-func (b BTCPay) createInvoice(w http.ResponseWriter, r *http.Request) error {
+func (b BTCPay) createInvoice(w http.ResponseWriter, r *http.Request) http.Handler {
 	defaultLanguage := r.PostFormValue("default-language")
 	purchaseID, paymentKey, _ := strings.Cut(r.PostFormValue("reference"), ":")
 
 	// redirect to existing invoice if it is younger than 15 minutes
 	if last, ok := lastInvoice[purchaseID+":"+paymentKey]; ok && time.Now().Unix()-last.Time < 15*60 {
-		http.Redirect(w, r, b.checkoutLink(r, last.ID), http.StatusSeeOther)
-		return nil
+		return http.RedirectHandler(b.checkoutLink(r, last.ID), http.StatusSeeOther)
 	}
 
 	sumCents, err := b.Purchases.PurchaseSumCents(purchaseID, paymentKey)
 	if err != nil {
-		return fmt.Errorf("getting sum: %w", err)
+		return b.CreateInvoiceError(err, "Error getting purchase sum. We are already working on it.")
 	}
 
 	invoiceRequest := &btcpay.InvoiceRequest{
@@ -99,7 +95,7 @@ func (b BTCPay) createInvoice(w http.ResponseWriter, r *http.Request) error {
 	invoiceRequest.RedirectURL = absHost(r) + path.Join("/", b.RedirectPath)
 	invoice, err := b.Store.CreateInvoice(invoiceRequest)
 	if err != nil {
-		return fmt.Errorf("querying store: %w", err)
+		return b.CreateInvoiceError(err, "Error creating BTCPay invoice. We are already working on it.")
 	}
 
 	lastInvoice[purchaseID+":"+paymentKey] = createdInvoice{
@@ -107,8 +103,7 @@ func (b BTCPay) createInvoice(w http.ResponseWriter, r *http.Request) error {
 		Time: time.Now().Unix(),
 	}
 
-	http.Redirect(w, r, b.checkoutLink(r, invoice.ID), http.StatusSeeOther)
-	return nil
+	return http.RedirectHandler(b.checkoutLink(r, invoice.ID), http.StatusSeeOther)
 }
 
 func (b BTCPay) checkoutLink(r *http.Request, invoiceID string) string {
@@ -133,26 +128,26 @@ func (b BTCPay) expirationMinutes() int {
 	return b.ExpirationMinutes
 }
 
-func (b BTCPay) webhook(w http.ResponseWriter, r *http.Request) error {
+func (b BTCPay) webhook(w http.ResponseWriter, r *http.Request) http.Handler {
 	event, err := b.Store.ProcessWebhook(r)
 	if err != nil {
-		return fmt.Errorf("getting event: %w", err)
+		return b.WebhookError(fmt.Errorf("getting event: %w", err))
 	}
 	purchaseID, paymentKey, _ := strings.Cut(event.InvoiceMetadata.OrderID, ":")
 
 	switch event.Type {
 	case btcpay.EventInvoiceProcessing:
 		if err := b.Purchases.SetPurchaseProcessing(purchaseID, paymentKey); err != nil {
-			return fmt.Errorf("setting purchase %s processing: %w", purchaseID, err)
+			return b.WebhookError(fmt.Errorf("setting purchase %s processing: %w", purchaseID, err))
 		}
 		return nil
 	case btcpay.EventInvoiceSettled:
 		if err := b.Purchases.SetPurchasePaid(purchaseID, paymentKey); err != nil {
-			return fmt.Errorf("setting purchase %s paid: %w", purchaseID, err)
+			return b.WebhookError(fmt.Errorf("setting purchase %s paid: %w", purchaseID, err))
 		}
 		return nil
 	default:
-		return fmt.Errorf("unknown event type: %s", event.Type)
+		return b.WebhookError(fmt.Errorf("unknown event type: %s", event.Type))
 	}
 }
 
