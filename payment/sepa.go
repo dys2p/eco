@@ -64,7 +64,7 @@ GDSV
 ` + purchaseID + `
 SEPA payment for purchase` // GDSV = Purchase & Sale of Goods and Services
 
-	epcPNG, err := qrcode.Encode(epcString, qrcode.Medium, 256)
+	epcPNG, err := qrcode.Encode(epcString, qrcode.Medium, -5)
 	if err != nil {
 		log.Printf("error creating EPC QR code: %v", err) // don't exit
 	}
