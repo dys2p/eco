@@ -226,6 +226,13 @@
             "fuzzy": true
         },
         {
+            "id": "If you are sending coins, please stick them down firmly. Otherwise they will be pressed out during transport.",
+            "message": "If you are sending coins, please stick them down firmly. Otherwise they will be pressed out during transport.",
+            "translation": "If you are sending coins, please stick them down firmly. Otherwise they will be pressed out during transport.",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
+        },
+        {
             "id": "We only send the order number to PayPal. Your ordered items and delivery or pickup details will not be sent to PayPal.",
             "message": "We only send the order number to PayPal. Your ordered items and delivery or pickup details will not be sent to PayPal.",
             "translation": "We only send the order number to PayPal. Your ordered items and delivery or pickup details will not be sent to PayPal.",
