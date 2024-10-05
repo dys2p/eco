@@ -1,13 +1,15 @@
 package httputil
 
 import (
+	"embed"
+	"io"
 	"io/fs"
 	"time"
 )
 
-// A ModTimeFS is an fs.FS with a given modification time. This is useful for embed.FS which returns an empty ModTime, resulting in http.FileServer not setting a Last-Modified header.
+// A ModTimeFS is an embed.FS with a given modification time. Else embed.FS returns an empty ModTime, resulting in http.FileServer not setting a Last-Modified header.
 type ModTimeFS struct {
-	fs.FS
+	embed.FS
 	ModTime time.Time
 }
 
@@ -22,6 +24,16 @@ func (fs ModTimeFS) Open(name string) (fs.File, error) {
 type file struct {
 	fs.File
 	modTime time.Time
+}
+
+// embed.FS.Open implements io.ReaderAt
+func (f file) ReadAt(p []byte, off int64) (n int, err error) {
+	return f.File.(io.ReaderAt).ReadAt(p, off)
+}
+
+// embed.FS.Open implements io.Seeker
+func (f file) Seek(offset int64, whence int) (int64, error) {
+	return f.File.(io.Seeker).Seek(offset, whence)
 }
 
 func (f file) Stat() (fs.FileInfo, error) {
