@@ -1,7 +1,6 @@
 package httputil
 
 import (
-	"embed"
 	"io"
 	"io/fs"
 	"time"
@@ -9,7 +8,7 @@ import (
 
 // A ModTimeFS is an embed.FS with a given modification time. Else embed.FS returns an empty ModTime, resulting in http.FileServer not setting a Last-Modified header.
 type ModTimeFS struct {
-	embed.FS
+	fs.FS   // must be embed.FS or fs.Sub(embed.FS, ...)
 	ModTime time.Time
 }
 
