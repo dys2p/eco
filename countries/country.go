@@ -188,7 +188,7 @@ func (c Country) VAT() VATRates {
 		}
 	case FI:
 		return map[Rate]float64{
-			RateStandard: 0.24,
+			RateStandard: 0.255,
 			RateReduced1: 0.10,
 			RateReduced2: 0.14,
 		}
