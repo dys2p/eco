@@ -100,7 +100,7 @@ func (td TemplateData) Hreflangs() template.HTML {
 }
 
 type Website struct {
-	Fsys    fs.FS
+	Fsys    fs.FS               // consider wrapping httputil.ModTimeFS around it
 	Dynamic map[string]struct { // url path
 		Template *template.Template
 		Data     TemplateData
