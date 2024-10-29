@@ -28,7 +28,7 @@ const TemplateString = `
 				<label for="captcha-answer" class="form-label">Please solve the captcha:</label>
 				<input class="form-control {{if .Err}}is-invalid{{end}}" id="captcha-answer" name="captcha-answer" value="{{.Answer}}" type="number" required>
 				<div class="invalid-feedback">Please type the digits correctly.</div>
-				<div class="form-text"><a class="text-muted" href="#" onclick="reloadCaptcha(); return false;">Load other image (requires JavaScript)</a></div>
+				<div class="form-text"><a class="text-muted" href="#" onclick="reloadCaptcha(); return false;">Load other captcha image (requires JavaScript)</a></div>
 			</div>
 			<input type="hidden" name="captcha-id" value="{{.ID}}">
 		{{end}}
