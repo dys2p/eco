@@ -6,9 +6,10 @@ import (
 	"encoding/binary"
 )
 
-const AlphanumCaseSensitiveDigits = "abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ123456789"
-
-const AlphanumCaseInsensitiveDigits = "ABCDEFGHJKLMNPQRSTUVWXYZ123456789"
+const (
+	AlphanumCaseSensitiveDigits = "abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ123456789"
+	AlphanumCaseInsensitiveDigits = "ABCDEFGHJKLMNPQRSTUVWXYZ123456789"
+)
 
 func newDigit(charset string) byte {
 	b := make([]byte, 8)
