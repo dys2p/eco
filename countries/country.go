@@ -302,17 +302,19 @@ func (c Country) VAT() VATRates {
 	}
 }
 
-type CountryWithName struct {
+type CountryOption struct {
 	Country
-	Name string
+	Name     string
+	Selected bool
 }
 
-func TranslateAndSort(l lang.Lang, countries []Country) []CountryWithName {
-	var result = make([]CountryWithName, len(countries))
+func TranslateAndSort(l lang.Lang, countries []Country, selected Country) []CountryOption {
+	var result = make([]CountryOption, len(countries))
 	for i := range countries {
-		result[i] = CountryWithName{
-			Country: countries[i],
-			Name:    countries[i].TranslateName(l),
+		result[i] = CountryOption{
+			Country:  countries[i],
+			Name:     countries[i].TranslateName(l),
+			Selected: countries[i] == selected,
 		}
 	}
 
