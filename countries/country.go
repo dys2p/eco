@@ -52,13 +52,17 @@ var All = []Country{AT, BE, BG, CH, CY, CZ, DE, DK, EE, ES, FI, FR, GB, GR, HR, 
 
 var EuropeanUnion = []Country{AT, BE, BG, CY, CZ, DE, DK, EE, ES, FI, FR, GR, HR, HU, IE, IT, LT, LU, LV, MT, NL, PL, PT, RO, SE, SI, SK}
 
+// Get returns the country with the given id from the slice. If none matches, the first country from the slice is returned. If the slice is empty, "unknown" is returned.
 func Get(cs []Country, id string) (Country, bool) {
 	for _, c := range cs {
 		if string(c) == id {
 			return c, true
 		}
 	}
-	return "", false
+	if len(cs) > 0 {
+		return cs[0], false
+	}
+	return "unknown", false
 }
 
 func InEuropeanUnion(country Country) bool {
