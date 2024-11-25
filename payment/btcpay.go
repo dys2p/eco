@@ -72,6 +72,15 @@ func (b BTCPay) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func (b BTCPay) createInvoice(w http.ResponseWriter, r *http.Request) http.Handler {
+	if b.CreateInvoiceError == nil {
+		b.CreateInvoiceError = func(err error, msg string) http.Handler {
+			return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				log.Printf("error creating btcpay invoice: %v", err)
+				w.Write([]byte(msg))
+			})
+		}
+	}
+
 	defaultLanguage := r.PostFormValue("default-language")
 	purchaseID, paymentKey, _ := strings.Cut(r.PostFormValue("reference"), ":")
 
@@ -129,6 +138,13 @@ func (b BTCPay) expirationMinutes() int {
 }
 
 func (b BTCPay) webhook(w http.ResponseWriter, r *http.Request) http.Handler {
+	if b.WebhookError == nil {
+		b.WebhookError = func(err error) http.Handler {
+			log.Printf("error processing btcpay webhook: %v", err)
+			return nil
+		}
+	}
+
 	event, err := b.Store.ProcessWebhook(r)
 	if err != nil {
 		return b.WebhookError(fmt.Errorf("getting event: %w", err))
