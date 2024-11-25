@@ -7,7 +7,7 @@ import (
 )
 
 const (
-	AlphanumCaseSensitiveDigits = "abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ123456789"
+	AlphanumCaseSensitiveDigits   = "abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ123456789"
 	AlphanumCaseInsensitiveDigits = "ABCDEFGHJKLMNPQRSTUVWXYZ123456789"
 )
 
