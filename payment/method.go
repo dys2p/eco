@@ -47,6 +47,6 @@ func Get(methods []Method, id string) (Method, error) {
 type PurchaseRepo interface {
 	PurchaseCreationDate(purchaseID, paymentKey string) (string, error) // yyyy-mm-dd
 	PurchaseSumCents(purchaseID, paymentKey string) (int, error)
-	SetPurchasePaid(purchaseID, paymentKey string) error
+	SetPurchasePaid(purchaseID, paymentKey, methodName string) error
 	SetPurchaseProcessing(purchaseID, paymentKey string) error
 }

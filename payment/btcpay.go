@@ -158,7 +158,7 @@ func (b BTCPay) webhook(w http.ResponseWriter, r *http.Request) http.Handler {
 		}
 		return nil
 	case btcpay.EventInvoiceSettled:
-		if err := b.Purchases.SetPurchasePaid(purchaseID, paymentKey); err != nil {
+		if err := b.Purchases.SetPurchasePaid(purchaseID, paymentKey, "BTCPay"); err != nil {
 			return b.WebhookError(fmt.Errorf("setting purchase %s paid: %w", purchaseID, err))
 		}
 		return nil
