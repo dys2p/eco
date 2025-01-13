@@ -10,9 +10,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/dys2p/btcpay"
 	"github.com/dys2p/eco/httputil"
 	"github.com/dys2p/eco/lang"
+	"github.com/dys2p/go-btcpay"
 )
 
 func init() {

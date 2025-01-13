@@ -16,10 +16,11 @@ package health
 import (
 	"encoding/json"
 	"net/http"
+	"strings"
 	"time"
 
-	"github.com/dys2p/btcpay"
 	"github.com/dys2p/eco/payment/rates"
+	"github.com/dys2p/go-btcpay"
 )
 
 type Server struct {
@@ -32,12 +33,15 @@ func (srv *Server) Run() {
 	for ; true; <-time.Tick(10 * time.Second) {
 		var status []Item
 		if srv.BTCPay != nil {
-			if serverStatus, err := srv.BTCPay.GetServerStatus(); err == nil {
+			if serverStatus, _ := srv.BTCPay.GetServerStatus(); serverStatus != nil {
 				for _, syncStatus := range serverStatus.SyncStatuses {
-					status = append(status, Item{
-						Name:   syncStatus.CryptoCode,
-						Synced: syncStatus.ChainHeight == syncStatus.SyncHeight,
-					})
+					name := strings.TrimSuffix(syncStatus.PaymentMethodID, "-CHAIN")
+					if name != "" {
+						status = append(status, Item{
+							Name:   name,
+							Synced: syncStatus.ChainHeight == syncStatus.SyncHeight,
+						})
+					}
 				}
 			}
 		}
