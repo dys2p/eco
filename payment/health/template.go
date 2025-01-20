@@ -19,7 +19,7 @@ const TemplateString = `
 						if(xhr.status == 200) {
 							let data = JSON.parse(xhr.responseText);
 							for(item of data) {
-								content = content + ` + backtick + `<span class="badge bg-${item.Synced ? 'success' : 'danger'} my-2">${item.Name}: ${item.Synced ? 'synced' : 'out of sync'}</span> ` + backtick + `;
+								content = content + ` + backtick + `<span class="badge bg-${item.Synced ? 'success' : 'warning'} my-2">${item.Name}: ${item.Synced ? 'synced' : 'out of sync'}</span> ` + backtick + `;
 							}
 						} else {
 							content = '<span class="badge bg-warning">could not connect</span>';
