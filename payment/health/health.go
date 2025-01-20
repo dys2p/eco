@@ -36,11 +36,18 @@ func (srv *Server) Run() {
 			if serverStatus, _ := srv.BTCPay.GetServerStatus(); serverStatus != nil {
 				for _, syncStatus := range serverStatus.SyncStatuses {
 					name := strings.TrimSuffix(syncStatus.PaymentMethodID, "-CHAIN")
-					if name != "" {
+					if name == "" { // XMR, it's a bug in the BTCPay Server API
 						status = append(status, Item{
-							Name:   name,
-							Synced: syncStatus.ChainHeight == syncStatus.SyncHeight,
+							Name:   "XMR",
+							Synced: syncStatus.Summary.Synced,
 						})
+					} else {
+						if syncStatus.ChainHeight != 0 {
+							status = append(status, Item{
+								Name:   name,
+								Synced: syncStatus.ChainHeight == syncStatus.SyncHeight,
+							})
+						}
 					}
 				}
 			}
