@@ -41,7 +41,7 @@ func (SEPA) ID() string {
 }
 
 func (SEPA) Name(l lang.Lang) string {
-	return l.Tr("SEPA Bank Transfer")
+	return l.Tr("Bank Transfer to our SEPA Account")
 }
 
 func (sepa SEPA) PayHTML(purchaseID, paymentKey string, l lang.Lang) (template.HTML, error) {
