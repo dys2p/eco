@@ -16,7 +16,6 @@ package health
 import (
 	"encoding/json"
 	"net/http"
-	"strings"
 	"time"
 
 	"github.com/dys2p/eco/payment/rates"
@@ -35,19 +34,17 @@ func (srv *Server) Run() {
 		if srv.BTCPay != nil {
 			if serverStatus, _ := srv.BTCPay.GetServerStatus(); serverStatus != nil {
 				for _, syncStatus := range serverStatus.SyncStatuses {
-					name := strings.TrimSuffix(syncStatus.PaymentMethodID, "-CHAIN")
-					if name == "" { // XMR, it's a bug in the BTCPay Server API
+					switch syncStatus.PaymentMethodID {
+					case "BTC-CHAIN":
+						status = append(status, Item{
+							Name:   "BTC",
+							Synced: syncStatus.Available && syncStatus.ChainHeight == syncStatus.SyncHeight,
+						})
+					case "XMR-CHAIN":
 						status = append(status, Item{
 							Name:   "XMR",
-							Synced: syncStatus.Summary.Synced,
+							Synced: syncStatus.Available && syncStatus.Summary.Synced && syncStatus.Summary.DaemonAvailable && syncStatus.Summary.WalletAvailable,
 						})
-					} else {
-						if syncStatus.ChainHeight != 0 {
-							status = append(status, Item{
-								Name:   name,
-								Synced: syncStatus.ChainHeight == syncStatus.SyncHeight,
-							})
-						}
 					}
 				}
 			}
