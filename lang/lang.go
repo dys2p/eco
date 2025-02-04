@@ -19,7 +19,7 @@
 //			l.Printer.Fprintf(w, "Hello World")
 //		})
 //	}
-//	http.HandleFunc("/", langs.Redirect)
+//	http.HandleFunc("/", langs.RedirectHandler())
 //
 // As in the example, adding routes for each language is recommended over using route parameters with possibly conflicting rules.
 //
