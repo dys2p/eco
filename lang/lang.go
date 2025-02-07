@@ -50,6 +50,11 @@ func (l Lang) Collator() *collate.Collator {
 	return collate.New(l.Tag, collate.IgnoreCase)
 }
 
+// String returns the l.Prefix to be used in URLs.
+func (l Lang) String() string {
+	return l.Prefix
+}
+
 func (l Lang) Tr(key message.Reference, a ...interface{}) string {
 	return l.Printer.Sprintf(key, a...)
 }
