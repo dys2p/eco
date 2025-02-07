@@ -13,7 +13,7 @@ import (
 	"strings"
 
 	"github.com/dys2p/eco/lang"
-	"github.com/dys2p/paypal"
+	"github.com/dys2p/go-paypal"
 )
 
 var payPalTmpl = template.Must(template.ParseFS(htmlfiles, "paypal-checkout.html"))
