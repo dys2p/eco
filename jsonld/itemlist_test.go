@@ -30,3 +30,13 @@ func TestBreadcrumbList(t *testing.T) {
 		t.Fatalf("got %s, want %s", got, want)
 	}
 }
+
+func TestBreadcrumbListEmpty(t *testing.T) {
+	var items []breadcrumb // nil
+	got, _ := json.Marshal(BreadcrumbList("https://example.com", items))
+	want := `{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[]}` // [] not null
+
+	if string(got) != want {
+		t.Fatalf("got %s, want %s", got, want)
+	}
+}

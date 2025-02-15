@@ -22,7 +22,7 @@ type Breadcrumb interface {
 //
 // BreadcrumbList uses generics so we don't have to convert the slice from []SomeType to []Breadcrumb.
 func BreadcrumbList[T Breadcrumb](urlprefix string, breadcrumbs []T) ItemList {
-	var elements []ItemListElement
+	var elements = make([]ItemListElement, 0, 4) // initialize, so Elements is marshaled as [], not null
 	for i, breadcrumb := range breadcrumbs {
 		var url string
 		if path := breadcrumb.URLPath(); path != "" {
