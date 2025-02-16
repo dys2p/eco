@@ -1,19 +1,9 @@
 package jsonld
 
-import "encoding/json"
-
 type ItemList struct {
 	Context  string            `json:"@context"`
 	Type     string            `json:"@type"`
 	Elements []ItemListElement `json:"itemListElement"`
-}
-
-func (il ItemList) MarshalJSON() ([]byte, error) {
-	if len(il.Elements) == 0 {
-		return nil, nil
-	}
-	type itemListWithoutMarshalJSON ItemList
-	return json.Marshal(itemListWithoutMarshalJSON(il))
 }
 
 type ItemListElement struct {
@@ -31,8 +21,8 @@ type Breadcrumb interface {
 // See https://developers.google.com/search/docs/appearance/structured-data/breadcrumb
 //
 // BreadcrumbList uses generics so we don't have to convert the slice from []SomeType to []Breadcrumb.
-func BreadcrumbList[T Breadcrumb](urlprefix string, breadcrumbs []T) ItemList {
-	var elements = make([]ItemListElement, 0, 4) // initialize, so Elements is marshaled as [], not null
+func BreadcrumbList[T Breadcrumb](urlprefix string, breadcrumbs []T) *ItemList {
+	var elements []ItemListElement
 	for i, breadcrumb := range breadcrumbs {
 		var url string
 		if path := breadcrumb.URLPath(); path != "" {
@@ -46,7 +36,10 @@ func BreadcrumbList[T Breadcrumb](urlprefix string, breadcrumbs []T) ItemList {
 			Item:     url,
 		})
 	}
-	return ItemList{
+	if len(elements) == 0 {
+		return nil
+	}
+	return &ItemList{
 		Context:  "https://schema.org",
 		Type:     "BreadcrumbList",
 		Elements: elements,

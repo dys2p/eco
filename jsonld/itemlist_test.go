@@ -34,7 +34,7 @@ func TestBreadcrumbList(t *testing.T) {
 func TestBreadcrumbListEmpty(t *testing.T) {
 	got, _ := json.Marshal(BreadcrumbList("https://example.com", []breadcrumb{}))
 
-	if string(got) != "" {
-		t.Fatalf("got %s, want empty string", got)
+	if string(got) != "null" {
+		t.Fatalf("got %s, want null", got)
 	}
 }
