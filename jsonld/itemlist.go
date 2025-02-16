@@ -1,9 +1,19 @@
 package jsonld
 
+import "encoding/json"
+
 type ItemList struct {
 	Context  string            `json:"@context"`
 	Type     string            `json:"@type"`
 	Elements []ItemListElement `json:"itemListElement"`
+}
+
+func (il ItemList) MarshalJSON() ([]byte, error) {
+	if len(il.Elements) == 0 {
+		return nil, nil
+	}
+	type itemListWithoutMarshalJSON ItemList
+	return json.Marshal(itemListWithoutMarshalJSON(il))
 }
 
 type ItemListElement struct {
