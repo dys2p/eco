@@ -88,7 +88,7 @@ func MakeLanguages(catalog catalog.Catalog, prefixes ...string) Languages {
 	return langs
 }
 
-// FromPath returns the language whose prefix matches the first segment of r.URL.Path and the remaining path.
+// FromPath returns the language whose prefix matches the first segment of the path and the remaining path.
 // If no language matches, it returns langs[0], the full path and false.
 func (langs Languages) FromPath(path string) (Lang, string, bool) {
 	path = strings.TrimLeft(path, "/")
