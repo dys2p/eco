@@ -110,14 +110,14 @@ func (config Config) Run() error {
 		}
 		file, err := os.ReadFile(fp)
 		if err != nil {
-			return err
+			return fmt.Errorf("reading file %s: %w", fp, err)
 		}
 		// similar to parse.Parse but with SkipFuncCheck
 		trees := make(map[string]*parse.Tree)
 		t := parse.New("name")
 		t.Mode |= parse.SkipFuncCheck
 		if _, err := t.Parse(string(file), "", "", trees); err != nil {
-			return err
+			return fmt.Errorf("parsing file %s: %w", fp, err)
 		}
 		for _, tree := range trees {
 			config.processNode(&templateMessages, tree.Root)
