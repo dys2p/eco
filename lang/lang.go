@@ -101,8 +101,8 @@ func (langs Languages) FromPath(path string) (Lang, string, bool) {
 	return langs[0], path, false
 }
 
-// RedirectHandler returns an http handler which redirects to the localized version of r.URL according to the Accept-Language header.
-// If r.URL it is already localized, the handler responds with a "not found" error in order to prevent a redirect loop.
+// RedirectHandler returns an http handler which redirects to the localized version of r.URL.Path according to the Accept-Language header.
+// If r.URL.Path it is already localized, the handler responds with a "not found" error in order to prevent a redirect loop.
 // It is recommended to chain the handler behind your http router.
 func (langs Languages) RedirectHandler() http.HandlerFunc {
 	var tags = make([]language.Tag, len(langs))
@@ -113,11 +113,13 @@ func (langs Languages) RedirectHandler() http.HandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
 		if _, _, ok := langs.FromPath(r.URL.Path); ok {
-			// url already starts with a supported language, prevent redirect loop
+			// url path already starts with a supported language, prevent redirect loop
 			http.NotFound(w, r)
 		} else {
 			_, index := language.MatchStrings(matcher, r.Header.Get("Accept-Language"))
-			http.Redirect(w, r, path.Join("/", langs[index].Prefix, r.URL.Path), http.StatusSeeOther)
+			var u = *r.URL // copy
+			u.Path = path.Join("/", langs[index].Prefix, u.Path)
+			http.Redirect(w, r, u.String(), http.StatusSeeOther)
 		}
 	}
 }
