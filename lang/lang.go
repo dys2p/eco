@@ -15,7 +15,7 @@
 //	langs := lang.MakeLanguages(nil, "de", "en")
 //	for _, l := range langs {
 //		http.HandleFunc("/"+l.Prefix, func(w http.ResponseWriter, r *http.Request) {
-//			l, _, _ := langs.FromPath(r)
+//			l, _, _ := langs.FromURL(r.URL)
 //			l.Printer.Fprintf(w, "Hello World")
 //		})
 //	}
@@ -29,6 +29,7 @@ package lang
 import (
 	"fmt"
 	"net/http"
+	"net/url"
 	"path"
 	"strings"
 
@@ -90,6 +91,8 @@ func MakeLanguages(catalog catalog.Catalog, prefixes ...string) Languages {
 
 // FromPath returns the language whose prefix matches the first segment of the path and the remaining path.
 // If no language matches, it returns langs[0], the full path and false.
+//
+// Deprecated: Use FromURL instead.
 func (langs Languages) FromPath(path string) (Lang, string, bool) {
 	path = strings.TrimLeft(path, "/")
 	prefix, remainder, _ := strings.Cut(path, "/")
@@ -99,6 +102,23 @@ func (langs Languages) FromPath(path string) (Lang, string, bool) {
 		}
 	}
 	return langs[0], path, false
+}
+
+// FromURL returns the language whose prefix matches the first segment of the path, and the remaining path and query.
+// If no language matches, it returns langs[0], the full path and query, and false.
+func (langs Languages) FromURL(u *url.URL) (Lang, string, bool) {
+	var path = strings.TrimLeft(u.Path, "/")
+	prefix, remainder, _ := strings.Cut(path, "/")
+	var query string
+	if u.RawQuery != "" {
+		query = "?" + u.RawQuery
+	}
+	for _, l := range langs {
+		if l.Prefix == prefix {
+			return l, remainder + query, true
+		}
+	}
+	return langs[0], path + query, false
 }
 
 // RedirectHandler returns an http handler which redirects to the localized version of r.URL.Path according to the Accept-Language header.
@@ -112,7 +132,7 @@ func (langs Languages) RedirectHandler() http.HandlerFunc {
 	matcher := language.NewMatcher(tags)
 
 	return func(w http.ResponseWriter, r *http.Request) {
-		if _, _, ok := langs.FromPath(r.URL.Path); ok {
+		if _, _, ok := langs.FromURL(r.URL); ok {
 			// url path already starts with a supported language, prevent redirect loop
 			http.NotFound(w, r)
 		} else {

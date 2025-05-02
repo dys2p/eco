@@ -51,7 +51,7 @@ func TestRedirect(t *testing.T) {
 func TestTranslate(t *testing.T) {
 	for _, l := range langs {
 		http.HandleFunc("/"+l.Prefix, func(w http.ResponseWriter, r *http.Request) {
-			l, _, _ := langs.FromPath(r.URL.Path)
+			l, _, _ := langs.FromURL(r.URL)
 			l.Printer.Fprintf(w, "Hello World")
 		})
 	}
