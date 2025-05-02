@@ -9,10 +9,10 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"slices"
 	"strings"
 	"text/template/parse"
 
-	"golang.org/x/exp/slices"
 	"golang.org/x/text/language"
 	"golang.org/x/text/message/pipeline"
 	"golang.org/x/tools/go/packages"

@@ -1,6 +1,6 @@
 module github.com/dys2p/eco
 
-go 1.22
+go 1.23
 
 require (
 	github.com/abh/geoip v0.0.0-20160510155516-07cea4480daa
@@ -13,7 +13,6 @@ require (
 	github.com/sethvargo/go-diceware v0.3.0
 	github.com/skip2/go-qrcode v0.0.0-20200617195104-da1b6568686e
 	gitlab.com/golang-commonmark/markdown v0.0.0-20211110145824-bf3e522c626a
-	golang.org/x/exp v0.0.0-20230321023759-10a507213a29
 	golang.org/x/net v0.34.0
 	golang.org/x/text v0.21.0
 	golang.org/x/tools v0.21.1-0.20240508182429-e35e4ccd0d2d

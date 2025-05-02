@@ -2,10 +2,11 @@
 package detect
 
 import (
+	"maps"
 	"net/http"
+	"slices"
 
 	"github.com/dys2p/eco/countries"
-	"golang.org/x/exp/maps"
 )
 
 type detectorFn func(r *http.Request) ([]countries.Country, error)
@@ -35,5 +36,5 @@ func Countries(r *http.Request) ([]countries.Country, bool, error) {
 			}
 		}
 	}
-	return maps.Keys(eu), nonEU, nil
+	return slices.Collect(maps.Keys(eu)), nonEU, nil
 }
