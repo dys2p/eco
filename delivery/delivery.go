@@ -83,7 +83,7 @@ type Method struct {
 	Name        string
 	Description string
 
-	AddressTypes []AddressType // can be empty
+	AddressTypes []AddressType // empty slice means one zero-valued AddressType
 	Details      func(weight, netValue int, country countries.Country) (netPrice, minDays, maxDays int, supported bool)
 	IsShipping   bool
 	TrackingLink string // use %s placeholder for tracking number
@@ -94,7 +94,7 @@ func (method *Method) AddressTypeOptions(selectedID string) (options []AddressTy
 	if method == nil {
 		return
 	}
-	// return empty options if there is exactly one option
+	// return empty options slice if there is exactly one option
 	if len(method.AddressTypes) == 1 {
 		return nil, method.AddressTypes[0]
 	}
@@ -122,6 +122,17 @@ func (method *Method) FmtTrackingLink(id string) string {
 		return id
 	} else {
 		return fmt.Sprintf(method.TrackingLink, id)
+	}
+}
+
+func (method *Method) SingleAddressType() *AddressType {
+	switch len(method.AddressTypes) {
+	case 0:
+		return &AddressType{}
+	case 1:
+		return &method.AddressTypes[0]
+	default:
+		return nil
 	}
 }
 
