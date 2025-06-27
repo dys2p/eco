@@ -1,0 +1,126 @@
+<!--
+* without <form>
+* requires .Tr function for translations
+* only use if DeliveryMethod.IsShipping is true
+-->
+{{define "delivery-shipping-form"}}
+	<div class="form-check mb-3">
+		<input
+			type="checkbox"
+			class="form-check-input"
+			id="address-elsewhere"
+			name="address-elsewhere"
+			value="_"
+			{{if .AddressElsewhere}}checked{{end}}
+			onchange="document.getElementById('address').style.display = (this.checked ? 'none' : 'block')">
+		<label class="form-check-label" for="address-elsewhere">
+			{{.Tr "I will send you the delivery address by mail, e-mail or messenger instead."}}
+		</label>
+	</div>
+	<div id="address" style="{{if .AddressElsewhere}}display: none{{end}}">
+		{{with .AddressOptions}}
+			<div class="mb-3">
+				{{range .}}
+					<input class="btn-check" type="radio" name="address-option" id="{{.ID}}" value="{{.ID}}" {{if .Selected}}checked{{end}} onchange="this.form.submit()">
+					<label class="btn btn-outline-primary" for="{{.ID}}">{{.Name}}</label>
+				{{end}}
+				<button type="submit" class="btn btn-primary d-js-none">
+					<i class="fa-solid fa-check"></i>
+					<span class="sr-only">{{$.Tr "Select"}}</span>
+				</button>
+			</div>
+		{{end}}
+		<div class="row">
+			<div class="col-sm-6 mb-3">
+				<input class="form-control" type="text" placeholder="{{.Tr "First name"}}" name="shipping-first-name" value="{{.Address.FirstName}}">
+			</div>
+			<div class="col-sm-6 mb-3">
+				<input class="form-control {{if .ErrAddressLastName}}is-invalid{{end}}" type="text" placeholder="{{.Tr "Last name"}}" name="shipping-last-name" value="{{.Address.LastName}}" aria-required="true">
+				<div class="invalid-feedback">
+					{{.Tr "Please enter a last name"}}
+				</div>
+			</div>
+		</div>
+		{{if .SelectedAddressType.Supplement}}
+			<div class="mb-3">
+				<input class="form-control" type="text" placeholder="{{.Tr "Address supplement"}} ({{.Tr "optional"}})" name="shipping-address-supplement" value="{{.Address.Supplement}}">
+			</div>
+		{{end}}
+		{{if .SelectedAddressType.CustomerIDRequired}}
+			<div class="mb-3">
+				<input class="form-control {{if .ErrAddressCustomerID}}is-invalid{{end}}" type="text" placeholder="{{.SelectedAddressType.CustomerIDRequired}}" name="shipping-address-customer-id" value="{{.Address.CustomerID}}" aria-required="true">
+				<div class="invalid-feedback">
+					{{.Tr "Please enter a %s." .SelectedAddressType.CustomerIDRequired}}
+				</div>
+			</div>
+		{{end}}
+		<div class="row">
+			<div class="col-sm-8 mb-3">
+				<input
+					type="text"
+					class="form-control {{if .ErrAddressStreet}}is-invalid{{end}}"
+					name="shipping-street"
+					placeholder="{{.Tr "Street"}}"
+					value="{{with .SelectedAddressType.StreetName}}{{.}}{{else}}{{.Address.Street}}{{end}}"
+					aria-required="true"
+					{{if .SelectedAddressType.StreetName}}disabled{{end}}>
+				<div class="invalid-feedback">
+					{{.Tr "Please enter a street"}}
+				</div>
+			</div>
+			<div class="col-sm-4 mb-3">
+				<input
+					type="text"
+					class="form-control {{if .ErrAddressHouseNumber}}is-invalid{{end}}"
+					name="shipping-house-number"
+					placeholder="{{if .SelectedAddressType.StreetName}}{{.Tr "Number"}}{{else}}{{.Tr "House number"}}{{end}}"
+					value="{{.Address.HouseNumber}}"
+					aria-required="true">
+				<div class="invalid-feedback">
+					{{.Tr "Please enter a number"}}
+				</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-sm-4 mb-3">
+				<input class="form-control {{if .ErrAddressPostcode}}is-invalid{{end}}" type="text" placeholder="{{.Tr "Postcode"}}" name="shipping-postcode" value="{{.Address.Postcode}}" aria-required="true">
+				<div class="invalid-feedback">
+					{{.Tr "Please enter a postcode"}}
+				</div>
+			</div>
+			<div class="col-sm-8 mb-3">
+				<input class="form-control {{if .ErrAddressCity}}is-invalid{{end}}" type="text" placeholder="{{.Tr "City"}}" name="shipping-city" value="{{.Address.City}}" aria-required="true">
+				<div class="invalid-feedback">
+					{{.Tr "Please enter a city"}}
+				</div>
+			</div>
+		</div>
+		{{if .SelectedAddressType.Email}}
+			<div class="mb-3">
+				<input
+					type="text"
+					class="form-control {{if .ErrAddressEmail}}is-invalid{{end}}"
+					name="shipping-email"
+					placeholder="{{.Tr "E-mail address"}}{{if not .SelectedAddressType.EmailRequired}} ({{.Tr "optional"}}){{end}}"
+					value="{{.Address.Email}}"
+					{{if .SelectedAddressType.EmailRequired}}aria-required="true"{{end}}
+					onchange="email = document.getElementById('email1'); if(email && email.value == '') { email.value = this.value; }">
+				<div class="invalid-feedback">
+					{{.Tr "Please enter an e-mail address"}}
+				</div>
+				<div class="form-text">{{.Tr "We will give this e-mail address to the delivery company."}}</div>
+			</div>
+		{{end}}
+		{{if .SelectedAddressType.Phone}}
+			<div class="mb-3">
+				<input
+					type="text"
+					class="form-control"
+					name="shipping-phone"
+					placeholder="{{.Tr "Phone number"}} ({{.Tr "optional"}})"
+					value="{{.Address.Phone}}">
+				<div class="form-text">{{.Tr "We will give this phone number to the delivery company."}}</div>
+			</div>
+		{{end}}
+	</div>
+{{end}}
