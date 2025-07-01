@@ -3,12 +3,27 @@ package delivery
 import (
 	"embed"
 	"net/mail"
+
+	"golang.org/x/text/message"
 )
 
 //go:embed template.html
 var TemplateFS embed.FS // usage: t = template.Must(t.ParseFS(delivery.TemplateFS, "*"))
 
-type ShippingForm struct {
+// ShippingAddressView is the data for template "shipping-address-view".
+//
+// It does not contain a country. It does not check Method.IsShipping.
+type ShippingAddressView struct {
+	*message.Printer
+	Address
+	AddressTypes []AddressType
+}
+
+// ShippingAddressFormElements is the data for template "shipping-address-form-elements".
+//
+// It does not contain a country. It does not check Method.IsShipping.
+type ShippingAddressFormElements struct {
+	*message.Printer
 	Address             Address
 	AddressElsewhere    bool
 	AddressOptions      []AddressTypeOption // empty if there is just one option
@@ -16,36 +31,36 @@ type ShippingForm struct {
 	SelectedAddressType AddressType
 }
 
-func (f ShippingForm) ErrAddressCity() bool {
+func (f ShippingAddressFormElements) ErrAddressCity() bool {
 	return f.CheckErrors && !f.AddressElsewhere && f.Address.City == ""
 }
 
-func (f ShippingForm) ErrAddressCustomerID() bool {
+func (f ShippingAddressFormElements) ErrAddressCustomerID() bool {
 	return f.CheckErrors && !f.AddressElsewhere && f.SelectedAddressType.CustomerIDRequired != "" && f.Address.CustomerID == ""
 }
 
-func (f ShippingForm) ErrAddressEmail() bool {
+func (f ShippingAddressFormElements) ErrAddressEmail() bool {
 	return f.CheckErrors && !f.AddressElsewhere && f.SelectedAddressType.EmailRequired && !emailAddressValid(f.Address.Email)
 }
 
-func (f ShippingForm) ErrAddressHouseNumber() bool {
+func (f ShippingAddressFormElements) ErrAddressHouseNumber() bool {
 	return f.CheckErrors && !f.AddressElsewhere && f.Address.HouseNumber == ""
 }
 
-func (f ShippingForm) ErrAddressLastName() bool {
+func (f ShippingAddressFormElements) ErrAddressLastName() bool {
 	return f.CheckErrors && !f.AddressElsewhere && f.Address.LastName == ""
 }
 
-func (f ShippingForm) ErrAddressPostcode() bool {
+func (f ShippingAddressFormElements) ErrAddressPostcode() bool {
 	return f.CheckErrors && !f.AddressElsewhere && f.Address.Postcode == ""
 }
 
-func (f ShippingForm) ErrAddressStreet() bool {
+func (f ShippingAddressFormElements) ErrAddressStreet() bool {
 	return f.CheckErrors && !f.AddressElsewhere && f.Address.Street == ""
 }
 
-func (form ShippingForm) HasErr() bool {
-	return form.ErrAddressCity() || form.ErrAddressCustomerID() || form.ErrAddressEmail() || form.ErrAddressHouseNumber() || form.ErrAddressLastName() || form.ErrAddressPostcode() || form.ErrAddressStreet()
+func (f ShippingAddressFormElements) HasErr() bool {
+	return f.ErrAddressCity() || f.ErrAddressCustomerID() || f.ErrAddressEmail() || f.ErrAddressHouseNumber() || f.ErrAddressLastName() || f.ErrAddressPostcode() || f.ErrAddressStreet()
 }
 
 func emailAddressValid(addr string) bool {

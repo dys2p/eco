@@ -125,15 +125,12 @@ func (method *Method) FmtTrackingLink(id string) string {
 	}
 }
 
-func (method *Method) SingleAddressType() *AddressType {
-	switch len(method.AddressTypes) {
-	case 0:
-		return &AddressType{}
-	case 1:
-		return &method.AddressTypes[0]
-	default:
+// GetAddressTypes returns method.AddressTypes or nil if method is nil. It is just a shortcut so you don't have to check method != nil.
+func (method *Method) GetAddressTypes() []AddressType {
+	if method == nil {
 		return nil
 	}
+	return method.AddressTypes
 }
 
 type MethodOption struct {
