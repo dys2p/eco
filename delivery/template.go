@@ -4,17 +4,19 @@ import (
 	"embed"
 	"net/mail"
 
-	"golang.org/x/text/message"
+	"github.com/dys2p/eco/lang"
 )
 
 //go:embed template.html
 var TemplateFS embed.FS // usage: t = template.Must(t.ParseFS(delivery.TemplateFS, "*"))
 
+// TODO Use *message.Printer instead of lang.Lang, generate out.gotext.json here with gotext-update-templates -trfunc Sprintf, then merge json files.
+
 // ShippingAddressView is the data for template "shipping-address-view".
 //
 // It does not contain a country. It does not check Method.IsShipping.
 type ShippingAddressView struct {
-	*message.Printer
+	lang.Lang
 	Address
 	AddressTypes []AddressType
 }
@@ -23,7 +25,7 @@ type ShippingAddressView struct {
 //
 // It does not contain a country. It does not check Method.IsShipping.
 type ShippingAddressFormElements struct {
-	*message.Printer
+	lang.Lang
 	Address             Address
 	AddressElsewhere    bool
 	AddressOptions      []AddressTypeOption // empty if there is just one option
