@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	"github.com/dys2p/eco/countries"
+	"github.com/dys2p/eco/euvat"
 )
 
 func main() {
@@ -13,26 +14,26 @@ func main() {
 		// Country code
 		fmt.Print(c, "\t")
 		// Standard rate
-		fmt.Print(fmtPercent(c.VAT()[countries.RateStandard]), "\t")
+		fmt.Print(fmtPercent(euvat.Get(c)[euvat.RateStandard]), "\t")
 		// Reduced rate
-		if r1 := c.VAT()[countries.RateReduced1]; r1 > 0 {
+		if r1 := euvat.Get(c)[euvat.RateReduced1]; r1 > 0 {
 			fmt.Print(fmtPercent(r1))
 		} else {
 			fmt.Print("-")
 		}
-		if r2 := c.VAT()[countries.RateReduced2]; r2 > 0 {
+		if r2 := euvat.Get(c)[euvat.RateReduced2]; r2 > 0 {
 			fmt.Print(" / ", fmtPercent(r2))
 		}
 		fmt.Print("\t")
 		// Super reduced rate
-		if sr := c.VAT()[countries.RateSuperReduced]; sr > 0 {
+		if sr := euvat.Get(c)[euvat.RateSuperReduced]; sr > 0 {
 			fmt.Print(fmtPercent(sr))
 		} else {
 			fmt.Print("-")
 		}
 		fmt.Print("\t")
 		// Parking rate
-		if pr := c.VAT()[countries.RateParking]; pr > 0 {
+		if pr := euvat.Get(c)[euvat.RateParking]; pr > 0 {
 			fmt.Print(fmtPercent(pr))
 		} else {
 			fmt.Print("-")
