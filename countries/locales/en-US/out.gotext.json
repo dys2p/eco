@@ -156,6 +156,13 @@
             "fuzzy": true
         },
         {
+            "id": "North Macedonia",
+            "message": "North Macedonia",
+            "translation": "North Macedonia",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
+        },
+        {
             "id": "Malta",
             "message": "Malta",
             "translation": "Malta",
