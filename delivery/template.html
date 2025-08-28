@@ -16,6 +16,7 @@
 				{{if eq (len .) 1}}
 					{{with (index . 0).CustomerIDRequired}}<p>{{$.Tr "I will include my %s, which is required for the selected delivery method." .}}</p>{{end}}
 					{{if   (index . 0).EmailRequired}}<p>{{$.Tr "I will include an email address, which will be shared with the shipping company."}}</p>{{end}}
+					{{if   (index . 0).PhoneRequired}}<p>{{$.Tr "I will include a phone number, which will be shared with the shipping company."}}</p>{{end}}
 				{{else}}
 					<p class="mb-1">{{$.Tr "The following address options are available:"}}</p>
 					<ul>
@@ -24,6 +25,7 @@
 								<strong>{{.Name}}</strong>
 								{{with .CustomerIDRequired}}({{$.Tr "%s required" .}}){{end}}
 								{{if .EmailRequired}}({{$.Tr "email address required, will be shared with the shipping company"}}){{end}}
+								{{if .PhoneRequired}}({{$.Tr "phone number required, will be shared with the shipping company"}}){{end}}
 							</li>
 						{{end}}
 					</ul>
@@ -145,10 +147,11 @@
 			<div class="mb-3">
 				<input
 					type="text"
-					class="form-control"
+					class="form-control {{if .ErrAddressPhone}}is-invalid{{end}}"
 					name="shipping-phone"
-					placeholder="{{.Tr "Phone number"}} ({{.Tr "optional"}})"
-					value="{{.Address.Phone}}">
+					placeholder="{{.Tr "Phone number"}}{{if not .SelectedAddressType.PhoneRequired}} ({{.Tr "optional"}}){{end}}"
+					value="{{.Address.Phone}}"
+					{{if .SelectedAddressType.PhoneRequired}}aria-required="true"{{end}}>
 				<div class="form-text">{{.Tr "We will give this phone number to the delivery company."}}</div>
 			</div>
 		{{end}}

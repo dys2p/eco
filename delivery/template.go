@@ -53,6 +53,10 @@ func (f ShippingAddressFormElements) ErrAddressLastName() bool {
 	return f.CheckErrors && !f.AddressElsewhere && f.Address.LastName == ""
 }
 
+func (f ShippingAddressFormElements) ErrAddressPhone() bool {
+	return f.CheckErrors && !f.AddressElsewhere && f.SelectedAddressType.PhoneRequired
+}
+
 func (f ShippingAddressFormElements) ErrAddressPostcode() bool {
 	return f.CheckErrors && !f.AddressElsewhere && f.Address.Postcode == ""
 }

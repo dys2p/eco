@@ -69,6 +69,7 @@ type AddressType struct {
 	Email              bool
 	EmailRequired      bool
 	Phone              bool
+	PhoneRequired      bool
 	StreetName         string
 	Supplement         bool
 }
