@@ -10,6 +10,7 @@ import (
 type Rate string
 
 const (
+	RateZero         Rate = "zero" // don't use zero value (empty string) because tax stuff should be explicit
 	RateStandard     Rate = "standard"
 	RateReduced1     Rate = "reduced-1"
 	RateReduced2     Rate = "reduced-2"
@@ -34,10 +35,9 @@ func (rates Rates) Net(gross float64, rate Rate) (float64, bool) {
 
 // Get returns the value of the given VAT rate. The boolean return value indicates if the rate has been found. If it is not found, the maximum rate is used.
 func (rates Rates) Get(rate Rate) (float64, bool) {
-	if rates == nil {
+	if rate == RateZero { // Rates does not contain RateZero because the zero rate is always the same
 		return 0, true
 	}
-
 	rateVal, ok := rates[rate]
 	if !ok {
 		for _, rv := range rates {
@@ -223,6 +223,8 @@ func Get(c countries.Country) Rates {
 			RateReduced1: 0.10,
 		}
 	default:
-		return nil
+		return map[Rate]float64{
+			RateStandard: 0.0,
+		}
 	}
 }
