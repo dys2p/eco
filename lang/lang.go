@@ -41,7 +41,7 @@ import (
 
 type Lang struct {
 	BCP47   string
-	Prefix  string
+	Prefix  string // URL prefix
 	Printer *message.Printer
 	Tag     language.Tag
 }
@@ -89,10 +89,20 @@ func MakeLanguages(catalog catalog.Catalog, prefixes ...string) Languages {
 	return langs
 }
 
+// ByPrefix returns the language whose prefix matches the given prefix.
+func (langs Languages) ByPrefix(prefix string) (Lang, bool) {
+	for _, l := range langs {
+		if l.Prefix == prefix {
+			return l, true
+		}
+	}
+	return langs[0], false
+}
+
 // FromPath returns the language whose prefix matches the first segment of the path and the remaining path.
 // If no language matches, it returns langs[0], the full path and false.
 //
-// Deprecated: Use FromURL instead.
+// Deprecated: Use ByPrefix or FromURL instead.
 func (langs Languages) FromPath(path string) (Lang, string, bool) {
 	path = strings.TrimLeft(path, "/")
 	prefix, remainder, _ := strings.Cut(path, "/")
