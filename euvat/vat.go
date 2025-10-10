@@ -90,7 +90,6 @@ func Get(c countries.Country) Rates {
 		return map[Rate]float64{
 			RateStandard: 0.21,
 			RateReduced1: 0.12,
-			RateReduced2: 0.15,
 		}
 	case countries.DE:
 		return map[Rate]float64{
@@ -103,7 +102,7 @@ func Get(c countries.Country) Rates {
 		}
 	case countries.EE:
 		return map[Rate]float64{
-			RateStandard: 0.22,
+			RateStandard: 0.24,
 			RateReduced1: 0.09,
 		}
 	case countries.ES:
@@ -144,9 +143,10 @@ func Get(c countries.Country) Rates {
 		}
 	case countries.IE:
 		return map[Rate]float64{
-			RateStandard: 0.23,
-			RateReduced1: 0.09,
-			RateReduced2: 0.135,
+			RateStandard:     0.23,
+			RateReduced1:     0.09,
+			RateReduced2:     0.135,
+			RateSuperReduced: 0.048,
 		}
 	case countries.IT:
 		return map[Rate]float64{
@@ -179,7 +179,6 @@ func Get(c countries.Country) Rates {
 			RateStandard: 0.18,
 			RateReduced1: 0.05,
 			RateReduced2: 0.07,
-			RateParking:  0.12,
 		}
 	case countries.NL:
 		return map[Rate]float64{
@@ -201,9 +200,8 @@ func Get(c countries.Country) Rates {
 		}
 	case countries.RO:
 		return map[Rate]float64{
-			RateStandard: 0.19,
-			RateReduced1: 0.05,
-			RateReduced2: 0.09,
+			RateStandard: 0.21,
+			RateReduced1: 0.11,
 		}
 	case countries.SE:
 		return map[Rate]float64{
@@ -219,8 +217,9 @@ func Get(c countries.Country) Rates {
 		}
 	case countries.SK:
 		return map[Rate]float64{
-			RateStandard: 0.20,
-			RateReduced1: 0.10,
+			RateStandard:     0.23,
+			RateReduced1:     0.19,
+			RateSuperReduced: 0.05,
 		}
 	default:
 		return map[Rate]float64{
