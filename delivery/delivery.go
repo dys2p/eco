@@ -20,6 +20,7 @@ type Address struct {
 	City        string
 	Email       string
 	Phone       string
+	Copyable    bool // click to copy to clipboard
 }
 
 func (a Address) NotEmpty() bool {

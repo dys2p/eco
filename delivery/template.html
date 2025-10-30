@@ -1,14 +1,26 @@
 {{define "shipping-address-view"}}
 	{{if .Address.NotEmpty}}
-		<address>
-			{{.Address.FirstName}} {{.Address.LastName}}<br>
-			{{with .Address.Supplement}}{{.}}<br>{{end}}
-			{{with .Address.CustomerID}}{{.}}<br>{{end}}
-			{{.Address.Street}} {{.Address.HouseNumber}}<br>
-			{{.Address.Postcode}} {{.Address.City}}<br>
-			{{with .Address.Email}}<br>{{.}}{{end}}
-			{{with .Address.Phone}}<br>{{.}}{{end}}
-		</address>
+		{{with .Address}}
+			<address>
+				{{if .Copyable}}
+					<a role="button" onclick="navigator.clipboard.writeText(this.textContent)">{{.FirstName}} {{.LastName}}</a><br>
+					{{with .Supplement}}<a role="button" onclick="navigator.clipboard.writeText(this.textContent)">{{.}}</a><br>{{end}}
+					{{with .CustomerID}}<a role="button" onclick="navigator.clipboard.writeText(this.textContent)">{{.}}</a><br>{{end}}
+					<a role="button" onclick="navigator.clipboard.writeText(this.textContent)">{{.Street}}</a> <a role="button" onclick="navigator.clipboard.writeText(this.textContent)">{{.HouseNumber}}</a><br>
+					<a role="button" onclick="navigator.clipboard.writeText(this.textContent)">{{.Postcode}}</a> <a role="button" onclick="navigator.clipboard.writeText(this.textContent)">{{.City}}</a>
+					{{with .Email}}<br><a role="button" onclick="navigator.clipboard.writeText(this.textContent)">{{.}}</a>{{end}}
+					{{with .Phone}}<br><a role="button" onclick="navigator.clipboard.writeText(this.textContent)">{{.}}</a>{{end}}
+				{{else}}
+					{{.FirstName}} {{.LastName}}<br>
+					{{with .Supplement}}{{.}}<br>{{end}}
+					{{with .CustomerID}}{{.}}<br>{{end}}
+					{{.Street}} {{.HouseNumber}}<br>
+					{{.Postcode}} {{.City}}
+					{{with .Email}}<br>{{.}}{{end}}
+					{{with .Phone}}<br>{{.}}{{end}}
+				{{end}}
+			</address>
+		{{end}}
 	{{else}}
 		<div>
 			<p class="mb-1">{{.Tr "I will send you the delivery address by mail, e-mail or messenger."}}</p>
