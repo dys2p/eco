@@ -27,6 +27,12 @@ func (rates Rates) Gross(net float64, rate Rate) (float64, bool) {
 	return net * (1.0 + rateVal), ok
 }
 
+// GrossInt returns the gross of the given net amount using the given VAT rate. The boolean return value indicates if the rate has been found. If it is not found, the maximum rate is used.
+func (rates Rates) GrossInt(net int, rate Rate) (int, bool) {
+	rateVal, ok := rates.Get(rate)
+	return int(math.Round(float64(net) * (1.0 + rateVal))), ok
+}
+
 // Gross returns the net of the given gross amount using the given VAT rate. The boolean return value indicates if the rate has been found. If it is not found, the maximum rate is used.
 func (rates Rates) Net(gross float64, rate Rate) (float64, bool) {
 	rateVal, ok := rates.Get(rate)
