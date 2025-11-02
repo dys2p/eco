@@ -19,6 +19,8 @@ type ShippingAddressView struct {
 	lang.Lang
 	Address
 	AddressTypes []AddressType
+	AskMissing   bool // ask for address if it is empty
+	Copyable     bool // show "copy to clipboard"
 }
 
 // ShippingAddressFormElements is the data for template "shipping-address-form-elements".
