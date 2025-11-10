@@ -29,7 +29,7 @@ func Countries(r *http.Request) ([]countries.Country, bool, error) {
 		// merge EU countries
 		for _, country := range detectedCountries {
 			// important: check whether country is in the European Union
-			if countries.InEuropeanUnion(country) {
+			if country.InEU() {
 				eu[country] = struct{}{}
 			} else {
 				nonEU = true

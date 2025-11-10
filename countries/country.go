@@ -63,8 +63,8 @@ func Get(cs []Country, id string) (Country, bool) {
 	return "", false
 }
 
-func InEuropeanUnion(country Country) bool {
-	return slices.Contains(EuropeanUnion, country)
+func (c Country) InEU() bool {
+	return slices.Contains(EuropeanUnion, c)
 }
 
 func (c Country) TranslateName(l lang.Lang) string {
