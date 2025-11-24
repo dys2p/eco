@@ -115,15 +115,20 @@ func (p PayPal) captureTransaction(w http.ResponseWriter, r *http.Request) error
 		return fmt.Errorf("capturing response: %w", err)
 	}
 
-	var purchaseID string
-	if captures := captureResponse.PurchaseUnits[0].Payments.Captures; len(captures) > 0 {
-		purchaseID = captures[0].InvoiceID
-	} else {
+	if len(captureResponse.PurchaseUnits) == 0 {
+		return errors.New("no purchase units")
+	}
+	if len(captureResponse.PurchaseUnits[0].Payments.Captures) == 0 {
 		return errors.New("no captures")
 	}
-	paymentKey := captureResponse.PurchaseUnits[0].ReferenceID
 
-	log.Printf("[%s] captured transaction: order: %s, capture: %s", purchaseID+":"+paymentKey, captureReq.OrderID, captureResponse.PurchaseUnits[0].Payments.Captures[0].ID)
+	var (
+		captureID  = captureResponse.PurchaseUnits[0].Payments.Captures[0].ID
+		paymentKey = captureResponse.PurchaseUnits[0].ReferenceID
+		purchaseID = captureResponse.PurchaseUnits[0].Payments.Captures[0].InvoiceID
+	)
+
+	log.Printf("[%s] captured transaction: order: %s, capture: %s", purchaseID+":"+paymentKey, captureReq.OrderID, captureID)
 
 	if err := p.Purchases.SetPurchasePaid(purchaseID, paymentKey, "PayPal"); err != nil {
 		return err
