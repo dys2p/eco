@@ -5,8 +5,10 @@ import (
 	"fmt"
 	"html/template"
 	"log"
+	"math"
 	"net/http"
 	"path"
+	"strconv"
 	"strings"
 	"time"
 
@@ -160,6 +162,13 @@ func (b BTCPay) webhook(w http.ResponseWriter, r *http.Request) http.Handler {
 	case btcpay.EventInvoiceSettled:
 		if err := b.Purchases.SetPurchasePaid(purchaseID, paymentKey, "BTCPay"); err != nil {
 			return b.WebhookError(fmt.Errorf("setting purchase %s paid: %w", purchaseID, err))
+		}
+		return nil
+	case btcpay.EventInvoicePaymentSettled:
+		amountEuro, _ := strconv.ParseFloat(event.Payment.Value, 64)
+		amountCents := int(math.Round(amountEuro * 100.0))
+		if err := b.Purchases.PaymentSettled(purchaseID, paymentKey, "BTCPay", event.Payment.ID, amountCents); err != nil {
+			return b.WebhookError(fmt.Errorf("setting purchase %s payment %s of %d: %w", purchaseID, event.Payment.ID, amountCents, err))
 		}
 		return nil
 	default:

@@ -44,8 +44,10 @@ func Get(methods []Method, id string) (Method, error) {
 	return nil, errors.New("no payment methods found")
 }
 
+// Note that payments don't necessarily add up exactly, e. g. BTCPay can be configured to consider a 99% paid invoice as fully paid.
 type PurchaseRepo interface {
-	PurchaseCreationDate(purchaseID, paymentKey string) (string, error) // yyyy-mm-dd
+	PaymentSettled(purchaseID, paymentKey, methodName, paymentID string, paymentCents int) error
+	PurchaseCreationDate(purchaseID, paymentKey string) (string, error) // yyyy-mm-dd, for exchange rates
 	PurchaseSumCents(purchaseID, paymentKey string) (int, error)
 	SetPurchasePaid(purchaseID, paymentKey, methodName string) error
 	SetPurchaseProcessing(purchaseID, paymentKey string) error

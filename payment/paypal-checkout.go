@@ -8,8 +8,10 @@ import (
 	"html/template"
 	"io"
 	"log"
+	"math"
 	"net/http"
 	"path"
+	"strconv"
 	"strings"
 
 	"github.com/dys2p/eco/lang"
@@ -123,12 +125,19 @@ func (p PayPal) captureTransaction(w http.ResponseWriter, r *http.Request) error
 	}
 
 	var (
+		amountStr  = captureResponse.PurchaseUnits[0].Payments.Captures[0].Amount.Value
 		captureID  = captureResponse.PurchaseUnits[0].Payments.Captures[0].ID
 		paymentKey = captureResponse.PurchaseUnits[0].ReferenceID
 		purchaseID = captureResponse.PurchaseUnits[0].Payments.Captures[0].InvoiceID
 	)
+	amountEuro, _ := strconv.ParseFloat(amountStr, 64)
+	amountCents := int(math.Round(amountEuro * 100.0))
 
 	log.Printf("[%s] captured transaction: order: %s, capture: %s", purchaseID+":"+paymentKey, captureReq.OrderID, captureID)
+
+	if err := p.Purchases.PaymentSettled(purchaseID, paymentKey, "PayPal", captureID, amountCents); err != nil {
+		return err
+	}
 
 	if err := p.Purchases.SetPurchasePaid(purchaseID, paymentKey, "PayPal"); err != nil {
 		return err
