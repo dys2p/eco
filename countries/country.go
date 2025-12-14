@@ -2,6 +2,7 @@
 package countries
 
 import (
+	"fmt"
 	"slices"
 	"sort"
 
@@ -134,6 +135,27 @@ func (c Country) TranslateName(l lang.Lang) string {
 	default:
 		return string(c)
 	}
+}
+
+// MarshalText implements encoding.TextMarshaler.
+func (c Country) MarshalText() (text []byte, err error) {
+	return []byte(c), nil
+}
+
+// UnmarshalText implements encoding.TextUnmarshaler.
+func (c *Country) UnmarshalText(text []byte) error {
+	// allow zero value
+	if len(text) == 0 {
+		*c = Country("")
+		return nil
+	}
+
+	got, ok := Get(All, string(text))
+	if !ok {
+		return fmt.Errorf("unmarshalling country: not found: %s", string(text))
+	}
+	*c = got
+	return nil
 }
 
 type CountryOption struct {
