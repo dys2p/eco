@@ -9,10 +9,10 @@ import (
 
 //go:generate gotext-update-templates -srclang=en-US -lang=de-DE,en-US -out=catalog.go -d . -d ./example.com
 
-func ExampleWebsite_StaticHTML() {
+func ExampleWebsite_WriteFiles() {
 	langs := lang.MakeLanguages(nil, "de", "en")
 	ws := ssg.Must(ssg.MakeWebsite(os.DirFS("./example.com"), nil, langs))
-	ws.StaticHTML("/tmp/build/example.com", false)
+	ws.WriteFiles("/tmp/build/example.com", false)
 
 	ssg.ListenAndServe("/tmp/build/example.com")
 }

@@ -11,10 +11,11 @@
 // Note that "gotext update" requires a Go module and package for merging translations, accessing message.DefaultCatalog and writing catalog.go.
 // While gotext-update-templates has been extended to accept additional directories, a root module and package is still required for static site generation.
 //
-// For symlink support see [Handler] and [StaticHTML]. Because it partly follows symlinks, you should use this package on trusted input only.
+// For symlink support see [Handler] and [WriteFiles]. Because it partly follows symlinks, you should use this package on trusted input only.
 package ssg
 
 import (
+	"errors"
 	"fmt"
 	"html/template"
 	"io/fs"
@@ -244,7 +245,7 @@ func MakeWebsite(fsys fs.FS, add *template.Template, langs lang.Languages) (*Web
 
 // Handler returns a HTTP handler which serves content from fsys.
 // It optionally accepts an additional HTML template and a function which makes custom template data.
-// For compatibility with StaticHTML, the custom template data struct should embed TemplateData.
+// For compatibility with WriteFiles, the custom template data struct should embed TemplateData.
 //
 // Note that embed.FS does not support symlinks. If you use symlinks to share content,
 // consider building a go:generate workflow which calls "cp --dereference".
@@ -282,39 +283,40 @@ func (ws Website) Handler(makeTemplateData func(*http.Request, TemplateData) any
 	return handler
 }
 
-// StaticHTML creates static HTML files. Templates are executed with TemplateData. Symlinks are dereferenced.
-func (ws Website) StaticHTML(outDir string, onion bool) {
+// WriteFiles creates static HTML files. Templates are executed with TemplateData. Symlinks are dereferenced.
+func (ws Website) WriteFiles(outDir string, onion bool) error {
 	if realOutDir, err := filepath.EvalSymlinks(outDir); err == nil {
 		outDir = realOutDir
 	}
 	if !strings.HasPrefix(outDir, "/tmp/") {
-		log.Fatalf("refusing to write outside of /tmp")
+		return errors.New("refusing to write outside of /tmp")
 	}
 	_ = os.RemoveAll(outDir)
 
 	for path, dynamic := range ws.Dynamic {
 		dst := filepath.Join(outDir, path)
 		if err := os.MkdirAll(filepath.Dir(dst), 0700); err != nil {
-			log.Fatalf("error making folder %s: %v", filepath.Dir(dst), err)
+			return fmt.Errorf("error making folder %s: %v", filepath.Dir(dst), err)
 		}
 		outfile, err := os.Create(dst)
 		if err != nil {
-			log.Fatalf("error opening outfile %s: %v", dst, err)
+			return fmt.Errorf("error opening outfile %s: %v", dst, err)
 		}
 		defer outfile.Close()
 
 		dynamic.Data.Onion = onion
 		err = dynamic.Template.ExecuteTemplate(outfile, "html", dynamic.Data)
 		if err != nil {
-			log.Fatalf("error executing template for %s: %v%s", dst, err, dynamic.Template.DefinedTemplates())
+			return fmt.Errorf("error executing template for %s: %v%s", dst, err, dynamic.Template.DefinedTemplates())
 		}
 	}
 
 	for _, path := range ws.Static {
 		if err := CopyFS(outDir, ws.Fsys, path); err != nil {
-			log.Fatalf("error copying %s to %s: %v", path, outDir, err)
+			return fmt.Errorf("error copying %s to %s: %v", path, outDir, err)
 		}
 	}
+	return nil
 }
 
 func getTitleFromMarkdown(filecontent string) string {
