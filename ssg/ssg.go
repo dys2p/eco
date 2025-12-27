@@ -1,12 +1,12 @@
-// Package ssg creates both static and dynamic sites from translated HTML templates and markdown files.
+// Package ssg creates pages from HTML templates and markdown files.
 //
 // The content directory root may contain:
 //
 //   - html template files
-//   - one folder for each html page, containing markdown files whose filename root is the language prefix, like "en.md"
-//   - files and folders which are copied verbatim (see Keep)
+//   - one folder for each page, containing markdown files whose filename root is the language prefix, like "en.md"
+//   - static assets (files and folders) which are copied verbatim (see Keep)
 //
-// The output is like "/en/page.html".
+// The output file structure is like "/en/page.html". The files contain static src and href paths.
 //
 // Note that "gotext update" requires a Go module and package for merging translations, accessing message.DefaultCatalog and writing catalog.go.
 // While gotext-update-templates has been extended to accept additional directories, a root module and package is still required for static site generation.
@@ -21,7 +21,7 @@ import (
 	"io/fs"
 	"log"
 	"net/http"
-	"net/http/httptest"
+	"net/url"
 	"os"
 	paths "path"
 	"path/filepath"
@@ -40,7 +40,6 @@ var Keep = []string{
 	"assets",
 	"files",
 	"images",
-	"sites",
 	"static",
 }
 
@@ -73,19 +72,8 @@ func LangOptions(langs lang.Languages, selected lang.Lang) []LangOption {
 type TemplateData struct {
 	lang.Lang
 	Languages []LangOption // usually empty if only one language is defined
-	Onion     bool
-	Path      string // without language prefix, for language buttons and hreflang
-	Title     string // for <title>
-}
-
-func MakeTemplateData(langs lang.Languages, r *http.Request) TemplateData {
-	l, path, _ := langs.FromPath(r.URL.Path)
-	return TemplateData{
-		Lang:      l,
-		Languages: LangOptions(langs, l),
-		Onion:     strings.HasSuffix(r.Host, ".onion") || strings.Contains(r.Host, ".onion:"),
-		Path:      path,
-	}
+	Path      string       // without language prefix, for language buttons and hreflang
+	Title     string       // for <title>
 }
 
 // Hreflangs returns <link hreflang> elements for every td.Language, including the selected language.
@@ -101,23 +89,24 @@ func (td TemplateData) Hreflangs() template.HTML {
 }
 
 type Website struct {
-	Fsys    fs.FS               // consider wrapping httputil.ModTimeFS around it
-	Dynamic map[string]struct { // url path
+	Fsys  fs.FS               // consider wrapping httputil.ModTimeFS around it
+	Pages map[string]struct { // key: path
 		Template *template.Template
 		Data     TemplateData
 	}
-	Static []string // url and filesystem paths
+	PageData func(r *http.Request, data TemplateData) any // Must return TemplateData or a struct that embeds it. The http request may be needed to get session data.
+	Static   []string                                     // url and filesystem paths
 }
 
-func MakeWebsite(fsys fs.FS, add *template.Template, langs lang.Languages) (*Website, error) {
-	var dynamic = make(map[string]struct {
+func MakeWebsite(fsys fs.FS, add *template.Template, langs lang.Languages, pageData func(*http.Request, TemplateData) any) (*Website, error) {
+	var pages = make(map[string]struct {
 		Template *template.Template
 		Data     TemplateData
 	})
 	var static []string
 
-	// collect static content and sites
-	var sites []string
+	// collect pages and static assets
+	var pageNames []string
 	entries, err := fs.ReadDir(fsys, ".")
 	if err != nil {
 		return nil, fmt.Errorf("reading root dir: %w", err)
@@ -141,11 +130,11 @@ func MakeWebsite(fsys fs.FS, add *template.Template, langs lang.Languages) (*Web
 		case slices.Contains(Keep, entry.Name()):
 			static = append(static, entry.Name())
 		case isDir:
-			sites = append(sites, entry.Name())
+			pageNames = append(pageNames, entry.Name())
 		}
 	}
 
-	// prepare site template
+	// prepare template
 	tmpl, err := template.ParseFS(fsys, "*.html")
 	if err != nil {
 		return nil, fmt.Errorf("parsing template: %w", err)
@@ -161,15 +150,15 @@ func MakeWebsite(fsys fs.FS, add *template.Template, langs lang.Languages) (*Web
 		}
 	}
 
-	// translate sites
-	for _, site := range sites {
+	// translate pages
+	for _, pageName := range pageNames {
 		// read markdown files
 		var bcp47 []string
 		var title []string   // same indices
 		var content []string // same indices
-		entries, err := fs.ReadDir(fsys, site)
+		entries, err := fs.ReadDir(fsys, pageName)
 		if err != nil {
-			return nil, fmt.Errorf("reading dir %s: %w", site, err)
+			return nil, fmt.Errorf("reading dir %s: %w", pageName, err)
 		}
 		for _, entry := range entries {
 			if strings.HasPrefix(entry.Name(), ".") {
@@ -182,7 +171,7 @@ func MakeWebsite(fsys fs.FS, add *template.Template, langs lang.Languages) (*Web
 			root := strings.TrimSuffix(entry.Name(), ext)
 			if ext == ".html" || ext == ".md" {
 				var filetitle string
-				filecontent, err := fs.ReadFile(fsys, filepath.Join(site, entry.Name()))
+				filecontent, err := fs.ReadFile(fsys, filepath.Join(pageName, entry.Name()))
 				if err != nil {
 					return nil, fmt.Errorf("reading file: %w", err)
 				}
@@ -210,7 +199,7 @@ func MakeWebsite(fsys fs.FS, add *template.Template, langs lang.Languages) (*Web
 		}
 		matcher := language.NewMatcher(haveTags)
 
-		// assemble site template
+		// assemble page template
 		for _, lang := range langs {
 			_, index, _ := matcher.Match(lang.Tag)
 			tt, err := tmpl.Clone()
@@ -219,14 +208,19 @@ func MakeWebsite(fsys fs.FS, add *template.Template, langs lang.Languages) (*Web
 			}
 			tt, err = tt.Parse(`{{define "content"}}` + content[index] + `{{end}}`) // or parse content into t and then call AddParseTree(content, t.Tree)
 			if err != nil {
-				return nil, fmt.Errorf("adding content of %s: %w", site, err)
+				return nil, fmt.Errorf("adding content of %s: %w", pageNames, err)
 			}
-			outpath := filepath.Join(lang.Prefix, site+".html")
-			data := MakeTemplateData(langs, httptest.NewRequest(http.MethodGet, "/"+outpath, nil))
-			data.Title = title[index]
-			// data.Onion is not known yet
+			outpath := filepath.Join(lang.Prefix, pageName+".html")
 
-			dynamic[outpath] = struct {
+			l, subpath, _ := langs.FromPath("/" + outpath)
+			data := TemplateData{
+				Lang:      l,
+				Languages: LangOptions(langs, l),
+				Path:      subpath,
+				Title:     title[index],
+			}
+
+			pages[outpath] = struct {
 				Template *template.Template
 				Data     TemplateData
 			}{
@@ -236,10 +230,17 @@ func MakeWebsite(fsys fs.FS, add *template.Template, langs lang.Languages) (*Web
 		}
 	}
 
+	if pageData == nil {
+		pageData = func(_ *http.Request, data TemplateData) any {
+			return data
+		}
+	}
+
 	return &Website{
-		Fsys:    fsys,
-		Dynamic: dynamic,
-		Static:  static,
+		Fsys:     fsys,
+		Pages:    pages,
+		PageData: pageData,
+		Static:   static,
 	}, nil
 }
 
@@ -249,21 +250,13 @@ func MakeWebsite(fsys fs.FS, add *template.Template, langs lang.Languages) (*Web
 //
 // Note that embed.FS does not support symlinks. If you use symlinks to share content,
 // consider building a go:generate workflow which calls "cp --dereference".
-func (ws Website) Handler(makeTemplateData func(*http.Request, TemplateData) any, next http.Handler) http.Handler {
+func (ws Website) Handler(next http.Handler) http.Handler {
 	handler := http.NewServeMux()
 
-	for path, dynamic := range ws.Dynamic {
-		path = paths.Join("/", path)
+	for path, page := range ws.Pages {
 		handler.HandleFunc(path, func(w http.ResponseWriter, r *http.Request) {
-			dynamic.Data.Onion = strings.HasSuffix(r.Host, ".onion") || strings.Contains(r.Host, ".onion:")
-			var data any
-			if makeTemplateData != nil {
-				data = makeTemplateData(r, dynamic.Data)
-			} else {
-				data = dynamic.Data
-			}
-
-			if err := dynamic.Template.ExecuteTemplate(w, "html", data); err != nil {
+			data := ws.PageData(&http.Request{URL: &url.URL{Path: path}}, page.Data)
+			if err := page.Template.ExecuteTemplate(w, "html", data); err != nil {
 				log.Printf("error executing ssg template %s: %v", path, err)
 			}
 		})
@@ -284,7 +277,7 @@ func (ws Website) Handler(makeTemplateData func(*http.Request, TemplateData) any
 }
 
 // WriteFiles creates static HTML files. Templates are executed with TemplateData. Symlinks are dereferenced.
-func (ws Website) WriteFiles(outDir string, onion bool) error {
+func (ws Website) WriteFiles(outDir string) error {
 	if realOutDir, err := filepath.EvalSymlinks(outDir); err == nil {
 		outDir = realOutDir
 	}
@@ -293,8 +286,8 @@ func (ws Website) WriteFiles(outDir string, onion bool) error {
 	}
 	_ = os.RemoveAll(outDir)
 
-	for path, dynamic := range ws.Dynamic {
-		dst := filepath.Join(outDir, path)
+	for path, page := range ws.Pages {
+		dst := filepath.Join("/", outDir, path) // "/" prevents path escape
 		if err := os.MkdirAll(filepath.Dir(dst), 0700); err != nil {
 			return fmt.Errorf("error making folder %s: %v", filepath.Dir(dst), err)
 		}
@@ -304,10 +297,10 @@ func (ws Website) WriteFiles(outDir string, onion bool) error {
 		}
 		defer outfile.Close()
 
-		dynamic.Data.Onion = onion
-		err = dynamic.Template.ExecuteTemplate(outfile, "html", dynamic.Data)
+		data := ws.PageData(&http.Request{URL: &url.URL{Path: path}}, page.Data)
+		err = page.Template.ExecuteTemplate(outfile, "html", data)
 		if err != nil {
-			return fmt.Errorf("error executing template for %s: %v%s", dst, err, dynamic.Template.DefinedTemplates())
+			return fmt.Errorf("error executing template for %s: %v%s", dst, err, page.Template.DefinedTemplates())
 		}
 	}
 
@@ -328,16 +321,9 @@ func getTitleFromMarkdown(filecontent string) string {
 	return ""
 }
 
-// ListenAndServe provides an easy way to preview a static site with absolute src and href paths.
+// ListenAndServe provides an easy way to preview a static site.
 func ListenAndServe(dir string) {
 	log.Println("listening to 127.0.0.1:8080")
 	http.Handle("/", http.FileServer(http.Dir(dir)))
 	http.ListenAndServe("127.0.0.1:8080", nil)
-}
-
-func Must(ws *Website, err error) *Website {
-	if err != nil {
-		panic(err)
-	}
-	return ws
 }

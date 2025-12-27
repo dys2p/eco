@@ -11,8 +11,14 @@ import (
 
 func ExampleWebsite_WriteFiles() {
 	langs := lang.MakeLanguages(nil, "de", "en")
-	ws := ssg.Must(ssg.MakeWebsite(os.DirFS("./example.com"), nil, langs))
-	ws.WriteFiles("/tmp/build/example.com", false)
+	ws, err := ssg.MakeWebsite(os.DirFS("./example.com"), nil, langs, nil)
+	if err != nil {
+		panic(err)
+	}
+	err = ws.WriteFiles("/tmp/build/example.com")
+	if err != nil {
+		panic(err)
+	}
 
 	ssg.ListenAndServe("/tmp/build/example.com")
 }
