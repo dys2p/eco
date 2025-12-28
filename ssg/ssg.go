@@ -254,6 +254,7 @@ func (ws Website) Handler(next http.Handler) http.Handler {
 	handler := http.NewServeMux()
 
 	for path, page := range ws.Pages {
+		path = paths.Join("/", path) // router needs leading slash
 		handler.HandleFunc(path, func(w http.ResponseWriter, r *http.Request) {
 			data := ws.PageData(&http.Request{URL: &url.URL{Path: path}}, page.Data)
 			if err := page.Template.ExecuteTemplate(w, "html", data); err != nil {
@@ -263,7 +264,7 @@ func (ws Website) Handler(next http.Handler) http.Handler {
 	}
 
 	for _, path := range ws.Static {
-		pattern := paths.Join("/", path) + "/" // trailing slash means prefix match
+		pattern := paths.Join("/", path) + "/" // router needs leading slash; trailing slash means prefix match
 		handler.HandleFunc(pattern, func(w http.ResponseWriter, r *http.Request) {
 			http.ServeFileFS(w, r, ws.Fsys, r.URL.Path) // works for dirs and files
 		})
