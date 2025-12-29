@@ -39,7 +39,7 @@ func OpenDB(fpath string) (*SQLiteDB, error) {
 	if err != nil {
 		return nil, err
 	}
-	latest, err := sqldb.Prepare("select ifnull(max(date), '0000-00-00') from rates_history")
+	latest, err := sqldb.Prepare("select ifnull(max(date), '0000-00-00') from rates_history where date <= ?")
 	if err != nil {
 		return nil, err
 	}
@@ -74,7 +74,7 @@ func (db *SQLiteDB) Insert(date string, m map[string]float64) error {
 	return err
 }
 
-func (db *SQLiteDB) LatestDate() (string, error) {
+func (db *SQLiteDB) LatestDate(maxDate string) (string, error) {
 	var latest string
-	return latest, db.latest.QueryRow().Scan(&latest)
+	return latest, db.latest.QueryRow(maxDate).Scan(&latest)
 }

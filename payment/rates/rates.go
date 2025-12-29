@@ -3,8 +3,9 @@ package rates
 
 import (
 	"cmp"
-	"errors"
+	"fmt"
 	"log"
+	"math/rand"
 	"slices"
 	"time"
 
@@ -16,15 +17,19 @@ type History struct {
 	GetBuyRates func(lastUpdateDate string) (map[string]float64, error)
 }
 
-// RunDaemon starts a loop which fetches the rates every hour and inserts them into the database. The function blocks.
+// RunDaemon starts a loop which fetches the rates each day (after 9:00 AM) and inserts them into the database. RunDaemon blocks and cannot be stopped.
 func (h *History) RunDaemon() error {
-	for ; true; <-time.Tick(time.Hour) {
-		lastUpdateDate, err := h.Database.LatestDate()
+	for ; true; time.Sleep(time.Duration(45*int64(time.Minute) + rand.Int63n(15*int64(time.Minute)))) {
+		if time.Now().Hour() < 9 {
+			continue // too early in the morning, today's rates are probably not available yet
+		}
+		today := time.Now().Format("2006-01-02")
+		lastUpdateDate, err := h.Database.LatestDate(today)
 		if err != nil {
 			log.Printf("\033[31m"+"error getting latest date: %v"+"\033[0m", err)
 			continue
 		}
-		if lastUpdateDate == time.Now().Format("2006-01-02") {
+		if lastUpdateDate == today {
 			continue // already updated today
 		}
 		buyRates, err := h.GetBuyRates(lastUpdateDate)
@@ -35,46 +40,45 @@ func (h *History) RunDaemon() error {
 		if len(buyRates) == 0 {
 			continue // nothing to insert
 		}
-		if err := h.Database.Insert(time.Now().Format("2006-01-02"), buyRates); err != nil {
+		if err := h.Database.Insert(today, buyRates); err == nil {
+			log.Println("\033[32m" + "updated foreign cash rates" + "\033[0m")
+		} else {
 			log.Printf("\033[31m"+"error inserting rates: %v"+"\033[0m", err)
 		}
 	}
 	return nil
 }
 
-// Get tries the given date and four previous days.
-func (h *History) Options(date string, value float64) ([]Option, error) {
-	t, err := time.Parse("2006-01-02", date)
+func (h *History) Options(maxDate string, value float64) ([]Option, error) {
+	date, err := h.Database.LatestDate(maxDate)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("getting latest date: %w", err)
 	}
 
-	for _, days := range []int{0, -1, -2, -3, -4} {
-		if rs, err := h.Database.Get(t.AddDate(0, 0, days).Format("2006-01-02")); err == nil {
-			var options []Option
-			for currency, rate := range rs {
-				options = append(options, Option{
-					Currency: currency,
-					Price:    value * rate,
-				})
-			}
-			slices.SortFunc(options, func(a, b Option) int {
-				return cmp.Compare(a.Currency, b.Currency)
-			})
-			return options, nil
-		}
+	rs, err := h.Database.Get(date)
+	if err != nil {
+		return nil, fmt.Errorf("getting rates for %s from database: %w", date, err) // unlikely because we got the date from the database
 	}
-
-	return nil, errors.New("no rates found")
+	var options []Option
+	for currency, rate := range rs {
+		options = append(options, Option{
+			Currency: currency,
+			Price:    value * rate,
+		})
+	}
+	slices.SortFunc(options, func(a, b Option) int {
+		return cmp.Compare(a.Currency, b.Currency)
+	})
+	return options, nil
 }
 
-// Synced returns whether rates have been updated since four days ago.
+// Synced returns whether rates have been fetched today or yesterday.
 func (h *History) Synced() bool {
-	lastUpdateDate, err := h.Database.LatestDate()
+	lastUpdateDate, err := h.Database.LatestDate(time.Now().Format("2006-01-02"))
 	if err != nil {
 		return false
 	}
-	min := time.Now().AddDate(0, 0, -4).Format("2006-01-02")
+	min := time.Now().AddDate(0, 0, -1).Format("2006-01-02")
 	return lastUpdateDate >= min
 }
 
