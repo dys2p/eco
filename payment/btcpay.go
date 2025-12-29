@@ -18,7 +18,7 @@ import (
 )
 
 func init() {
-	log.Println(`Don't forget to set up the BTCPay webhook for your store: URL: "/payment/btcpay/webhook", events: "An invoice is processing" and "An invoice has been settled"`)
+	log.Println(`Don't forget to set up the BTCPay webhook for your store: URL: "/payment/btcpay/webhook", events: "Invoice - Received Payment", "Invoice - Is Settled", "Invoice - Payment Settled"`)
 }
 
 var btcpayTmpl = template.Must(template.ParseFS(htmlfiles, "btcpay.html"))
