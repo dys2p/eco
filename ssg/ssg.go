@@ -256,7 +256,7 @@ func (ws Website) Handler(next http.Handler) http.Handler {
 	for path, page := range ws.Pages {
 		path = paths.Join("/", path) // router needs leading slash
 		handler.HandleFunc(path, func(w http.ResponseWriter, r *http.Request) {
-			data := ws.PageData(&http.Request{URL: &url.URL{Path: path}}, page.Data)
+			data := ws.PageData(r, page.Data)
 			if err := page.Template.ExecuteTemplate(w, "html", data); err != nil {
 				log.Printf("error executing ssg template %s: %v", path, err)
 			}
