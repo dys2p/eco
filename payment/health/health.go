@@ -23,7 +23,7 @@ import (
 )
 
 type Server struct {
-	BTCPay btcpay.Store
+	BTCPay *btcpay.Store
 	Rates  *rates.History
 	status []Item
 }

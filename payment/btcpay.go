@@ -118,12 +118,7 @@ func (b BTCPay) createInvoice(w http.ResponseWriter, r *http.Request) http.Handl
 }
 
 func (b BTCPay) checkoutLink(r *http.Request, invoiceID string) string {
-	// ignore invoice.CheckoutLink in favor of the onion option
-	link := b.Store.InvoiceCheckoutLink(invoiceID)
-	if strings.HasSuffix(r.Host, ".onion") || strings.Contains(r.Host, ".onion:") {
-		link = b.Store.InvoiceCheckoutLinkPreferOnion(invoiceID)
-	}
-	return link
+	return b.Store.InvoiceCheckoutLink(invoiceID, strings.HasSuffix(r.Host, ".onion") || strings.Contains(r.Host, ".onion:"))
 }
 
 func (b BTCPay) expirationMinutes() int {
@@ -147,7 +142,7 @@ func (b BTCPay) webhook(w http.ResponseWriter, r *http.Request) http.Handler {
 		}
 	}
 
-	event, err := b.Store.ProcessWebhook(r)
+	event, err := b.Store.ParseInvoiceWebhook(r)
 	if err != nil {
 		return b.WebhookError(fmt.Errorf("getting event: %w", err))
 	}
