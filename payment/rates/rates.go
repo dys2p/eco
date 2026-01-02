@@ -3,9 +3,11 @@ package rates
 
 import (
 	"cmp"
+	"encoding/json"
 	"fmt"
 	"log"
 	"math/rand"
+	"net/http"
 	"slices"
 	"time"
 
@@ -14,43 +16,61 @@ import (
 
 type History struct {
 	Database    *SQLiteDB
-	GetBuyRates func(lastUpdateDate string) (map[string]float64, error)
+	GetBuyRates func() (map[string]float64, error)
+	Synced      bool // updated today or yesterday
 }
 
-// RunDaemon starts a loop which fetches the rates each day (after 9:00 AM) and inserts them into the database. RunDaemon blocks and cannot be stopped.
-func (h *History) RunDaemon() error {
-	for ; true; time.Sleep(time.Duration(45*int64(time.Minute) + rand.Int63n(15*int64(time.Minute)))) {
-		if time.Now().Hour() < 9 {
-			continue // too early in the morning, today's rates are probably not available yet
-		}
-		today := time.Now().Format("2006-01-02")
-		lastUpdateDate, err := h.Database.LatestDate(today)
-		if err != nil {
-			log.Printf("\033[31m"+"error getting latest date: %v"+"\033[0m", err)
-			continue
-		}
-		if lastUpdateDate == today {
-			continue // already updated today
-		}
-		buyRates, err := h.GetBuyRates(lastUpdateDate)
-		if err != nil {
-			log.Printf("\033[31m"+"error getting rates: %v"+"\033[0m", err)
-			continue
-		}
-		if len(buyRates) == 0 {
-			continue // nothing to insert
-		}
-		if err := h.Database.Insert(today, buyRates); err == nil {
-			log.Println("\033[32m" + "updated foreign cash rates" + "\033[0m")
-		} else {
-			log.Printf("\033[31m"+"error inserting rates: %v"+"\033[0m", err)
-		}
+// MakeAndRun starts a goroutine which calls GetBuyRates every 45-60 minutes. If GetBuyRates returns rates, they are inserted into the database and GetBuyRates is not called until the next day.
+func MakeAndRun(sqlitePath string, getBuyRates func() (map[string]float64, error)) (*History, error) {
+	db, err := OpenDB(sqlitePath)
+	if err != nil {
+		return nil, err
 	}
-	return nil
+
+	h := &History{
+		Database:    db,
+		GetBuyRates: getBuyRates,
+	}
+
+	go func() {
+		for ; true; time.Sleep(time.Duration(45*int64(time.Minute) + rand.Int63n(15*int64(time.Minute)))) {
+			now := time.Now()
+			today := now.Format("2006-01-02")
+			yesterday := now.AddDate(0, 0, -1).Format("2006-01-02")
+
+			lastUpdateDate, err := h.Database.LatestDate(today)
+			if err != nil {
+				log.Printf("\033[31m"+"error getting latest date from database: %v"+"\033[0m", err)
+				h.Synced = false // database error means no good for sync status
+				continue
+			}
+
+			h.Synced = lastUpdateDate == today || lastUpdateDate == yesterday
+			if lastUpdateDate == today {
+				continue // already updated today
+			}
+
+			buyRates, err := h.GetBuyRates()
+			if err != nil {
+				log.Printf("\033[31m"+"error getting rates: %v"+"\033[0m", err)
+				continue
+			}
+			if len(buyRates) == 0 {
+				continue // nothing to insert
+			}
+			if err := h.Database.Insert(today, buyRates); err == nil {
+				log.Println("\033[32m" + "updated foreign cash rates" + "\033[0m")
+			} else {
+				log.Printf("\033[31m"+"error inserting rates: %v"+"\033[0m", err)
+			}
+		}
+	}()
+
+	return h, nil
 }
 
-func (h *History) Options(maxDate string, value float64) ([]Option, error) {
-	date, err := h.Database.LatestDate(maxDate)
+func (h *History) Options(effectiveDate string, value float64) ([]Option, error) {
+	date, err := h.Database.LatestDate(effectiveDate)
 	if err != nil {
 		return nil, fmt.Errorf("getting latest date: %w", err)
 	}
@@ -72,18 +92,16 @@ func (h *History) Options(maxDate string, value float64) ([]Option, error) {
 	return options, nil
 }
 
-// Synced returns whether rates have been fetched today or yesterday.
-func (h *History) Synced() bool {
-	lastUpdateDate, err := h.Database.LatestDate(time.Now().Format("2006-01-02"))
-	if err != nil {
-		return false
+// SyncedHandler writes JSON true or false. The returned handler can be queried extensively because it just reads a variable.
+func (h *History) SyncedHandler() http.HandlerFunc {
+	return func(w http.ResponseWriter, _ *http.Request) {
+		w.Header().Add("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(h.Synced)
 	}
-	min := time.Now().AddDate(0, 0, -1).Format("2006-01-02")
-	return lastUpdateDate >= min
 }
 
 type Option struct {
-	Currency string // from GetBuyRates result
+	Currency string // from GetBuyRates
 	Price    float64
 }
 

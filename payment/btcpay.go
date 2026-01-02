@@ -2,6 +2,7 @@ package payment
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"html/template"
 	"log"
@@ -27,6 +28,7 @@ type btcpayTmplData struct {
 	lang.Lang
 	DefaultLanguage string
 	Reference       string
+	Status          bool
 }
 
 type createdInvoice struct {
@@ -42,8 +44,9 @@ type BTCPay struct {
 	Store             btcpay.Store
 	Purchases         PurchaseRepo
 
-	CreateInvoiceError func(err error, msg string) http.Handler
-	WebhookError       func(err error) http.Handler
+	ErrCreateInvoice func(err error, msg string) http.Handler
+	ErrWebhook       func(err error) http.Handler
+	GetStatus        func() []btcpay.StatusItem
 }
 
 func (BTCPay) ID() string {
@@ -60,6 +63,7 @@ func (b BTCPay) PayHTML(purchaseID, paymentKey string, l lang.Lang) (template.HT
 		Lang:            l,
 		DefaultLanguage: l.Prefix,
 		Reference:       purchaseID + ":" + paymentKey,
+		Status:          b.GetStatus != nil,
 	})
 	return template.HTML(buf.String()), err
 }
@@ -68,14 +72,16 @@ func (b BTCPay) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	switch path.Base(r.URL.Path) {
 	case "create-invoice":
 		httputil.HandlerFunc(b.createInvoice).ServeHTTP(w, r)
+	case "status":
+		b.status(w, r)
 	case "webhook":
 		httputil.HandlerFunc(b.webhook).ServeHTTP(w, r)
 	}
 }
 
 func (b BTCPay) createInvoice(w http.ResponseWriter, r *http.Request) http.Handler {
-	if b.CreateInvoiceError == nil {
-		b.CreateInvoiceError = func(err error, msg string) http.Handler {
+	if b.ErrCreateInvoice == nil {
+		b.ErrCreateInvoice = func(err error, msg string) http.Handler {
 			return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				log.Printf("error creating btcpay invoice: %v", err)
 				w.Write([]byte(msg))
@@ -88,25 +94,25 @@ func (b BTCPay) createInvoice(w http.ResponseWriter, r *http.Request) http.Handl
 
 	// redirect to existing invoice if it is younger than 15 minutes
 	if last, ok := lastInvoice[purchaseID+":"+paymentKey]; ok && time.Now().Unix()-last.Time < 15*60 {
-		return http.RedirectHandler(b.checkoutLink(r, last.ID), http.StatusSeeOther)
+		return http.RedirectHandler(b.Store.InvoiceCheckoutLink(last.ID, strings.HasSuffix(r.Host, ".onion") || strings.Contains(r.Host, ".onion:")), http.StatusSeeOther)
 	}
 
 	sumCents, err := b.Purchases.PurchaseSumCents(purchaseID, paymentKey)
 	if err != nil {
-		return b.CreateInvoiceError(err, "Error getting purchase sum. We are already working on it.")
+		return b.ErrCreateInvoice(err, "Error getting purchase sum. We are already working on it.")
 	}
 
 	invoiceRequest := &btcpay.InvoiceRequest{
 		Amount:   float64(sumCents) / 100.0,
 		Currency: "EUR",
 	}
-	invoiceRequest.ExpirationMinutes = b.expirationMinutes()
+	invoiceRequest.ExpirationMinutes = max(30, min(1440, b.ExpirationMinutes))
 	invoiceRequest.DefaultLanguage = defaultLanguage
 	invoiceRequest.OrderID = purchaseID + ":" + paymentKey // reference
 	invoiceRequest.RedirectURL = absHost(r) + path.Join("/", b.RedirectPath)
 	invoice, err := b.Store.CreateInvoice(invoiceRequest)
 	if err != nil {
-		return b.CreateInvoiceError(err, "Error creating BTCPay invoice. We are already working on it.")
+		return b.ErrCreateInvoice(err, "Error creating BTCPay invoice. We are already working on it.")
 	}
 
 	lastInvoice[purchaseID+":"+paymentKey] = createdInvoice{
@@ -114,29 +120,21 @@ func (b BTCPay) createInvoice(w http.ResponseWriter, r *http.Request) http.Handl
 		Time: time.Now().Unix(),
 	}
 
-	return http.RedirectHandler(b.checkoutLink(r, invoice.ID), http.StatusSeeOther)
+	return http.RedirectHandler(b.Store.InvoiceCheckoutLink(invoice.ID, strings.HasSuffix(r.Host, ".onion") || strings.Contains(r.Host, ".onion:")), http.StatusSeeOther)
 }
 
-func (b BTCPay) checkoutLink(r *http.Request, invoiceID string) string {
-	return b.Store.InvoiceCheckoutLink(invoiceID, strings.HasSuffix(r.Host, ".onion") || strings.Contains(r.Host, ".onion:"))
-}
-
-func (b BTCPay) expirationMinutes() int {
-	if b.ExpirationMinutes == 0 {
-		return 60 // default
+func (b BTCPay) status(w http.ResponseWriter, r *http.Request) http.Handler {
+	if b.GetStatus != nil {
+		json.NewEncoder(w).Encode(b.GetStatus())
+		return nil
+	} else {
+		return http.NotFoundHandler()
 	}
-	if b.ExpirationMinutes < 30 {
-		return 30
-	}
-	if b.ExpirationMinutes > 1440 {
-		return 1440
-	}
-	return b.ExpirationMinutes
 }
 
 func (b BTCPay) webhook(w http.ResponseWriter, r *http.Request) http.Handler {
-	if b.WebhookError == nil {
-		b.WebhookError = func(err error) http.Handler {
+	if b.ErrWebhook == nil {
+		b.ErrWebhook = func(err error) http.Handler {
 			log.Printf("error processing btcpay webhook: %v", err)
 			return nil
 		}
@@ -144,30 +142,30 @@ func (b BTCPay) webhook(w http.ResponseWriter, r *http.Request) http.Handler {
 
 	event, err := b.Store.ParseInvoiceWebhook(r)
 	if err != nil {
-		return b.WebhookError(fmt.Errorf("getting event: %w", err))
+		return b.ErrWebhook(fmt.Errorf("getting event: %w", err))
 	}
 	purchaseID, paymentKey, _ := strings.Cut(event.InvoiceMetadata.OrderID, ":")
 
 	switch event.Type {
 	case btcpay.EventInvoiceProcessing:
 		if err := b.Purchases.SetPurchaseProcessing(purchaseID, paymentKey); err != nil {
-			return b.WebhookError(fmt.Errorf("setting purchase %s processing: %w", purchaseID, err))
+			return b.ErrWebhook(fmt.Errorf("setting purchase %s processing: %w", purchaseID, err))
 		}
 		return nil
 	case btcpay.EventInvoiceSettled:
 		if err := b.Purchases.SetPurchasePaid(purchaseID, paymentKey, "BTCPay"); err != nil {
-			return b.WebhookError(fmt.Errorf("setting purchase %s paid: %w", purchaseID, err))
+			return b.ErrWebhook(fmt.Errorf("setting purchase %s paid: %w", purchaseID, err))
 		}
 		return nil
 	case btcpay.EventInvoicePaymentSettled:
 		amountEuro, _ := strconv.ParseFloat(event.Payment.Value, 64)
 		amountCents := int(math.Round(amountEuro * 100.0))
 		if err := b.Purchases.PaymentSettled(purchaseID, paymentKey, "BTCPay", event.Payment.ID, amountCents); err != nil {
-			return b.WebhookError(fmt.Errorf("setting purchase %s payment %s of %d: %w", purchaseID, event.Payment.ID, amountCents, err))
+			return b.ErrWebhook(fmt.Errorf("setting purchase %s payment %s of %d: %w", purchaseID, event.Payment.ID, amountCents, err))
 		}
 		return nil
 	default:
-		return b.WebhookError(fmt.Errorf("unknown event type: %s", event.Type))
+		return b.ErrWebhook(fmt.Errorf("unknown event type: %s", event.Type))
 	}
 }
 

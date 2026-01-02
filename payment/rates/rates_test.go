@@ -7,19 +7,17 @@ import (
 )
 
 func TestRates(t *testing.T) {
-	db, err := OpenDB("/tmp/rates-test.sqlite3")
+	history, err := MakeAndRun(
+		"/tmp/rates-test.sqlite3",
+		func() (map[string]float64, error) {
+			return map[string]float64{"USD": 1.1, "GBP": 0.85}, nil
+		},
+	)
 	if err != nil {
 		t.Fatalf("opening db: %v", err)
 	}
-	history := History{
-		Database: db,
-		GetBuyRates: func(lastUpdateDate string) (map[string]float64, error) {
-			return map[string]float64{"USD": 1.1, "GBP": 0.85}, nil
-		},
-	}
 
-	go history.RunDaemon()
-	time.Sleep(100 * time.Millisecond)
+	time.Sleep(100 * time.Millisecond) // wait until database is created
 
 	got, err := history.Options(time.Now().AddDate(0, 0, 3).Format("2006-01-02"), 100.0) // three days in the future
 	if err != nil {
