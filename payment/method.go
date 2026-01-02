@@ -25,7 +25,7 @@ import (
 // Even if a payment key is used, payment methods should store the purchase ID
 // because tax accounting may require a connection between payment and purchase.
 type Method interface {
-	http.Handler
+	Handler() http.Handler
 	ID() string
 	Name(l lang.Lang) string
 	PayHTML(purchaseID, paymentKey string, l lang.Lang) (template.HTML, error)

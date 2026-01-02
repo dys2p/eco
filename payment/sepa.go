@@ -36,6 +36,10 @@ type SEPA struct {
 	Purchases PurchaseRepo
 }
 
+func (SEPA) Handler() http.Handler {
+	return http.NewServeMux()
+}
+
 func (SEPA) ID() string {
 	return "sepa"
 }
@@ -79,8 +83,6 @@ SEPA payment for purchase` // GDSV = Purchase & Sale of Goods and Services
 	})
 	return template.HTML(buf.String()), err
 }
-
-func (SEPA) ServeHTTP(w http.ResponseWriter, r *http.Request) {}
 
 func (SEPA) VerifiesAdult() bool {
 	return false

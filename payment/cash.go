@@ -20,6 +20,10 @@ type Cash struct {
 	AddressHTML string
 }
 
+func (Cash) Handler() http.Handler {
+	return http.NewServeMux()
+}
+
 func (Cash) ID() string {
 	return "cash"
 }
@@ -37,8 +41,6 @@ func (cash Cash) PayHTML(purchaseID, paymentKey string, l lang.Lang) (template.H
 	})
 	return template.HTML(buf.String()), err
 }
-
-func (Cash) ServeHTTP(w http.ResponseWriter, r *http.Request) {}
 
 func (Cash) VerifiesAdult() bool {
 	return false

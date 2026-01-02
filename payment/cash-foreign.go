@@ -2,6 +2,7 @@ package payment
 
 import (
 	"bytes"
+	"encoding/json"
 	"html/template"
 	"log"
 	"net/http"
@@ -23,6 +24,15 @@ type CashForeign struct {
 	AddressHTML string
 	Purchases   PurchaseRepo
 	History     *rates.History
+}
+
+func (cash CashForeign) Handler() http.Handler {
+	var mux = http.NewServeMux()
+	mux.HandleFunc("GET /status", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Add("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(cash.History.Synced)
+	})
+	return mux
 }
 
 func (CashForeign) ID() string {
@@ -60,8 +70,6 @@ func (cash CashForeign) PayHTML(purchaseID, paymentKey string, l lang.Lang) (tem
 	})
 	return template.HTML(buf.String()), err
 }
-
-func (CashForeign) ServeHTTP(w http.ResponseWriter, r *http.Request) {}
 
 func (CashForeign) VerifiesAdult() bool {
 	return false

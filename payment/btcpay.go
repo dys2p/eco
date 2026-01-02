@@ -49,6 +49,14 @@ type BTCPay struct {
 	GetStatus        func() []btcpay.StatusItem
 }
 
+func (b BTCPay) Handler() http.Handler {
+	var mux = http.NewServeMux()
+	mux.Handle("POST /create-invoice", httputil.HandlerFunc(b.createInvoice))
+	mux.Handle("GET  /status", httputil.HandlerFunc(b.status))
+	mux.Handle("POST /webhook", httputil.HandlerFunc(b.webhook))
+	return mux
+}
+
 func (BTCPay) ID() string {
 	return "btcpay"
 }
@@ -66,17 +74,6 @@ func (b BTCPay) PayHTML(purchaseID, paymentKey string, l lang.Lang) (template.HT
 		Status:          b.GetStatus != nil,
 	})
 	return template.HTML(buf.String()), err
-}
-
-func (b BTCPay) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	switch path.Base(r.URL.Path) {
-	case "create-invoice":
-		httputil.HandlerFunc(b.createInvoice).ServeHTTP(w, r)
-	case "status":
-		b.status(w, r)
-	case "webhook":
-		httputil.HandlerFunc(b.webhook).ServeHTTP(w, r)
-	}
 }
 
 func (b BTCPay) createInvoice(w http.ResponseWriter, r *http.Request) http.Handler {
@@ -125,6 +122,7 @@ func (b BTCPay) createInvoice(w http.ResponseWriter, r *http.Request) http.Handl
 
 func (b BTCPay) status(w http.ResponseWriter, r *http.Request) http.Handler {
 	if b.GetStatus != nil {
+		w.Header().Add("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(b.GetStatus())
 		return nil
 	} else {
