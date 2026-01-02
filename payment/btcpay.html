@@ -3,7 +3,7 @@
 <form action="/payment/btcpay/create-invoice" method="post" target="_blank">
 	<input type="hidden" name="default-language" value="{{.DefaultLanguage}}">
 	<input type="hidden" name="reference" value="{{.Reference}}">
-	<button type="submit" class="btn btn-success mb-3">{{.Tr "Pay using Monero or Bitcoin"}}</button>
+	<button type="submit" class="btn btn-primary mb-2">{{.Tr "Pay using Monero or Bitcoin"}}</button>
 
 	{{if .Status}}
 		<div id="btcpay-status" class="mb-2"></div>
@@ -14,13 +14,13 @@
 				.then((data) => {
 					let content = "";
 					for(item of data) {
-						content = content + `<span class="badge bg-${item.Synced ? 'success' : 'warning'} my-2">${item.Name}: ${item.Synced ? 'synced' : 'out of sync'}</span> `;
+						content = content + `<span class="badge text-bg-${item.Synced ? 'success' : 'warning'} my-2">${item.Name}: ${item.Synced ? 'synced' : 'out of sync'}</span> `;
 					}
 					document.getElementById("btcpay-status").innerHTML = content;
 				})
-				.catch((error) => document.getElementById("btcpay-status").innerHTML = '<span class="badge bg-warning">Error loading sync status.</span>')
+				.catch((error) => document.getElementById("btcpay-status").innerHTML = '<span class="badge text-bg-warning my-2">Error loading sync status.</span>')
 				.finally(() => {
-					setTimeout(() => updateBTCPayStatus(), 100*1000); // 10 seconds from now
+					setTimeout(() => updateBTCPayStatus(), 10*1000); // 10 seconds from now
 				});
 			}
 			updateBTCPayStatus();
