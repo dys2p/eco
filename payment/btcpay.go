@@ -44,7 +44,7 @@ type BTCPay struct {
 	Store             btcpay.Store
 	Purchases         PurchaseRepo
 
-	ErrCreateInvoice func(err error, msg string) http.Handler
+	ErrCreateInvoice func(err error) http.Handler // should write an error message or error template to the ResponseWriter
 	ErrWebhook       func(err error) http.Handler
 	GetStatus        func() []btcpay.StatusItem
 }
@@ -76,12 +76,16 @@ func (b BTCPay) PayHTML(purchaseID, paymentKey string, l lang.Lang) (template.HT
 	return template.HTML(buf.String()), err
 }
 
+func (BTCPay) VerifiesAdult() bool {
+	return false
+}
+
 func (b BTCPay) createInvoice(w http.ResponseWriter, r *http.Request) http.Handler {
 	if b.ErrCreateInvoice == nil {
-		b.ErrCreateInvoice = func(err error, msg string) http.Handler {
+		b.ErrCreateInvoice = func(err error) http.Handler {
 			return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				log.Printf("error creating btcpay invoice: %v", err)
-				w.Write([]byte(msg))
+				w.Write([]byte("Error creating BTCPay invoice. We have been notified and will fix it soon. Sorry for the inconvenience."))
 			})
 		}
 	}
@@ -96,7 +100,7 @@ func (b BTCPay) createInvoice(w http.ResponseWriter, r *http.Request) http.Handl
 
 	sumCents, err := b.Purchases.PurchaseSumCents(purchaseID, paymentKey)
 	if err != nil {
-		return b.ErrCreateInvoice(err, "Error getting purchase sum. We are already working on it.")
+		return b.ErrCreateInvoice(err)
 	}
 
 	invoiceRequest := &btcpay.InvoiceRequest{
@@ -109,7 +113,7 @@ func (b BTCPay) createInvoice(w http.ResponseWriter, r *http.Request) http.Handl
 	invoiceRequest.RedirectURL = absHost(r) + path.Join("/", b.RedirectPath)
 	invoice, err := b.Store.CreateInvoice(invoiceRequest)
 	if err != nil {
-		return b.ErrCreateInvoice(err, "Error creating BTCPay invoice. We are already working on it.")
+		return b.ErrCreateInvoice(err)
 	}
 
 	lastInvoice[purchaseID+":"+paymentKey] = createdInvoice{
@@ -165,10 +169,6 @@ func (b BTCPay) webhook(w http.ResponseWriter, r *http.Request) http.Handler {
 	default:
 		return b.ErrWebhook(fmt.Errorf("unknown event type: %s", event.Type))
 	}
-}
-
-func (BTCPay) VerifiesAdult() bool {
-	return false
 }
 
 // absHost returns the scheme and host part of an HTTP request. It uses a heuristic for the scheme.
