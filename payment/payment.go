@@ -1,10 +1,8 @@
 // Package payment implements payment methods.
 //
-// Register your payment methods for POST requests under /payment/{method}:
+// Some methods bring their own HTTP endpoints. Register every method under /payment/{method}:
 //
-//	router.Handler(http.MethodPost, fmt.Sprintf("/payment/%s/*path", paymentMethod.ID()), paymentMethod)
-//
-// Note that the handlers will be publicly available.
+//	mux.Handle(fmt.Sprintf("/payment/%s/", method.ID()), method.Handler())
 package payment
 
 import (
