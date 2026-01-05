@@ -28,7 +28,7 @@ type CashForeign struct {
 
 func (cash CashForeign) Handler() http.Handler {
 	var mux = http.NewServeMux()
-	mux.HandleFunc("GET /status", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("GET /payment/cash-foreign/status", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Add("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(cash.History.Synced)
 	})

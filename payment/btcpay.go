@@ -51,9 +51,9 @@ type BTCPay struct {
 
 func (b BTCPay) Handler() http.Handler {
 	var mux = http.NewServeMux()
-	mux.Handle("POST /create-invoice", httputil.HandlerFunc(b.createInvoice))
-	mux.Handle("GET  /status", httputil.HandlerFunc(b.status))
-	mux.Handle("POST /webhook", httputil.HandlerFunc(b.webhook))
+	mux.Handle("POST /payment/btcpay/create-invoice", httputil.HandlerFunc(b.createInvoice))
+	mux.Handle("GET  /payment/btcpay/status", httputil.HandlerFunc(b.status))
+	mux.Handle("POST /payment/btcpay/webhook", httputil.HandlerFunc(b.webhook))
 	return mux
 }
 
