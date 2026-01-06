@@ -45,8 +45,8 @@ func (p PayPal) Handler() http.Handler {
 	}
 
 	var mux = http.NewServeMux()
-	mux.Handle("POST /payment/paypal/create-order", httputil.HandlerFunc(p.createTransaction))
-	mux.Handle("POST /payment/paypal/capture-order", httputil.HandlerFunc(p.captureTransaction))
+	mux.Handle("POST /payment/paypal-checkout/create-order", httputil.HandlerFunc(p.createTransaction))
+	mux.Handle("POST /payment/paypal-checkout/capture-order", httputil.HandlerFunc(p.captureTransaction))
 	return mux
 }
 
