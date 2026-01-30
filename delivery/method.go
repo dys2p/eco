@@ -126,24 +126,17 @@ func (method *Method) FmtTrackingLink(id string) string {
 	}
 }
 
-// GetAddressTypes returns method.AddressTypes or nil if method is nil. It is just a shortcut so you don't have to check method != nil.
-func (method *Method) GetAddressTypes() []AddressType {
-	if method == nil {
-		return nil
-	}
-	return method.AddressTypes
-}
-
 type MethodOption struct {
 	Method
-	Gross           int
+	GrossPrice      int // to be set by caller
+	NetPrice        int
 	Selected        bool
 	ShippingDaysMax int
 	ShippingDaysMin int
 }
 
-// Support represents whether a given product can be delivered to a given country. ShippingDaysMax and ShippingDaysMin should be across all shipping methods (not just the fastest method, which might not be the cheapest).
-type Support struct {
+// Preview summarizes the delivery options for a given product and a given country.
+type Preview struct {
 	Pickup          bool
 	Shipping        bool
 	ShippingDaysMax int
@@ -151,14 +144,14 @@ type Support struct {
 	ShippingNetMin  int
 }
 
-func (support Support) Any() bool {
-	return support.Pickup || support.Shipping
+func (preview Preview) Any() bool {
+	return preview.Pickup || preview.Shipping
 }
 
-func (support Support) None() bool {
-	return !support.Pickup && !support.Shipping
+func (preview Preview) None() bool {
+	return !preview.Pickup && !preview.Shipping
 }
 
-func (support Support) PickupOnly() bool {
-	return support.Pickup && !support.Shipping
+func (preview Preview) PickupOnly() bool {
+	return preview.Pickup && !preview.Shipping
 }

@@ -8,7 +8,7 @@ import (
 )
 
 //go:embed template.html
-var TemplateFS embed.FS // usage: t = template.Must(t.ParseFS(delivery.TemplateFS, "*"))
+var Templates embed.FS // usage: t = template.Must(t.ParseFS(delivery.Templates, "*"))
 
 // TODO Use *message.Printer instead of lang.Lang, generate out.gotext.json here with gotext-update-templates -trfunc Sprintf, then merge json files.
 
