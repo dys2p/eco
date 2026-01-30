@@ -10,8 +10,8 @@ import (
 
 type Config[P any] struct {
 	Methods        []Method
-	ForbidCountry  func(countries.Country, P) bool         // local laws
-	ForbidDelivery func(countries.Country, Method, P) bool // shipping company terms of service
+	ForbidCountry  func(countries.Country, P) bool         // optional, for country laws
+	ForbidDelivery func(countries.Country, Method, P) bool // optional, for shipping company size limits and terms of service
 }
 
 func (conf Config[P]) Method(id string) *Method {
@@ -29,10 +29,10 @@ func (conf Config[P]) Valid(method Method, weightGrams, netPrice int, country co
 		return false
 	}
 	for product := range products {
-		if conf.ForbidCountry(country, product) {
+		if conf.ForbidCountry != nil && conf.ForbidCountry(country, product) {
 			return false
 		}
-		if conf.ForbidDelivery(country, method, product) {
+		if conf.ForbidDelivery != nil && conf.ForbidDelivery(country, method, product) {
 			return false
 		}
 	}
@@ -65,7 +65,7 @@ func (conf Config[P]) Options(selected *Method, weightGrams, netPrice int, count
 	for product := range products {
 		var pickup, shipping bool
 		for i, option := range options {
-			if conf.ForbidDelivery(country, option.Method, product) {
+			if conf.ForbidDelivery != nil && conf.ForbidDelivery(country, option.Method, product) {
 				removeOptions[i] = struct{}{}
 				continue
 			}
@@ -88,7 +88,7 @@ func (conf Config[P]) Options(selected *Method, weightGrams, netPrice int, count
 
 	// check ForbidCountry (do this at last because it will make options empty)
 	for product := range products {
-		if conf.ForbidCountry(country, product) {
+		if conf.ForbidCountry != nil && conf.ForbidCountry(country, product) {
 			options = nil
 			none = append(none, product)
 		}
@@ -98,7 +98,7 @@ func (conf Config[P]) Options(selected *Method, weightGrams, netPrice int, count
 }
 
 func (conf Config[P]) Product(country countries.Country, product P, weightGrams, netPrice int) (preview Preview) {
-	if conf.ForbidCountry(country, product) {
+	if conf.ForbidCountry != nil && conf.ForbidCountry(country, product) {
 		return
 	}
 	preview.ShippingDaysMin = math.MaxInt
@@ -108,7 +108,7 @@ func (conf Config[P]) Product(country countries.Country, product P, weightGrams,
 		if !supported {
 			continue
 		}
-		if conf.ForbidDelivery(country, method, product) {
+		if conf.ForbidDelivery != nil && conf.ForbidDelivery(country, method, product) {
 			continue
 		}
 
