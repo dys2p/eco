@@ -21,22 +21,26 @@ const (
 // Rates are typically the VAT rates of a country.
 type Rates map[Rate]float64
 
-// Gross returns the gross of the given net amount using the given VAT rate. The boolean return value indicates if the rate has been found. If it is not found, the maximum rate is used.
-func (rates Rates) Gross(net float64, rate Rate) (float64, bool) {
+func (rates Rates) gross(net float64, rate Rate) (float64, bool) {
 	rateVal, ok := rates.Get(rate)
 	return net * (1.0 + rateVal), ok
 }
 
-// GrossInt returns the gross of the given net amount using the given VAT rate. The boolean return value indicates if the rate has been found. If it is not found, the maximum rate is used.
-func (rates Rates) GrossInt(net int, rate Rate) (int, bool) {
-	rateVal, ok := rates.Get(rate)
-	return int(math.Round(float64(net) * (1.0 + rateVal))), ok
+// Gross returns the gross of the given net amount using the given VAT rate. The boolean return value indicates if the rate has been found. If it is not found, the maximum rate is used.
+func (rates Rates) Gross(net int, rate Rate) (int, bool) {
+	res, ok := rates.gross(float64(net), rate)
+	return int(math.Round(res)), ok
 }
 
-// Gross returns the net of the given gross amount using the given VAT rate. The boolean return value indicates if the rate has been found. If it is not found, the maximum rate is used.
-func (rates Rates) Net(gross float64, rate Rate) (float64, bool) {
+func (rates Rates) net(gross float64, rate Rate) (float64, bool) {
 	rateVal, ok := rates.Get(rate)
 	return gross / (1.0 + rateVal), ok
+}
+
+// Net returns the net of the given gross amount using the given VAT rate. The boolean return value indicates if the rate has been found. If it is not found, the maximum rate is used.
+func (rates Rates) Net(gross int, rate Rate) (int, bool) {
+	res, ok := rates.net(float64(gross), rate)
+	return int(math.Round(res)), ok
 }
 
 // Get returns the value of the given VAT rate. The boolean return value indicates if the rate has been found. If it is not found, the maximum rate is used.
@@ -58,8 +62,8 @@ func Convert(value int, src countries.Country, srcRate Rate, dst countries.Count
 		return value
 	}
 	srcVal := float64(value)
-	netVal, _ := Get(src).Net(srcVal, srcRate)
-	dstVal, _ := Get(dst).Gross(netVal, dstRate)
+	netVal, _ := Get(src).net(srcVal, srcRate)
+	dstVal, _ := Get(dst).gross(netVal, dstRate)
 	return int(math.Round(dstVal))
 }
 
