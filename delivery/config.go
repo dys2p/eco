@@ -23,24 +23,29 @@ func (conf Config[P]) Method(id string) *Method {
 	return nil
 }
 
-// checks Details, ForbidCountry and ForbidDelivery
-func (conf Config[P]) Valid(method Method, weightGrams, netPrice int, country countries.Country, products iter.Seq[P]) bool {
-	if _, _, _, supported := method.Details(weightGrams, netPrice, country); !supported {
-		return false
+// gets method and checks Details, ForbidCountry and ForbidDelivery
+func (conf Config[P]) Checkout(methodID string, weightGrams, goodsNetPrice int, country countries.Country, products iter.Seq[P]) (method *Method, deliveryNetPrice, minDays, maxDays int) {
+	method = conf.Method(methodID)
+	if method == nil {
+		return nil, 0, 0, 0
+	}
+	deliveryNetPrice, minDays, maxDays, supported := method.Details(weightGrams, goodsNetPrice, country)
+	if !supported {
+		return nil, 0, 0, 0
 	}
 	for product := range products {
 		if conf.ForbidCountry != nil && conf.ForbidCountry(country, product) {
-			return false
+			return nil, 0, 0, 0
 		}
-		if conf.ForbidDelivery != nil && conf.ForbidDelivery(country, method, product) {
-			return false
+		if conf.ForbidDelivery != nil && conf.ForbidDelivery(country, *method, product) {
+			return nil, 0, 0, 0
 		}
 	}
-	return true
+	return method, deliveryNetPrice, minDays, maxDays
 }
 
 // for cart view, does not set MethodOption.GrossPrice
-func (conf Config[P]) Options(selected *Method, weightGrams, netPrice int, country countries.Country, products iter.Seq[P]) (options []MethodOption, none []P, pickupOnly []P) {
+func (conf Config[P]) Options(selected *Method, weightGrams, goodsNetPrice int, country countries.Country, products iter.Seq[P]) (options []MethodOption, none []P, pickupOnly []P) {
 	var selectedID string
 	if selected != nil {
 		selectedID = selected.ID
@@ -48,11 +53,11 @@ func (conf Config[P]) Options(selected *Method, weightGrams, netPrice int, count
 
 	// check Details
 	for _, method := range conf.Methods {
-		netDeliveryPrice, minDays, maxDays, supported := method.Details(weightGrams, netPrice, country)
+		deliveryNetPrice, minDays, maxDays, supported := method.Details(weightGrams, goodsNetPrice, country)
 		if supported {
 			options = append(options, MethodOption{
 				Method:          method,
-				NetPrice:        netDeliveryPrice,
+				NetPrice:        deliveryNetPrice,
 				Selected:        method.ID == selectedID,
 				ShippingDaysMax: maxDays,
 				ShippingDaysMin: minDays,
@@ -97,14 +102,15 @@ func (conf Config[P]) Options(selected *Method, weightGrams, netPrice int, count
 	return
 }
 
-func (conf Config[P]) Product(country countries.Country, product P, weightGrams, netPrice int) (preview Preview) {
+// for product view
+func (conf Config[P]) Product(country countries.Country, product P, weightGrams, goodsNetPrice int) (preview Preview) {
 	if conf.ForbidCountry != nil && conf.ForbidCountry(country, product) {
 		return
 	}
 	preview.ShippingDaysMin = math.MaxInt
 	preview.ShippingNetMin = math.MaxInt
 	for _, method := range conf.Methods {
-		netPrice, minDays, maxDays, supported := method.Details(weightGrams, netPrice, country)
+		deliveryNetPrice, minDays, maxDays, supported := method.Details(weightGrams, goodsNetPrice, country)
 		if !supported {
 			continue
 		}
@@ -116,7 +122,7 @@ func (conf Config[P]) Product(country countries.Country, product P, weightGrams,
 			preview.Shipping = true
 			preview.ShippingDaysMax = max(preview.ShippingDaysMax, maxDays)
 			preview.ShippingDaysMin = min(preview.ShippingDaysMin, minDays)
-			preview.ShippingNetMin = min(preview.ShippingNetMin, netPrice)
+			preview.ShippingNetMin = min(preview.ShippingNetMin, deliveryNetPrice)
 		} else {
 			preview.Pickup = true
 		}
