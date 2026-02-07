@@ -66,12 +66,12 @@ func (conf Config[P]) Options(selected *Method, weightGrams, goodsNetPrice int, 
 	}
 
 	// check ForbidDelivery, remove affected options
-	var removeOptions = make(map[int]any) // don't remove instantly because we want to collect all responsible products (not just the first product)
+	var removeOptions = make(map[string]any) // key: method id; don't remove instantly because we want to collect all responsible products (not just the first product)
 	for product := range products {
 		var pickup, shipping bool
-		for i, option := range options {
+		for _, option := range options {
 			if conf.ForbidDelivery != nil && conf.ForbidDelivery(country, option.Method, product) {
-				removeOptions[i] = struct{}{}
+				removeOptions[option.ID] = struct{}{}
 				continue
 			}
 			if option.Method.IsShipping {
@@ -87,9 +87,10 @@ func (conf Config[P]) Options(selected *Method, weightGrams, goodsNetPrice int, 
 			pickupOnly = append(pickupOnly, product)
 		}
 	}
-	for i := range removeOptions {
-		options = slices.Delete(options, i, i+1)
-	}
+	options = slices.DeleteFunc(options, func(o MethodOption) bool {
+		_, ok := removeOptions[o.ID]
+		return ok
+	})
 
 	// check ForbidCountry (do this at last because it will make options empty)
 	for product := range products {
