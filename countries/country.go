@@ -46,11 +46,12 @@ const (
 	// selected Non-EU countries
 	CH Country = "CH"
 	GB Country = "GB"
+	GE Country = "GE"
 	ME Country = "ME"
 	MK Country = "MK"
 )
 
-var All = []Country{AT, BE, BG, CH, CY, CZ, DE, DK, EE, ES, FI, FR, GB, GR, HR, HU, IE, IT, LT, LU, LV, ME, MK, MT, NL, PL, PT, RO, SE, SI, SK}
+var All = []Country{AT, BE, BG, CH, CY, CZ, DE, DK, EE, ES, FI, FR, GB, GE, GR, HR, HU, IE, IT, LT, LU, LV, ME, MK, MT, NL, PL, PT, RO, SE, SI, SK}
 
 var EuropeanUnion = []Country{AT, BE, BG, CY, CZ, DE, DK, EE, ES, FI, FR, GR, HR, HU, IE, IT, LT, LU, LV, MT, NL, PL, PT, RO, SE, SI, SK}
 
@@ -96,6 +97,8 @@ func (c Country) TranslateName(l lang.Lang) string {
 		return l.Tr("France")
 	case GB:
 		return l.Tr("United Kingdom")
+	case GE:
+		return l.Tr("Georgia (Europe)")
 	case GR:
 		return l.Tr("Greece")
 	case HR:

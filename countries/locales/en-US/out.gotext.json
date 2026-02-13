@@ -93,6 +93,13 @@
             "fuzzy": true
         },
         {
+            "id": "Georgia (Europe)",
+            "message": "Georgia (Europe)",
+            "translation": "Georgia (Europe)",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
+        },
+        {
             "id": "Greece",
             "message": "Greece",
             "translation": "Greece",
