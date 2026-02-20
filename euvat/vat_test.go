@@ -33,7 +33,7 @@ func TestGrossNet(t *testing.T) {
 	tests := []struct {
 		country countries.Country
 		rate    Rate
-		net     int
+		net     float64
 		gross   int
 	}{
 		{countries.DE, RateReduced1, 100, 107},
@@ -49,7 +49,7 @@ func TestGrossNet(t *testing.T) {
 			t.Fatalf("gross: got %d, want %d", gross, test.gross)
 		}
 		if net, _ := Get(test.country).Net(test.gross, test.rate); math.Abs(float64(net-test.net)) > epsilon {
-			t.Fatalf("net: got %d, want %d", net, test.net)
+			t.Fatalf("net: got %f, want %f", net, test.net)
 		}
 	}
 }

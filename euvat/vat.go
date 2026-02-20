@@ -1,4 +1,7 @@
 // Package euvat models VAT rates from an an European Union point of view.
+//
+// Gross values are represented as int because they are usually explicit.
+// Net values are represented as float64 because they are usually intermediate.
 package euvat
 
 import (
@@ -27,9 +30,9 @@ func (rates Rates) gross(net float64, rate Rate) (float64, bool) {
 }
 
 // Gross returns the gross of the given net amount using the given VAT rate. The boolean return value indicates if the rate has been found. If it is not found, the maximum rate is used.
-func (rates Rates) Gross(net int, rate Rate) (int, bool) {
-	res, ok := rates.gross(float64(net), rate)
-	return int(math.Round(res)), ok
+func (rates Rates) Gross(net float64, rate Rate) (int, bool) {
+	g, ok := rates.gross(net, rate)
+	return int(math.Round(g)), ok
 }
 
 func (rates Rates) net(gross float64, rate Rate) (float64, bool) {
@@ -38,9 +41,8 @@ func (rates Rates) net(gross float64, rate Rate) (float64, bool) {
 }
 
 // Net returns the net of the given gross amount using the given VAT rate. The boolean return value indicates if the rate has been found. If it is not found, the maximum rate is used.
-func (rates Rates) Net(gross int, rate Rate) (int, bool) {
-	res, ok := rates.net(float64(gross), rate)
-	return int(math.Round(res)), ok
+func (rates Rates) Net(gross int, rate Rate) (float64, bool) {
+	return rates.net(float64(gross), rate)
 }
 
 // Get returns the value of the given VAT rate. The boolean return value indicates if the rate has been found. If it is not found, the maximum rate is used.
