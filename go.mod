@@ -5,7 +5,7 @@ go 1.24.0
 require (
 	github.com/abh/geoip v0.0.0-20160510155516-07cea4480daa
 	github.com/dchest/captcha v1.0.0
-	github.com/dys2p/go-btcpay v0.8.2
+	github.com/dys2p/go-btcpay v0.8.3
 	github.com/dys2p/go-paypal v0.2.3
 	github.com/emersion/go-sasl v0.0.0-20220912192320-0145f2c60ead
 	github.com/emersion/go-smtp v0.16.1-0.20230108191019-90d596c5fb00
