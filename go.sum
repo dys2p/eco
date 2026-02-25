@@ -2,8 +2,8 @@ github.com/abh/geoip v0.0.0-20160510155516-07cea4480daa h1:o7+BnQZpdqHPCc9F2fTWP
 github.com/abh/geoip v0.0.0-20160510155516-07cea4480daa/go.mod h1:N2q9pP3q4thAewFqmOB/DL8EsWimMuDOx4KduwXMT5A=
 github.com/dchest/captcha v1.0.0 h1:vw+bm/qMFvTgcjQlYVTuQBJkarm5R0YSsDKhm1HZI2o=
 github.com/dchest/captcha v1.0.0/go.mod h1:7zoElIawLp7GUMLcj54K9kbw+jEyvz2K0FDdRRYhvWo=
-github.com/dys2p/go-btcpay v0.8.3 h1:vfQtAbe7fL3SuFK5km/ir7AV6jcVO5USzG5UyGRP9UU=
-github.com/dys2p/go-btcpay v0.8.3/go.mod h1:qxi3rBJRp8L5UMCw1RA8aSUUvEqlHhpegoRxvJhiVBI=
+github.com/dys2p/go-btcpay v0.8.4 h1:W7i9MMgfAwRFkuV83fZ9IeelJLyWoRrEtyx2A01GPtM=
+github.com/dys2p/go-btcpay v0.8.4/go.mod h1:qxi3rBJRp8L5UMCw1RA8aSUUvEqlHhpegoRxvJhiVBI=
 github.com/dys2p/go-paypal v0.2.3 h1:fJpSx9FiIKf4tfDV+J1qVsQc94oTHeh4T997uiNJ9eU=
 github.com/dys2p/go-paypal v0.2.3/go.mod h1:SEscSsCAtVS66HaleWX37DMl/jLL+lOoPm2dKd+3OvU=
 github.com/emersion/go-sasl v0.0.0-20200509203442-7bfe0ed36a21/go.mod h1:iL2twTeMvZnrg54ZoPDNfJaJaqy0xIQFuBdrLsmspwQ=
