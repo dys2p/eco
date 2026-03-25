@@ -1,10 +1,7 @@
 // Package httputil provides an easy way to chain handlers and a server with timeouts and graceful shutdown.
 package httputil
 
-import (
-	"log"
-	"net/http"
-)
+import "net/http"
 
 // A HandlerFunc can return the next handler or nil, which provides easy chaining:
 //
