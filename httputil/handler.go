@@ -12,25 +12,27 @@ import (
 //		// do something, then return next handler or nil
 //	}))
 //
-// You can return http.NotFoundHandler and http.RedirectHandler for not found errors and redirects.
+// You can return an http.RedirectHandler. You can also return an http.NotFoundHandler, although it's probably better to write your own error handlers, e. g.:
+//
+//	func internalServerError(err error) http.Handler {
+//		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+//			// log error
+//			w.WriteHeader(http.StatusInternalServerError)
+//			// execute custom error html template
+//		})
+//	}
+//
+//	func executeTemplate(t *template.Template, data any) http.Handler {
+//		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+//			if err := t.Execute(w, data); err != nil {
+//				internalServerError(err).ServeHTTP(w, r)
+//			}
+//		})
+//	}
 type HandlerFunc func(w http.ResponseWriter, r *http.Request) http.Handler
 
 func (f HandlerFunc) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if handler := f(w, r); handler != nil {
 		handler.ServeHTTP(w, r)
 	}
-}
-
-func Forbidden() http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusForbidden)
-	})
-}
-
-// InternalServerError returns an handler which writes status code 500 and logs the error string.
-func InternalServerError(err error) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusInternalServerError)
-		log.Printf("internal server error: %v", err)
-	})
 }
