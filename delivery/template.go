@@ -18,9 +18,9 @@ var Templates embed.FS // usage: t = template.Must(t.ParseFS(delivery.Templates,
 type ShippingAddressView struct {
 	lang.Lang
 	Address
-	AddressTypes []AddressType
-	AskMissing   bool // ask for address if it is empty
-	Copyable     bool // show "copy to clipboard"
+	AskMissing bool    // ask for address if it is empty
+	Copyable   bool    // show "copy to clipboard"
+	Method     *Method // optional, for AskMissing hints
 }
 
 // ShippingAddressFormElements is the data for template "shipping-address-form-elements".

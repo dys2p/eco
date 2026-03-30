@@ -24,29 +24,35 @@
 			{{end}}
 		</address>
 	{{else}}
-		{{if .AskMissing}}
-			<p>{{.Tr "I will send you the delivery address by mail, e-mail or messenger."}}</p>
-			{{with .AddressTypes}}
-				{{if eq (len .) 1}}
-					{{with (index . 0).CustomerIDRequired}}<p>{{$.Tr "I will include my %s, which is required for the selected delivery method." .}}</p>{{end}}
-					{{if   (index . 0).EmailRequired}}<p>{{$.Tr "I will include an email address, which will be shared with the shipping company."}}</p>{{end}}
-					{{if   (index . 0).PhoneRequired}}<p>{{$.Tr "I will include a phone number, which will be shared with the shipping company."}}</p>{{end}}
-				{{else}}
-					<p class="mb-1">{{$.Tr "The following address options are available:"}}</p>
-					<ul>
-						{{range .}}
-							<li>
-								<strong>{{.Name}}</strong>
-								{{with .CustomerIDRequired}}({{$.Tr "%s required" .}}){{end}}
-								{{if .EmailRequired}}({{$.Tr "email address required, will be shared with the shipping company"}}){{end}}
-								{{if .PhoneRequired}}({{$.Tr "phone number required, will be shared with the shipping company"}}){{end}}
-							</li>
-						{{end}}
-					</ul>
+		<!-- address is empty -->
+		{{if and .Method .Method.IsShipping}}
+			<!-- method is shipping -->
+			{{if .AskMissing}}
+				<!-- probably not shipped yet -->
+				<p>{{.Tr "I will send you the delivery address by mail, e-mail or messenger."}}</p>
+				{{with .Method.AddressTypes}}
+					{{if eq (len .) 1}}
+						{{with (index . 0).CustomerIDRequired}}<p>{{$.Tr "I will include my %s, which is required for the selected delivery method." .}}</p>{{end}}
+						{{if   (index . 0).EmailRequired}}<p>{{$.Tr "I will include an email address, which will be shared with the shipping company."}}</p>{{end}}
+						{{if   (index . 0).PhoneRequired}}<p>{{$.Tr "I will include a phone number, which will be shared with the shipping company."}}</p>{{end}}
+					{{else}}
+						<p class="mb-1">{{$.Tr "The following address options are available:"}}</p>
+						<ul>
+							{{range .}}
+								<li>
+									<strong>{{.Name}}</strong>
+									{{with .CustomerIDRequired}}({{$.Tr "%s required" .}}){{end}}
+									{{if .EmailRequired}}({{$.Tr "email address required, will be shared with the shipping company"}}){{end}}
+									{{if .PhoneRequired}}({{$.Tr "phone number required, will be shared with the shipping company"}}){{end}}
+								</li>
+							{{end}}
+						</ul>
+					{{end}}
 				{{end}}
+			{{else}}
+				<!-- probably already shipped -->
+				<p>{{.Tr "The delivery address is empty."}}</p>
 			{{end}}
-		{{else}}
-			<p>{{.Tr "The delivery address is empty."}}</p>
 		{{end}}
 	{{end}}
 {{end}}
