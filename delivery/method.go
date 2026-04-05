@@ -2,7 +2,6 @@
 package delivery
 
 import (
-	"fmt"
 	"strings"
 
 	"github.com/dys2p/eco/countries"
@@ -87,7 +86,7 @@ type Method struct {
 	AddressTypes []AddressType // empty slice means one zero-valued AddressType
 	Details      func(weight, netValue int, country countries.Country) (netPrice, minDays, maxDays int, supported bool)
 	IsShipping   bool
-	TrackingLink string // use %s placeholder for tracking number
+	TrackingLink func(id string) string
 	WarnBackend  string
 }
 
@@ -122,7 +121,7 @@ func (method *Method) FmtTrackingLink(id string) string {
 	if strings.HasPrefix(id, "https://") {
 		return id
 	} else {
-		return fmt.Sprintf(method.TrackingLink, id)
+		return method.TrackingLink(id)
 	}
 }
 
