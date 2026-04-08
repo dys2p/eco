@@ -12,7 +12,14 @@ var client = &http.Client{
 	Timeout: time.Minute,
 }
 
+// Publish publishes a message via ntfy.sh.
+// If addr is empty, this is a no-op.
 func Publish(addr, title, message string) error {
+	addr = strings.TrimSpace(addr)
+	if addr == "" {
+		return nil
+	}
+
 	req, err := http.NewRequest(http.MethodPost, addr, strings.NewReader(message))
 	if err != nil {
 		return err
