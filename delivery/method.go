@@ -120,8 +120,11 @@ func (method *Method) FmtTrackingLink(id string) string {
 	id = strings.TrimSpace(id)
 	if strings.HasPrefix(id, "https://") {
 		return id
-	} else {
+	}
+	if method.TrackingLink != nil {
 		return method.TrackingLink(id)
+	} else {
+		return id
 	}
 }
 
