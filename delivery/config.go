@@ -33,12 +33,14 @@ func (conf Config[P]) Checkout(methodID string, weightGrams, goodsNetPrice int, 
 	if !supported {
 		return nil, 0, 0, 0
 	}
-	for product := range products {
-		if conf.ForbidCountry != nil && conf.ForbidCountry(country, product) {
-			return nil, 0, 0, 0
-		}
-		if conf.ForbidDelivery != nil && conf.ForbidDelivery(country, *method, product) {
-			return nil, 0, 0, 0
+	if products != nil {
+		for product := range products {
+			if conf.ForbidCountry != nil && conf.ForbidCountry(country, product) {
+				return nil, 0, 0, 0
+			}
+			if conf.ForbidDelivery != nil && conf.ForbidDelivery(country, *method, product) {
+				return nil, 0, 0, 0
+			}
 		}
 	}
 	return method, deliveryNetPrice, minDays, maxDays
@@ -67,24 +69,26 @@ func (conf Config[P]) Options(selected *Method, weightGrams, goodsNetPrice int, 
 
 	// check ForbidDelivery, remove affected options
 	var removeOptions = make(map[string]any) // key: method id; don't remove instantly because we want to collect all responsible products (not just the first product)
-	for product := range products {
-		var pickup, shipping bool
-		for _, option := range options {
-			if conf.ForbidDelivery != nil && conf.ForbidDelivery(country, option.Method, product) {
-				removeOptions[option.ID] = struct{}{}
-				continue
+	if products != nil {
+		for product := range products {
+			var pickup, shipping bool
+			for _, option := range options {
+				if conf.ForbidDelivery != nil && conf.ForbidDelivery(country, option.Method, product) {
+					removeOptions[option.ID] = struct{}{}
+					continue
+				}
+				if option.Method.IsShipping {
+					shipping = true
+				} else {
+					pickup = true
+				}
 			}
-			if option.Method.IsShipping {
-				shipping = true
-			} else {
-				pickup = true
+			if !pickup && !shipping {
+				none = append(none, product)
 			}
-		}
-		if !pickup && !shipping {
-			none = append(none, product)
-		}
-		if pickup && !shipping {
-			pickupOnly = append(pickupOnly, product)
+			if pickup && !shipping {
+				pickupOnly = append(pickupOnly, product)
+			}
 		}
 	}
 	options = slices.DeleteFunc(options, func(o MethodOption) bool {
@@ -93,10 +97,12 @@ func (conf Config[P]) Options(selected *Method, weightGrams, goodsNetPrice int, 
 	})
 
 	// check ForbidCountry (do this at last because it will make options empty)
-	for product := range products {
-		if conf.ForbidCountry != nil && conf.ForbidCountry(country, product) {
-			options = nil
-			none = append(none, product)
+	if products != nil {
+		for product := range products {
+			if conf.ForbidCountry != nil && conf.ForbidCountry(country, product) {
+				options = nil
+				none = append(none, product)
+			}
 		}
 	}
 
