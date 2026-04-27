@@ -47,12 +47,7 @@ func (conf Config[P]) Checkout(methodID string, weightGrams, goodsNetPrice int, 
 }
 
 // for cart view, does not set MethodOption.GrossPrice
-func (conf Config[P]) Options(selected *Method, weightGrams, goodsNetPrice int, country countries.Country, products iter.Seq[P]) (options []MethodOption, none []P, pickupOnly []P) {
-	var selectedID string
-	if selected != nil {
-		selectedID = selected.ID
-	}
-
+func (conf Config[P]) Options(selectedID string, weightGrams, goodsNetPrice int, country countries.Country, products iter.Seq[P]) (options []MethodOption, none []P, pickupOnly []P) {
 	// check Details
 	for _, method := range conf.Methods {
 		deliveryNetPrice, minDays, maxDays, supported := method.Details(weightGrams, goodsNetPrice, country)

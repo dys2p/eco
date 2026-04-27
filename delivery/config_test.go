@@ -54,37 +54,37 @@ func TestOptions(t *testing.T) {
 	}
 
 	tests := []struct {
-		selected *Method
-		country  countries.Country
-		products []Product
+		selectedID string
+		country    countries.Country
+		products   []Product
 
 		wantOptionIDs  []string
 		wantNone       []Product
 		wantPickupOnly []Product
 	}{
 		// DE: boring product okay
-		{nil, countries.DE, []Product{boringProduct}, []string{"courier", "store"}, nil, nil},
+		{"", countries.DE, []Product{boringProduct}, []string{"courier", "store"}, nil, nil},
 
 		// FR: boring product okay
-		{nil, countries.FR, []Product{boringProduct}, []string{"courier"}, nil, nil},
+		{"", countries.FR, []Product{boringProduct}, []string{"courier"}, nil, nil},
 
 		// DE: restricted product okay
-		{nil, countries.DE, []Product{boringProduct, restrictedProduct}, []string{"courier", "store"}, nil, nil},
+		{"", countries.DE, []Product{boringProduct, restrictedProduct}, []string{"courier", "store"}, nil, nil},
 
 		// FR: no restricted product
-		{nil, countries.FR, []Product{boringProduct, restrictedProduct}, nil, []Product{restrictedProduct}, nil},
+		{"", countries.FR, []Product{boringProduct, restrictedProduct}, nil, []Product{restrictedProduct}, nil},
 
 		// DE: dangerous product pickup only
-		{nil, countries.DE, []Product{boringProduct, dangerousProduct, restrictedProduct}, []string{"store"}, nil, []Product{dangerousProduct}},
-		{&courier, countries.DE, []Product{boringProduct, dangerousProduct, restrictedProduct}, []string{"store"}, nil, []Product{dangerousProduct}}, // same but with courier selected by user
-		{&store, countries.DE, []Product{boringProduct, dangerousProduct, restrictedProduct}, []string{"store"}, nil, []Product{dangerousProduct}},   // same but with store selected by user
+		{"", countries.DE, []Product{boringProduct, dangerousProduct, restrictedProduct}, []string{"store"}, nil, []Product{dangerousProduct}},
+		{courier.ID, countries.DE, []Product{boringProduct, dangerousProduct, restrictedProduct}, []string{"store"}, nil, []Product{dangerousProduct}}, // same but with courier selected by user
+		{store.ID, countries.DE, []Product{boringProduct, dangerousProduct, restrictedProduct}, []string{"store"}, nil, []Product{dangerousProduct}},   // same but with store selected by user
 
 		// FR: no restricted product, no dangerous product because there is no pickup point in that country
-		{nil, countries.FR, []Product{boringProduct, dangerousProduct, restrictedProduct}, nil, []Product{dangerousProduct, restrictedProduct}, nil},
+		{"", countries.FR, []Product{boringProduct, dangerousProduct, restrictedProduct}, nil, []Product{dangerousProduct, restrictedProduct}, nil},
 	}
 
 	for i, test := range tests {
-		gotOptions, gotNone, gotPickupOnly := conf.Options(test.selected, 1000, 2500, test.country, slices.Values(test.products))
+		gotOptions, gotNone, gotPickupOnly := conf.Options(test.selectedID, 1000, 2500, test.country, slices.Values(test.products))
 		gotOptionIDs := optionIDs(gotOptions)
 		if !slices.Equal(gotOptionIDs, test.wantOptionIDs) {
 			t.Fatalf("test %d: options: got %v, want %v", i, gotOptionIDs, test.wantOptionIDs)
