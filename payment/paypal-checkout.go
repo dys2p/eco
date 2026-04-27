@@ -142,7 +142,7 @@ func (p PayPal) captureTransaction(w http.ResponseWriter, r *http.Request) http.
 
 	log.Printf("[%s] captured transaction: order: %s, capture: %s", purchaseID+":"+paymentKey, captureReq.OrderID, captureID)
 
-	if err := p.Purchases.PaymentSettled(purchaseID, paymentKey, "PayPal", captureID, amountCents); err != nil {
+	if err := p.Purchases.PaymentSettled(purchaseID, paymentKey, "PayPal", captureID, amountCents, false); err != nil {
 		return p.Err(err)
 	}
 

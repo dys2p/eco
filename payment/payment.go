@@ -43,8 +43,11 @@ func Get(methods []Method, id string) (Method, error) {
 }
 
 // Note that payments don't necessarily add up exactly, e. g. BTCPay can be configured to consider a 99% paid invoice as fully paid.
+//
+// PaymentSettled also covers late BTCPay payments ("paid late", "AfterExpiration").
+// SetPurchasePaid, however, relies on the invoice settlement configuration of the BTCPay Server.
 type PurchaseRepo interface {
-	PaymentSettled(purchaseID, paymentKey, methodName, paymentID string, paymentCents int) error
+	PaymentSettled(purchaseID, paymentKey, methodName, paymentID string, paymentCents int, paidLate bool) error
 	PurchaseCreationDate(purchaseID, paymentKey string) (string, error) // yyyy-mm-dd, for exchange rates
 	PurchaseSumCents(purchaseID, paymentKey string) (int, error)
 	SetPurchasePaid(purchaseID, paymentKey, methodName string) error

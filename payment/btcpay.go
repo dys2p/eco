@@ -162,7 +162,7 @@ func (b BTCPay) webhook(w http.ResponseWriter, r *http.Request) http.Handler {
 	case btcpay.EventInvoicePaymentSettled:
 		amountCrypto, _ := strconv.ParseFloat(event.Payment.Value, 64)
 		amountCents := int(math.Round(amountCrypto * event.Rate * 100.0))
-		if err := b.Purchases.PaymentSettled(purchaseID, paymentKey, "BTCPay", event.Payment.ID, amountCents); err != nil {
+		if err := b.Purchases.PaymentSettled(purchaseID, paymentKey, "BTCPay", event.Payment.ID, amountCents, event.AfterExpiration); err != nil {
 			return b.ErrWebhook(fmt.Errorf("setting purchase %s payment %s of %d: %w", purchaseID, event.Payment.ID, amountCents, err))
 		}
 		return nil
