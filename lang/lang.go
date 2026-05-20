@@ -13,13 +13,10 @@
 // Then use them in your code:
 //
 //	langs := lang.MakeLanguages(nil, "de", "en")
-//	for _, l := range langs {
-//		http.HandleFunc("/"+l.Prefix, func(w http.ResponseWriter, r *http.Request) {
-//			l, _, _ := langs.FromURL(r.URL)
-//			l.Printer.Fprintf(w, "Hello World")
-//		})
-//	}
-//	http.HandleFunc("/", langs.RedirectHandler())
+//	lang.Handle(http.DefaultServeMux, langs, "/", func(w http.ResponseWriter, r *http.Request) {
+//		l, _, _ := langs.FromURL(r.URL)
+//		l.Printer.Fprintf(w, "Hello World")
+//	})
 //
 // As in the example, adding routes for each language is recommended over using route parameters with possibly conflicting rules.
 //
@@ -131,25 +128,36 @@ func (langs Languages) FromURL(u *url.URL) (Lang, string, bool) {
 	return langs[0], path + query, false
 }
 
-// RedirectHandler returns an http handler which redirects to the localized version of r.URL.Path according to the Accept-Language header.
-// If r.URL.Path it is already localized, the handler responds with a "not found" error in order to prevent a redirect loop.
-// It is recommended to chain the handler behind your http router.
-func (langs Languages) RedirectHandler() http.HandlerFunc {
+// Handle is a shortcut for HandleFunc(mux, langs, pattern, handler.ServeHTTP).
+func Handle(mux *http.ServeMux, langs Languages, pattern string, handler http.Handler) {
+	HandleFunc(mux, langs, pattern, handler.ServeHTTP)
+}
+
+// HandleFunc registers /lang/pattern for each language, and a redirect handler for /pattern.
+//
+// It registers each route explicitly rather than redirecting 404s to /default-lang/pattern, so we don't mess with chained handlers.
+func HandleFunc(mux *http.ServeMux, langs Languages, pattern string, handler http.HandlerFunc) {
+	// no language support if langs is empty
+	if len(langs) == 0 {
+		mux.HandleFunc(pattern, handler)
+		return
+	}
+
+	// handle /lang/pattern
+	for _, l := range langs {
+		mux.HandleFunc(path.Join("/", l.Prefix, pattern), handler)
+	}
+
+	// handle /pattern
 	var tags = make([]language.Tag, len(langs))
 	for i := range tags {
 		tags[i] = langs[i].Tag
 	}
 	matcher := language.NewMatcher(tags)
-
-	return func(w http.ResponseWriter, r *http.Request) {
-		if _, _, ok := langs.FromURL(r.URL); ok {
-			// url path already starts with a supported language, prevent redirect loop
-			http.NotFound(w, r)
-		} else {
-			_, index := language.MatchStrings(matcher, r.Header.Get("Accept-Language"))
-			var u = *r.URL // copy
-			u.Path = path.Join("/", langs[index].Prefix, u.Path)
-			http.Redirect(w, r, u.String(), http.StatusSeeOther)
-		}
-	}
+	mux.HandleFunc(pattern, func(w http.ResponseWriter, r *http.Request) {
+		_, index := language.MatchStrings(matcher, r.Header.Get("Accept-Language"))
+		var u = *r.URL // copy
+		u.Path = path.Join("/", langs[index].Prefix, u.Path)
+		http.Redirect(w, r, u.String(), http.StatusSeeOther)
+	})
 }

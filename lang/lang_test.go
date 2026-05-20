@@ -23,7 +23,10 @@ func init() {
 	langs = MakeLanguages(nil, "en", "de")
 }
 
-func TestRedirect(t *testing.T) {
+func TestHandle(t *testing.T) {
+	var mux = http.NewServeMux()
+	HandleFunc(mux, langs, "/", func(http.ResponseWriter, *http.Request) {})
+
 	tests := map[string]string{
 		"de":                    "/de",
 		"de-CH":                 "/de",
@@ -37,7 +40,7 @@ func TestRedirect(t *testing.T) {
 		r := httptest.NewRequest(http.MethodGet, "/", nil)
 		r.Header.Set("Accept-Language", accept)
 		w := httptest.NewRecorder()
-		langs.RedirectHandler()(w, r)
+		mux.ServeHTTP(w, r)
 		result := w.Result()
 		if result.StatusCode != http.StatusSeeOther {
 			t.Fatalf("got status %d, want %d", result.StatusCode, http.StatusSeeOther)
