@@ -23,16 +23,7 @@ func HandleFunc(mux *http.ServeMux, langs Languages, pattern string, handler htt
 		return
 	}
 
-	// handle /lang/pattern (insert lang at the right place: "In general, a pattern looks like [METHOD ][HOST]/[PATH]")
-	insertAt := strings.Index(pattern, "/")
-	if insertAt < 0 {
-		insertAt = len(pattern)
-	}
-	for _, l := range langs {
-		mux.HandleFunc(pattern[:insertAt]+"/"+l.Prefix+pattern[insertAt:], handler)
-	}
-
-	// handle /pattern (panics if pattern is empty, which is correct behavior)
+	// handle /pattern
 	var tags = make([]language.Tag, len(langs))
 	for i := range tags {
 		tags[i] = langs[i].Tag
@@ -44,4 +35,18 @@ func HandleFunc(mux *http.ServeMux, langs Languages, pattern string, handler htt
 		u.Path = path.Join("/", langs[index].Prefix, u.Path)
 		http.Redirect(w, r, u.String(), http.StatusSeeOther)
 	})
+
+	// handle /lang/pattern
+	for _, l := range langs {
+		mux.HandleFunc(insert(pattern, l.Prefix), handler)
+	}
+}
+
+// insert inserts pathPrefix into pattern ("In general, a pattern looks like [METHOD ][HOST]/[PATH]")
+func insert(pattern, pathPrefix string) string {
+	insertAt := strings.Index(pattern, "/")
+	if insertAt < 0 {
+		return pattern // pattern is invalid, return unchanged
+	}
+	return pattern[:insertAt] + "/" + pathPrefix + pattern[insertAt:]
 }
