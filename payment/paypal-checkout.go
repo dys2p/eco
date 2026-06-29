@@ -58,7 +58,7 @@ func (PayPal) Name(l lang.Lang) string {
 	return "PayPal"
 }
 
-func (p PayPal) PayHTML(purchaseID, paymentKey string, l lang.Lang) (template.HTML, error) {
+func (p PayPal) PayHTML(purchaseID, paymentKey, redirectURL string, l lang.Lang) (template.HTML, error) {
 	b := &bytes.Buffer{}
 	err := payPalTmpl.Execute(b, paypalTmplData{
 		Lang:      l,

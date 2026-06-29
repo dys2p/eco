@@ -8,7 +8,6 @@ import (
 	"log"
 	"math"
 	"net/http"
-	"path"
 	"strconv"
 	"strings"
 	"time"
@@ -27,7 +26,9 @@ var btcpayTmpl = template.Must(template.ParseFS(htmlfiles, "btcpay.html"))
 type btcpayTmplData struct {
 	lang.Lang
 	DefaultLanguage string
-	Reference       string
+	PurchaseID      string
+	PaymentKey      string
+	RedirectURL     string
 	Status          bool
 }
 
@@ -40,7 +41,6 @@ var lastInvoice = make(map[string]createdInvoice) // key: purchase ID
 
 type BTCPay struct {
 	ExpirationMinutes int
-	RedirectPath      string
 	Store             btcpay.Store
 	Purchases         PurchaseRepo
 
@@ -52,6 +52,7 @@ type BTCPay struct {
 func (b BTCPay) Handler() http.Handler {
 	var mux = http.NewServeMux()
 	mux.Handle("POST /payment/btcpay/create-invoice", httputil.HandlerFunc(b.createInvoice))
+	mux.Handle("GET  /payment/btcpay/redirect", httputil.HandlerFunc(b.redirect)) // after payment
 	mux.Handle("GET  /payment/btcpay/status", httputil.HandlerFunc(b.status))
 	mux.Handle("POST /payment/btcpay/webhook", httputil.HandlerFunc(b.webhook))
 	return mux
@@ -65,12 +66,14 @@ func (BTCPay) Name(l lang.Lang) string {
 	return l.Tr("Monero or Bitcoin")
 }
 
-func (b BTCPay) PayHTML(purchaseID, paymentKey string, l lang.Lang) (template.HTML, error) {
+func (b BTCPay) PayHTML(purchaseID, paymentKey, redirectURL string, l lang.Lang) (template.HTML, error) {
 	buf := &bytes.Buffer{}
 	err := btcpayTmpl.Execute(buf, btcpayTmplData{
 		Lang:            l,
 		DefaultLanguage: l.Prefix,
-		Reference:       purchaseID + ":" + paymentKey,
+		PurchaseID:      purchaseID,
+		PaymentKey:      paymentKey,
+		RedirectURL:     redirectURL,
 		Status:          b.GetStatus != nil,
 	})
 	return template.HTML(buf.String()), err
@@ -91,7 +94,9 @@ func (b BTCPay) createInvoice(w http.ResponseWriter, r *http.Request) http.Handl
 	}
 
 	defaultLanguage := r.PostFormValue("default-language")
-	purchaseID, paymentKey, _ := strings.Cut(r.PostFormValue("reference"), ":")
+	purchaseID := r.PostFormValue("purchase-id")
+	paymentKey := r.PostFormValue("payment-key")
+	redirectURL := r.PostFormValue("redirect-url")
 
 	// redirect to existing invoice if it is younger than 15 minutes
 	if last, ok := lastInvoice[purchaseID+":"+paymentKey]; ok && time.Now().Unix()-last.Time < 15*60 {
@@ -110,11 +115,19 @@ func (b BTCPay) createInvoice(w http.ResponseWriter, r *http.Request) http.Handl
 	invoiceRequest.ExpirationMinutes = max(30, min(1440, b.ExpirationMinutes))
 	invoiceRequest.DefaultLanguage = defaultLanguage
 	invoiceRequest.OrderID = purchaseID + ":" + paymentKey // reference
-	invoiceRequest.RedirectURL = absHost(r) + path.Join("/", b.RedirectPath)
+	invoiceRequest.RedirectURL = absHost(r) + "/payment/btcpay/redirect"
 	invoice, err := b.Store.CreateInvoice(invoiceRequest)
 	if err != nil {
 		return b.ErrCreateInvoice(err)
 	}
+
+	http.SetCookie(w, &http.Cookie{
+		Name:     "payment-btcpay-redirect-url",
+		Value:    redirectURL,
+		Expires:  time.Now().Add(4 * time.Hour),
+		HttpOnly: true, // no javascript
+		SameSite: http.SameSiteStrictMode,
+	})
 
 	lastInvoice[purchaseID+":"+paymentKey] = createdInvoice{
 		ID:   invoice.ID,
@@ -122,6 +135,15 @@ func (b BTCPay) createInvoice(w http.ResponseWriter, r *http.Request) http.Handl
 	}
 
 	return http.RedirectHandler(b.Store.InvoiceCheckoutLink(invoice.ID, strings.HasSuffix(r.Host, ".onion") || strings.Contains(r.Host, ".onion:")), http.StatusSeeOther)
+}
+
+// redirects to purchase (URL stored in cookie) after payment, so we don't have to give the purchase URL to the BTCPay Server
+func (b BTCPay) redirect(w http.ResponseWriter, r *http.Request) http.Handler {
+	cookie, err := r.Cookie("payment-btcpay-redirect-url")
+	if err != nil || cookie.Value == "" {
+		return http.RedirectHandler(absHost(r), http.StatusSeeOther)
+	}
+	return http.RedirectHandler(cookie.Value, http.StatusSeeOther)
 }
 
 func (b BTCPay) status(w http.ResponseWriter, r *http.Request) http.Handler {

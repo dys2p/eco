@@ -32,7 +32,7 @@ func (Cash) Name(l lang.Lang) string {
 	return l.Tr("Cash")
 }
 
-func (cash Cash) PayHTML(purchaseID, paymentKey string, l lang.Lang) (template.HTML, error) {
+func (cash Cash) PayHTML(purchaseID, paymentKey, redirectURL string, l lang.Lang) (template.HTML, error) {
 	buf := &bytes.Buffer{}
 	err := cashTmpl.Execute(buf, cashTmplData{
 		Lang:        l,

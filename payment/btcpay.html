@@ -2,7 +2,9 @@
 <!-- open in new window, in case you didn't bookmark the purchase url -->
 <form action="/payment/btcpay/create-invoice" method="post" target="_blank">
 	<input type="hidden" name="default-language" value="{{.DefaultLanguage}}">
-	<input type="hidden" name="reference" value="{{.Reference}}">
+	<input type="hidden" name="purchase-id" value="{{.PurchaseID}}">
+	<input type="hidden" name="payment-key" value="{{.PaymentKey}}">
+	<input type="hidden" name="redirect-url" value="{{.RedirectURL}}">
 	<button type="submit" class="btn btn-primary mb-2">{{.Tr "Pay using Monero or Bitcoin"}}</button>
 
 	{{if .Status}}
