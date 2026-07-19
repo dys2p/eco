@@ -42,22 +42,22 @@ func respond(s string) http.HandlerFunc {
 
 func TestInsert(t *testing.T) {
 	tests := map[string]string{
-		"/":                       `/en/`,
-		"/{$}":                    `/en/{$}`,
-		"/foo":                    `/en/foo`,
-		"/foo/bar":                `/en/foo/bar`,
+		"/":                       "/en/",
+		"/{$}":                    "/en/{$}",
+		"/foo":                    "/en/foo",
+		"/foo/bar":                "/en/foo/bar",
 		"GET /":                   "GET /en/",
 		"GET /{$}":                "GET /en/{$}",
-		"GET /foo":                `GET /en/foo`,
-		"GET /foo/bar":            `GET /en/foo/bar`,
-		"example.com/":            `example.com/en/`,
-		"example.com/{$}":         `example.com/en/{$}`,
-		"example.com/foo":         `example.com/en/foo`,
-		"example.com/foo/bar":     `example.com/en/foo/bar`,
+		"GET /foo":                "GET /en/foo",
+		"GET /foo/bar":            "GET /en/foo/bar",
+		"example.com/":            "example.com/en/",
+		"example.com/{$}":         "example.com/en/{$}",
+		"example.com/foo":         "example.com/en/foo",
+		"example.com/foo/bar":     "example.com/en/foo/bar",
 		"GET example.com/":        "GET example.com/en/",
 		"GET example.com/{$}":     "GET example.com/en/{$}",
-		"GET example.com/foo":     `GET example.com/en/foo`,
-		"GET example.com/foo/bar": `GET example.com/en/foo/bar`,
+		"GET example.com/foo":     "GET example.com/en/foo",
+		"GET example.com/foo/bar": "GET example.com/en/foo/bar",
 	}
 
 	for pattern, want := range tests {
