@@ -42,11 +42,16 @@ func HandleFunc(mux *http.ServeMux, langs Languages, pattern string, handler htt
 	}
 }
 
-// insert inserts pathPrefix into pattern ("In general, a pattern looks like [METHOD ][HOST]/[PATH]")
+// insert inserts pathPrefix into pattern ("In general, a pattern looks like [METHOD ][HOST]/[PATH]").
+// pathPrefix must not be empty.
 func insert(pattern, pathPrefix string) string {
-	insertAt := strings.Index(pattern, "/")
-	if insertAt < 0 {
+	firstSlash := strings.Index(pattern, "/")
+	if firstSlash < 0 {
 		return pattern // pattern is invalid, return unchanged
 	}
-	return pattern[:insertAt] + "/" + pathPrefix + pattern[insertAt:]
+	methodHost, path := pattern[:firstSlash], pattern[firstSlash:]
+	if path == "/{$}" {
+		path = "" // see TestInsert
+	}
+	return methodHost + "/" + pathPrefix + path
 }
