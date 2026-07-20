@@ -34,12 +34,16 @@ type Sendmail struct {
 	From string
 }
 
-func (mailer Sendmail) Send(to string, subject string, body []byte) error {
+func (mailer Sendmail) Send(to, cc, subject string, body []byte) error {
 	if !AddressValid(to) {
 		return ErrInvalidAddress
 	}
 
-	mail, err := MakeEmail(mailer.From, to, subject, body)
+	if cc != "" && !AddressValid(cc) {
+		return ErrInvalidAddress
+	}
+
+	mail, err := MakeEmail(mailer.From, to, cc, subject, body)
 	if err != nil {
 		return err
 	}

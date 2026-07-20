@@ -16,7 +16,7 @@ import (
 var ErrInvalidAddress = errors.New("invalid address")
 
 type Emailer interface {
-	Send(to string, subject string, body []byte) error
+	Send(to, cc, subject string, body []byte) error
 }
 
 // AddressValid returns true if addr is a well-formed email address, and if it exactly one email address and not a list.
@@ -46,7 +46,7 @@ func newMessageId(domain string) string {
 	return (&mail.Address{Address: idLeft + "@" + domain}).String()
 }
 
-func MakeEmail(from, to, subject string, body []byte) (*bytes.Buffer, error) {
+func MakeEmail(from, to, cc, subject string, body []byte) (*bytes.Buffer, error) {
 	fromDomain, err := getDomain(from)
 	if err != nil {
 		return nil, err
@@ -60,6 +60,9 @@ func MakeEmail(from, to, subject string, body []byte) (*bytes.Buffer, error) {
 	msg.WriteString("From: " + mime.QEncoding.Encode("utf-8", from) + "\r\n")
 	msg.WriteString("Subject: " + mime.QEncoding.Encode("utf-8", subject) + "\r\n")
 	msg.WriteString("To: " + mime.QEncoding.Encode("utf-8", to) + "\r\n")
+	if cc != "" {
+		msg.WriteString("Cc: " + mime.QEncoding.Encode("utf-8", cc) + "\r\n")
+	}
 	msg.WriteString("\r\n")
 	msg.Write(body)
 	return msg, nil
