@@ -13,6 +13,7 @@ import (
 type Rate string
 
 const (
+	RateAuxiliary    Rate = ""     // taxation depends on the main product
 	RateZero         Rate = "zero" // don't use zero value (empty string) because tax stuff should be explicit
 	RateStandard     Rate = "standard"
 	RateReduced1     Rate = "reduced-1"
