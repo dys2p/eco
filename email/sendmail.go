@@ -34,16 +34,8 @@ type Sendmail struct {
 	From string
 }
 
-func (mailer Sendmail) Send(to, cc, subject string, body []byte) error {
-	if !AddressValid(to) {
-		return ErrInvalidAddress
-	}
-
-	if cc != "" && !AddressValid(cc) {
-		return ErrInvalidAddress
-	}
-
-	mail, err := MakeEmail(mailer.From, to, cc, subject, body)
+func (mailer Sendmail) Send(em Email) error {
+	mail, err := em.bytes(mailer.From)
 	if err != nil {
 		return err
 	}
@@ -51,10 +43,7 @@ func (mailer Sendmail) Send(to, cc, subject string, body []byte) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	envelopeFrom := mailer.From
-	envelopeTo := to
-
-	sendmail := exec.CommandContext(ctx, "/usr/sbin/sendmail", "-i", "-f", envelopeFrom, "--", envelopeTo) // -i don't treat a line with only a . character as the end of input
+	sendmail := exec.CommandContext(ctx, "/usr/sbin/sendmail", "-i", "-f", mailer.From, "--", em.To) // -i don't treat a line with only a . character as the end of input
 	sendmail.Stdin = mail
 	return sendmail.Run()
 }

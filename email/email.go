@@ -16,7 +16,7 @@ import (
 var ErrInvalidAddress = errors.New("invalid address")
 
 type Emailer interface {
-	Send(to, cc, subject string, body []byte) error
+	Send(em Email) error
 }
 
 // AddressValid returns true if addr is a well-formed email address, and if it exactly one email address and not a list.
@@ -46,10 +46,24 @@ func newMessageId(domain string) string {
 	return (&mail.Address{Address: idLeft + "@" + domain}).String()
 }
 
-func MakeEmail(from, to, cc, subject string, body []byte) (*bytes.Buffer, error) {
+type Email struct {
+	To      string
+	Cc      string
+	Subject string
+	Body    []byte
+}
+
+func (em Email) bytes(from string) (*bytes.Buffer, error) {
 	fromDomain, err := getDomain(from)
 	if err != nil {
 		return nil, err
+	}
+
+	if !AddressValid(em.To) {
+		return nil, ErrInvalidAddress
+	}
+	if em.Cc != "" && !AddressValid(em.Cc) {
+		return nil, ErrInvalidAddress
 	}
 
 	msg := &bytes.Buffer{}
@@ -58,12 +72,12 @@ func MakeEmail(from, to, cc, subject string, body []byte) (*bytes.Buffer, error)
 	msg.WriteString("Date: " + time.Now().Format("2 Jan 2006 15:04:05 -0700") + "\r\n")
 	msg.WriteString("Message-ID: " + newMessageId(fromDomain) + "\r\n") //
 	msg.WriteString("From: " + mime.QEncoding.Encode("utf-8", from) + "\r\n")
-	msg.WriteString("Subject: " + mime.QEncoding.Encode("utf-8", subject) + "\r\n")
-	msg.WriteString("To: " + mime.QEncoding.Encode("utf-8", to) + "\r\n")
-	if cc != "" {
-		msg.WriteString("Cc: " + mime.QEncoding.Encode("utf-8", cc) + "\r\n")
+	msg.WriteString("Subject: " + mime.QEncoding.Encode("utf-8", em.Subject) + "\r\n")
+	msg.WriteString("To: " + mime.QEncoding.Encode("utf-8", em.To) + "\r\n")
+	if em.Cc != "" {
+		msg.WriteString("Cc: " + mime.QEncoding.Encode("utf-8", em.Cc) + "\r\n")
 	}
 	msg.WriteString("\r\n")
-	msg.Write(body)
+	msg.Write(em.Body)
 	return msg, nil
 }

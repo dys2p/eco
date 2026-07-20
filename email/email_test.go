@@ -33,7 +33,11 @@ func TestInvalidAddresses(t *testing.T) {
 	}
 	for _, emailer := range emailers {
 		for _, addr := range addrs {
-			if err := emailer.Send(addr, "", "Subject", nil); err != ErrInvalidAddress {
+			em := Email{
+				To:      addr,
+				Subject: "Subject",
+			}
+			if err := emailer.Send(em); err != ErrInvalidAddress {
 				t.Fatalf("got %v, want %v", err, ErrInvalidAddress)
 			}
 		}
@@ -43,9 +47,12 @@ func TestInvalidAddresses(t *testing.T) {
 var messageID = regexp.MustCompile("[a-zA-Z0-9]{16}")
 
 func TestMakeEmail(t *testing.T) {
-	buf, _ := MakeEmail("alice@example.com", "bob@example.com", "", "Hello World", []byte("This is an example email."))
-	got := buf.String()
-	got = messageID.ReplaceAllString(got, "0123456789ABCDEF")
+	buf, _ := Email{
+		To:      "bob@example.com",
+		Subject: "Hello World",
+		Body:    []byte("This is an example email."),
+	}.bytes("alice@example.com")
+	got := messageID.ReplaceAllString(buf.String(), "0123456789ABCDEF")
 
 	var want string
 	want += "MIME-Version: 1.0" + "\r\n"
@@ -64,9 +71,13 @@ func TestMakeEmail(t *testing.T) {
 }
 
 func TestMakeEmailWithCc(t *testing.T) {
-	buf, _ := MakeEmail("alice@example.com", "bob@example.com", "carol@example.com", "Hello World", []byte("This is an example email."))
-	got := buf.String()
-	got = messageID.ReplaceAllString(got, "0123456789ABCDEF")
+	buf, _ := Email{
+		To:      "bob@example.com",
+		Cc:      "carol@example.com",
+		Subject: "Hello World",
+		Body:    []byte("This is an example email."),
+	}.bytes("alice@example.com")
+	got := messageID.ReplaceAllString(buf.String(), "0123456789ABCDEF")
 
 	var want string
 	want += "MIME-Version: 1.0" + "\r\n"

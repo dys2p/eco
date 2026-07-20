@@ -4,16 +4,21 @@ import "log"
 
 type DummyMailer struct{}
 
-func (DummyMailer) Send(to, cc, subject string, body []byte) error {
-	if !AddressValid(to) {
+func (DummyMailer) Send(em Email) error {
+	// same validity checks as in Email.Bytes
+	if !AddressValid(em.To) {
 		return ErrInvalidAddress
 	}
-	log.Println("------ dummy mailer ------")
-	log.Printf("to: %s", to)
-	if cc != "" {
-		log.Printf("cc: %s", cc)
+	if em.Cc != "" && !AddressValid(em.Cc) {
+		return ErrInvalidAddress
 	}
-	log.Printf("subject: %s", subject)
-	log.Printf("body: %s", body)
+
+	log.Println("------ dummy mailer ------")
+	log.Printf("To: %s", em.To)
+	if em.Cc != "" {
+		log.Printf("Cc: %s", em.Cc)
+	}
+	log.Printf("Subject: %s", em.Subject)
+	log.Printf("%s", em.Body)
 	return nil
 }

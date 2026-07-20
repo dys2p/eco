@@ -75,19 +75,10 @@ func LoadSMTP(jsonPath string) (*SMTP, error) {
 	return mailer, nil
 }
 
-func (mailer SMTP) Send(to, cc, subject string, body []byte) error {
-	if !AddressValid(to) {
-		return ErrInvalidAddress
-	}
-
-	if cc != "" && !AddressValid(cc) {
-		return ErrInvalidAddress
-	}
-
-	mail, err := MakeEmail(mailer.From, to, cc, subject, body)
+func (mailer SMTP) Send(em Email) error {
+	mail, err := em.bytes(mailer.From)
 	if err != nil {
 		return err
 	}
-
-	return smtp.SendMailTLS(mailer.hostAddr(), mailer.auth(), mailer.From, []string{to}, mail)
+	return smtp.SendMailTLS(mailer.hostAddr(), mailer.auth(), mailer.From, []string{em.To}, mail)
 }
