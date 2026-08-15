@@ -40,9 +40,8 @@ type createdInvoice struct {
 var lastInvoice = make(map[string]createdInvoice) // key: purchase ID
 
 type BTCPay struct {
-	ExpirationMinutes int
-	Store             btcpay.Store
-	Purchases         PurchaseRepo
+	Store     btcpay.Store
+	Purchases PurchaseRepo
 
 	ErrCreateInvoice func(err error) http.Handler // should write an error message or error template to the ResponseWriter
 	ErrWebhook       func(err error) http.Handler
@@ -112,7 +111,6 @@ func (b BTCPay) createInvoice(w http.ResponseWriter, r *http.Request) http.Handl
 		Amount:   float64(sumCents) / 100.0,
 		Currency: "EUR",
 	}
-	invoiceRequest.ExpirationMinutes = max(30, min(1440, b.ExpirationMinutes))
 	invoiceRequest.DefaultLanguage = defaultLanguage
 	invoiceRequest.OrderID = purchaseID + ":" + paymentKey // reference
 	invoiceRequest.RedirectURL = absHost(r) + "/payment/btcpay/redirect"
