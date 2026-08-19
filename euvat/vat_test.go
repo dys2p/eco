@@ -48,8 +48,11 @@ func TestGrossNet(t *testing.T) {
 		if gross, _ := Get(test.country).Gross(test.net, test.rate); math.Abs(float64(gross-test.gross)) > epsilon {
 			t.Fatalf("gross: got %d, want %d", gross, test.gross)
 		}
-		if net, _ := Get(test.country).Net(test.gross, test.rate); math.Abs(float64(net-test.net)) > epsilon {
+		if net, _ := Get(test.country).Net(test.gross, test.rate); math.Abs(net-test.net) > epsilon {
 			t.Fatalf("net: got %f, want %f", net, test.net)
+		}
+		if netInt, _ := Get(test.country).NetInt(test.gross, test.rate); math.Abs(float64(netInt)-test.net) > epsilon {
+			t.Fatalf("net: got %d, want %f", netInt, test.net)
 		}
 	}
 }
