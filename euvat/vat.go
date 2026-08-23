@@ -2,6 +2,8 @@
 //
 // Gross values are represented as int because they are usually explicit.
 // Net values are represented as float64 because they are usually intermediate.
+//
+// Note that the ISO 3166-1 code for Greece is "GR", but the VAT rate table uses its ISO 639-1 code "EL".
 package euvat
 
 import (
@@ -13,8 +15,8 @@ import (
 type Rate string
 
 const (
-	RateAuxiliary    Rate = ""     // taxation depends on the main product
-	RateZero         Rate = "zero" // don't use zero value (empty string) because tax stuff should be explicit
+	RateAuxiliary    Rate = "" // taxation depends on the main product
+	RateZero         Rate = "zero"
 	RateStandard     Rate = "standard"
 	RateReduced1     Rate = "reduced-1"
 	RateReduced2     Rate = "reduced-2"
@@ -22,226 +24,191 @@ const (
 	RateParking      Rate = "parking"
 )
 
-// Rates are typically the VAT rates of a country.
-type Rates map[Rate]float64
-
-func (rates Rates) gross(net float64, rate Rate) (float64, bool) {
-	rateVal, ok := rates.Get(rate)
-	return net * (1.0 + rateVal), ok
+// Gross returns the gross of the given net amount using the given VAT rate. The boolean return value indicates if the country and rate have been found.
+func Gross(c countries.Country, net float64, rate Rate) (int, bool) {
+	val, ok := Value(c, rate)
+	return int(math.Round(net * (1.0 + val))), ok
 }
 
-// Gross returns the gross of the given net amount using the given VAT rate. The boolean return value indicates if the rate has been found. If it is not found, the maximum rate is used.
-func (rates Rates) Gross(net float64, rate Rate) (int, bool) {
-	g, ok := rates.gross(net, rate)
-	return int(math.Round(g)), ok
+// Net returns the net of the given gross amount using the given VAT rate. The boolean return value indicates if the country and rate have been found.
+func Net(c countries.Country, gross int, rate Rate) (float64, bool) {
+	val, ok := Value(c, rate)
+	return float64(gross) / (1.0 + val), ok
 }
 
-func (rates Rates) net(gross float64, rate Rate) (float64, bool) {
-	rateVal, ok := rates.Get(rate)
-	return gross / (1.0 + rateVal), ok
-}
-
-// Net returns the net of the given gross amount using the given VAT rate. The boolean return value indicates if the rate has been found. If it is not found, the maximum rate is used.
-func (rates Rates) Net(gross int, rate Rate) (float64, bool) {
-	return rates.net(float64(gross), rate)
-}
-
-func (rates Rates) NetInt(gross int, rate Rate) (int, bool) {
-	net, ok := rates.Net(gross, rate)
-	return int(math.Round(net)), ok
-}
-
-// Get returns the value of the given VAT rate. The boolean return value indicates if the rate has been found. If it is not found, the maximum rate is used.
-func (rates Rates) Get(rate Rate) (float64, bool) {
-	if rate == RateZero { // Rates does not contain RateZero because the zero rate is always the same
-		return 0, true
-	}
-	rateVal, ok := rates[rate]
-	if !ok {
-		for _, rv := range rates {
-			rateVal = max(rateVal, rv) // return max rate
-		}
-	}
-	return rateVal, ok
-}
-
-func Convert(value int, src countries.Country, srcRate Rate, dst countries.Country, dstRate Rate) int {
-	if src == dst && srcRate == dstRate {
-		return value
-	}
-	srcVal := float64(value)
-	netVal, _ := Get(src).net(srcVal, srcRate)
-	dstVal, _ := Get(dst).gross(netVal, dstRate)
-	return int(math.Round(dstVal))
+func NetInt(c countries.Country, gross int, rate Rate) (int, bool) {
+	val, ok := Value(c, rate)
+	return int(math.Round(float64(gross) / (1.0 + val))), ok
 }
 
 // VAT rates are from: https://europa.eu/youreurope/business/taxation/vat/vat-rules-rates/index_en.htm#shortcut-5.
-// Note that the ISO 3166-1 code for Greece is "GR", but the VAT rate table uses its ISO 639-1 code "EL".
-func Get(c countries.Country) Rates {
+func Value(c countries.Country, r Rate) (v float64, ok bool) {
+	if r == RateZero {
+		return 0, true
+	}
+
 	switch c {
 	case countries.AT:
-		return map[Rate]float64{
+		v, ok = map[Rate]float64{
 			RateStandard: 0.20,
 			RateReduced1: 0.10,
 			RateReduced2: 0.13,
 			RateParking:  0.13,
-		}
+		}[r]
 	case countries.BE:
-		return map[Rate]float64{
+		v, ok = map[Rate]float64{
 			RateStandard: 0.21,
 			RateReduced1: 0.06,
 			RateReduced2: 0.12,
 			RateParking:  0.12,
-		}
+		}[r]
 	case countries.BG:
-		return map[Rate]float64{
+		v, ok = map[Rate]float64{
 			RateStandard: 0.20,
 			RateReduced1: 0.09,
-		}
+		}[r]
 	case countries.CY:
-		return map[Rate]float64{
+		v, ok = map[Rate]float64{
 			RateStandard: 0.19,
 			RateReduced1: 0.05,
 			RateReduced2: 0.09,
-		}
+		}[r]
 	case countries.CZ:
-		return map[Rate]float64{
+		v, ok = map[Rate]float64{
 			RateStandard: 0.21,
 			RateReduced1: 0.12,
-		}
+		}[r]
 	case countries.DE:
-		return map[Rate]float64{
+		v, ok = map[Rate]float64{
 			RateStandard: 0.19,
 			RateReduced1: 0.07,
-		}
+		}[r]
 	case countries.DK:
-		return map[Rate]float64{
+		v, ok = map[Rate]float64{
 			RateStandard: 0.25,
-		}
+		}[r]
 	case countries.EE:
-		return map[Rate]float64{
+		v, ok = map[Rate]float64{
 			RateStandard: 0.24,
 			RateReduced1: 0.09,
-		}
+		}[r]
 	case countries.ES:
-		return map[Rate]float64{
+		v, ok = map[Rate]float64{
 			RateStandard: 0.21,
 			RateReduced1: 0.10,
-		}
+		}[r]
 	case countries.FI:
-		return map[Rate]float64{
+		v, ok = map[Rate]float64{
 			RateStandard: 0.255,
 			RateReduced1: 0.10,
 			RateReduced2: 0.14,
-		}
+		}[r]
 	case countries.FR:
-		return map[Rate]float64{
+		v, ok = map[Rate]float64{
 			RateStandard:     0.20,
 			RateReduced1:     0.055,
 			RateReduced2:     0.10,
 			RateSuperReduced: 0.021,
-		}
+		}[r]
 	case countries.GR:
-		return map[Rate]float64{
+		v, ok = map[Rate]float64{
 			RateStandard: 0.24,
 			RateReduced1: 0.06,
 			RateReduced2: 0.13,
-		}
+		}[r]
 	case countries.HR:
-		return map[Rate]float64{
+		v, ok = map[Rate]float64{
 			RateStandard: 0.25,
 			RateReduced1: 0.05,
 			RateReduced2: 0.13,
-		}
+		}[r]
 	case countries.HU:
-		return map[Rate]float64{
+		v, ok = map[Rate]float64{
 			RateStandard: 0.27,
 			RateReduced1: 0.05,
 			RateReduced2: 0.18,
-		}
+		}[r]
 	case countries.IE:
-		return map[Rate]float64{
+		v, ok = map[Rate]float64{
 			RateStandard:     0.23,
 			RateReduced1:     0.09,
 			RateReduced2:     0.135,
 			RateSuperReduced: 0.048,
-		}
+		}[r]
 	case countries.IT:
-		return map[Rate]float64{
+		v, ok = map[Rate]float64{
 			RateStandard:     0.22,
 			RateReduced1:     0.05,
 			RateReduced2:     0.10,
 			RateSuperReduced: 0.04,
-		}
+		}[r]
 	case countries.LT:
-		return map[Rate]float64{
+		v, ok = map[Rate]float64{
 			RateStandard: 0.21,
 			RateReduced1: 0.05,
 			RateReduced2: 0.09,
-		}
+		}[r]
 	case countries.LU:
-		return map[Rate]float64{
+		v, ok = map[Rate]float64{
 			RateStandard:     0.17,
 			RateReduced1:     0.08,
 			RateSuperReduced: 0.03,
 			RateParking:      0.14,
-		}
+		}[r]
 	case countries.LV:
-		return map[Rate]float64{
+		v, ok = map[Rate]float64{
 			RateStandard: 0.21,
 			RateReduced1: 0.05,
 			RateReduced2: 0.12,
-		}
+		}[r]
 	case countries.MT:
-		return map[Rate]float64{
+		v, ok = map[Rate]float64{
 			RateStandard: 0.18,
 			RateReduced1: 0.05,
 			RateReduced2: 0.07,
-		}
+		}[r]
 	case countries.NL:
-		return map[Rate]float64{
+		v, ok = map[Rate]float64{
 			RateStandard: 0.21,
 			RateReduced1: 0.09,
-		}
+		}[r]
 	case countries.PL:
-		return map[Rate]float64{
+		v, ok = map[Rate]float64{
 			RateStandard: 0.23,
 			RateReduced1: 0.05,
 			RateReduced2: 0.08,
-		}
+		}[r]
 	case countries.PT:
-		return map[Rate]float64{
+		v, ok = map[Rate]float64{
 			RateStandard: 0.23,
 			RateReduced1: 0.06,
 			RateReduced2: 0.13,
 			RateParking:  0.13,
-		}
+		}[r]
 	case countries.RO:
-		return map[Rate]float64{
+		v, ok = map[Rate]float64{
 			RateStandard: 0.21,
 			RateReduced1: 0.11,
-		}
+		}[r]
 	case countries.SE:
-		return map[Rate]float64{
+		v, ok = map[Rate]float64{
 			RateStandard: 0.25,
 			RateReduced1: 0.06,
 			RateReduced2: 0.12,
-		}
+		}[r]
 	case countries.SI:
-		return map[Rate]float64{
+		v, ok = map[Rate]float64{
 			RateStandard: 0.22,
 			RateReduced1: 0.05,
 			RateReduced2: 0.095,
-		}
+		}[r]
 	case countries.SK:
-		return map[Rate]float64{
+		v, ok = map[Rate]float64{
 			RateStandard:     0.23,
 			RateReduced1:     0.19,
 			RateSuperReduced: 0.05,
-		}
-	default:
-		return map[Rate]float64{
-			RateStandard: 0.0,
-		}
+		}[r]
 	}
+
+	return v, ok
 }

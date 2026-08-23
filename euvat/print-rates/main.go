@@ -14,26 +14,27 @@ func main() {
 		// Country code
 		fmt.Print(c, "\t")
 		// Standard rate
-		fmt.Print(fmtPercent(euvat.Get(c)[euvat.RateStandard]), "\t")
+		s, _ := euvat.Value(c, euvat.RateStandard)
+		fmt.Print(fmtPercent(s), "\t")
 		// Reduced rate
-		if r1 := euvat.Get(c)[euvat.RateReduced1]; r1 > 0 {
+		if r1, ok := euvat.Value(c, euvat.RateReduced1); ok {
 			fmt.Print(fmtPercent(r1))
 		} else {
 			fmt.Print("-")
 		}
-		if r2 := euvat.Get(c)[euvat.RateReduced2]; r2 > 0 {
+		if r2, ok := euvat.Value(c, euvat.RateReduced2); ok {
 			fmt.Print(" / ", fmtPercent(r2))
 		}
 		fmt.Print("\t")
 		// Super reduced rate
-		if sr := euvat.Get(c)[euvat.RateSuperReduced]; sr > 0 {
+		if sr, ok := euvat.Value(c, euvat.RateSuperReduced); ok {
 			fmt.Print(fmtPercent(sr))
 		} else {
 			fmt.Print("-")
 		}
 		fmt.Print("\t")
 		// Parking rate
-		if pr := euvat.Get(c)[euvat.RateParking]; pr > 0 {
+		if pr, ok := euvat.Value(c, euvat.RateParking); ok {
 			fmt.Print(fmtPercent(pr))
 		} else {
 			fmt.Print("-")
