@@ -29,6 +29,11 @@ func (mailer SMTP) hostAddr() string {
 	return mailer.Host + ":465"
 }
 
+// String exists so the SMTP password can't leak if the struct is printed.
+func (mailer SMTP) String() string {
+	return "SMTP mailer"
+}
+
 func createConfig(jsonPath string) error {
 	data, err := json.Marshal(&SMTP{})
 	if err != nil {
