@@ -168,6 +168,11 @@ type CountryOption struct {
 }
 
 func TranslateAndSort(l lang.Lang, countries []Country, selected Country) []CountryOption {
+	// if selected is zero and there is exactly one country, then select it
+	if selected == Country("") && len(countries) == 1 {
+		selected = countries[0]
+	}
+
 	var result = make([]CountryOption, len(countries))
 	for i := range countries {
 		result[i] = CountryOption{
