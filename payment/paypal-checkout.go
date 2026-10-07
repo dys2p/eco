@@ -76,9 +76,9 @@ func (p PayPal) createTransaction(w http.ResponseWriter, r *http.Request) http.H
 	reference, _ := io.ReadAll(r.Body)
 	purchaseID, paymentKey, _ := strings.Cut(string(reference), ":")
 
-	sumCents, err := p.Purchases.PurchaseSumCents(purchaseID, paymentKey)
+	dueCents, err := p.Purchases.PurchaseDueCents(purchaseID, paymentKey)
 	if err != nil {
-		return p.Err(fmt.Errorf("getting purchase sum: %w", err))
+		return p.Err(fmt.Errorf("getting purchase due: %w", err))
 	}
 
 	authResult, err := p.Config.Auth()
@@ -86,7 +86,7 @@ func (p PayPal) createTransaction(w http.ResponseWriter, r *http.Request) http.H
 		return p.Err(err)
 	}
 
-	generateOrderResponse, err := p.Config.CreateOrder(authResult, "Purchase "+purchaseID, purchaseID, paymentKey, sumCents)
+	generateOrderResponse, err := p.Config.CreateOrder(authResult, "Purchase "+purchaseID, purchaseID, paymentKey, dueCents)
 	if err != nil {
 		return p.Err(err)
 	}

@@ -102,13 +102,13 @@ func (b BTCPay) createInvoice(w http.ResponseWriter, r *http.Request) http.Handl
 		return http.RedirectHandler(b.Store.InvoiceCheckoutLink(last.ID, strings.HasSuffix(r.Host, ".onion") || strings.Contains(r.Host, ".onion:")), http.StatusSeeOther)
 	}
 
-	sumCents, err := b.Purchases.PurchaseSumCents(purchaseID, paymentKey)
+	dueCents, err := b.Purchases.PurchaseDueCents(purchaseID, paymentKey)
 	if err != nil {
 		return b.ErrCreateInvoice(err)
 	}
 
 	invoiceRequest := &btcpay.InvoiceRequest{
-		Amount:   float64(sumCents) / 100.0,
+		Amount:   float64(dueCents) / 100.0,
 		Currency: "EUR",
 	}
 	invoiceRequest.DefaultLanguage = defaultLanguage

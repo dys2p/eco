@@ -49,9 +49,9 @@ func (SEPA) Name(l lang.Lang) string {
 }
 
 func (sepa SEPA) PayHTML(purchaseID, paymentKey, redirectURL string, l lang.Lang) (template.HTML, error) {
-	eurocents, err := sepa.Purchases.PurchaseSumCents(purchaseID, paymentKey)
+	eurocents, err := sepa.Purchases.PurchaseDueCents(purchaseID, paymentKey)
 	if err != nil {
-		log.Printf("error getting purchase sum from database: %v", err)
+		log.Printf("error getting purchase due from database: %v", err)
 		return template.HTML("Error getting purchase information from database"), nil
 	}
 

@@ -49,7 +49,7 @@ func Get(methods []Method, id string) (Method, error) {
 type PurchaseRepo interface {
 	PaymentSettled(purchaseID, paymentKey, methodName, paymentID string, paymentCents int, paidLate bool) error
 	PurchaseCreationDate(purchaseID, paymentKey string) (string, error) // yyyy-mm-dd, for exchange rates
-	PurchaseSumCents(purchaseID, paymentKey string) (int, error)
+	PurchaseDueCents(purchaseID, paymentKey string) (int, error)
 	SetPurchasePaid(purchaseID, paymentKey, methodName string) error
 	SetPurchaseProcessing(purchaseID, paymentKey string) error
 }

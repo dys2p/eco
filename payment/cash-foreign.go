@@ -49,9 +49,9 @@ func (cash CashForeign) PayHTML(purchaseID, paymentKey, redirectURL string, l la
 		log.Printf("error getting purchase creation date from database: %v", err)
 		return template.HTML("Error getting purchase information from database"), nil
 	}
-	eurocents, err := cash.Purchases.PurchaseSumCents(purchaseID, paymentKey)
+	eurocents, err := cash.Purchases.PurchaseDueCents(purchaseID, paymentKey)
 	if err != nil {
-		log.Printf("error getting purchase sum from database: %v", err)
+		log.Printf("error getting purchase due from database: %v", err)
 		return template.HTML("Error getting purchase information from database"), nil
 	}
 	euros := float64(eurocents) / 100.0
