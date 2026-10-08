@@ -2,5 +2,6 @@
 <address>
 	{{.AddressHTML}}
 </address>
+<p>{{.Tr "Amount"}}: <strong>{{.Tr "%.2f EUR" .Amount}}</strong></p>
 <p>{{.Tr "Please include a note with this order number"}}: <strong>{{.PurchaseID}}</strong></p>
 <p><strong>{{.Tr "If you are sending coins, please stick them down firmly. Otherwise they will be pressed out during transport."}}</strong></p>
