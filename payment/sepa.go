@@ -52,7 +52,7 @@ func (sepa SEPA) PayHTML(purchaseID, paymentKey, redirectURL string, l lang.Lang
 	eurocents, err := sepa.Purchases.PurchaseDueCents(purchaseID, paymentKey)
 	if err != nil {
 		log.Printf("error getting purchase due from database: %v", err)
-		return template.HTML("Error getting purchase information from database"), nil
+		return template.HTML("Error getting purchase from database"), nil
 	}
 
 	epcString := `BCD
