@@ -48,6 +48,10 @@ type BTCPay struct {
 	GetStatus        func() []btcpay.StatusItem
 }
 
+func (BTCPay) Authenticates() bool {
+	return false
+}
+
 func (b BTCPay) Handler() http.Handler {
 	var mux = http.NewServeMux()
 	mux.Handle("POST /payment/btcpay/create-invoice", httputil.HandlerFunc(b.createInvoice))
@@ -175,14 +179,14 @@ func (b BTCPay) webhook(w http.ResponseWriter, r *http.Request) http.Handler {
 		}
 		return nil
 	case btcpay.EventInvoiceSettled:
-		if err := b.Purchases.SetPurchasePaid(purchaseID, paymentKey, "BTCPay"); err != nil {
+		if err := b.Purchases.SetPurchasePaid(purchaseID, paymentKey, "BTCPay", b.Authenticates(), b.VerifiesAdult()); err != nil {
 			return b.ErrWebhook(fmt.Errorf("setting purchase %s paid: %w", purchaseID, err))
 		}
 		return nil
 	case btcpay.EventInvoicePaymentSettled:
 		amountCrypto, _ := strconv.ParseFloat(event.Payment.Value, 64)
 		amountCents := int(math.Round(amountCrypto * event.Rate * 100.0))
-		if err := b.Purchases.PaymentSettled(purchaseID, paymentKey, "BTCPay", event.Payment.ID, amountCents, event.AfterExpiration); err != nil {
+		if err := b.Purchases.PaymentSettled(purchaseID, paymentKey, "BTCPay", b.Authenticates(), b.VerifiesAdult(), event.Payment.ID, amountCents, event.AfterExpiration); err != nil {
 			return b.ErrWebhook(fmt.Errorf("setting purchase %s payment %s of %d: %w", purchaseID, event.Payment.ID, amountCents, err))
 		}
 		return nil

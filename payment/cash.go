@@ -23,6 +23,10 @@ type Cash struct {
 	Purchases   PurchaseRepo
 }
 
+func (Cash) Authenticates() bool {
+	return false
+}
+
 func (Cash) Handler() http.Handler {
 	return http.NewServeMux()
 }

@@ -26,6 +26,10 @@ type CashForeign struct {
 	History     *rates.History
 }
 
+func (CashForeign) Authenticates() bool {
+	return false
+}
+
 func (cash CashForeign) Handler() http.Handler {
 	var mux = http.NewServeMux()
 	mux.HandleFunc("GET /payment/cash-foreign/status", func(w http.ResponseWriter, r *http.Request) {

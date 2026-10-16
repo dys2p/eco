@@ -34,6 +34,10 @@ type PayPal struct {
 	Err func(err error) http.Handler // should write an error message or error template to the ResponseWriter
 }
 
+func (PayPal) Authenticates() bool {
+	return true
+}
+
 func (p PayPal) Handler() http.Handler {
 	if p.Err == nil {
 		p.Err = func(err error) http.Handler {
@@ -142,11 +146,11 @@ func (p PayPal) captureTransaction(w http.ResponseWriter, r *http.Request) http.
 
 	log.Printf("[%s] captured transaction: order: %s, capture: %s", purchaseID+":"+paymentKey, captureReq.OrderID, captureID)
 
-	if err := p.Purchases.PaymentSettled(purchaseID, paymentKey, "PayPal", captureID, amountCents, false); err != nil {
+	if err := p.Purchases.PaymentSettled(purchaseID, paymentKey, "PayPal", p.Authenticates(), p.VerifiesAdult(), captureID, amountCents, false); err != nil {
 		return p.Err(err)
 	}
 
-	if err := p.Purchases.SetPurchasePaid(purchaseID, paymentKey, "PayPal"); err != nil {
+	if err := p.Purchases.SetPurchasePaid(purchaseID, paymentKey, "PayPal", p.Authenticates(), p.VerifiesAdult()); err != nil {
 		return p.Err(err)
 	}
 

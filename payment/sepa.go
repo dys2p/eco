@@ -36,6 +36,10 @@ type SEPA struct {
 	Purchases PurchaseRepo
 }
 
+func (SEPA) Authenticates() bool {
+	return true
+}
+
 func (SEPA) Handler() http.Handler {
 	return http.NewServeMux()
 }

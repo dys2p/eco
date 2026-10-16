@@ -23,6 +23,7 @@ import (
 // Even if a payment key is used, payment methods should store the purchase ID
 // because tax accounting may require a connection between payment and purchase.
 type Method interface {
+	Authenticates() bool
 	Handler() http.Handler
 	ID() string
 	Name(l lang.Lang) string
@@ -47,9 +48,9 @@ func Get(methods []Method, id string) (Method, error) {
 // PaymentSettled also covers late BTCPay payments ("paid late", "AfterExpiration").
 // SetPurchasePaid, however, relies on the invoice settlement configuration of the BTCPay Server.
 type PurchaseRepo interface {
-	PaymentSettled(purchaseID, paymentKey, methodName, paymentID string, paymentCents int, paidLate bool) error
+	PaymentSettled(purchaseID, paymentKey, methodName string, methodAuthenticates, verifiesAdult bool, paymentID string, paymentCents int, paidLate bool) error
 	PurchaseCreationDate(purchaseID, paymentKey string) (string, error) // yyyy-mm-dd, for exchange rates
 	PurchaseDueCents(purchaseID, paymentKey string) (int, error)
-	SetPurchasePaid(purchaseID, paymentKey, methodName string) error
+	SetPurchasePaid(purchaseID, paymentKey, methodName string, methodAuthenticates, verifiesAdult bool) error
 	SetPurchaseProcessing(purchaseID, paymentKey string) error
 }
