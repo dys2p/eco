@@ -1,34 +1,23 @@
 <p>{{.Tr "Make a bank transfer to our German SEPA (Single Euro Payments Area) bank account. We check for new incoming payments manually every day. We will see your name and account number on our bank statement. If your bank account is outside the Single Euro Payments Area, please pay any fees yourself by selecting the „OUR“ fee option."}}</p>
-<table class="table w-auto">
-	<tbody>
-		<tr>
-			<td>{{.Tr "Account holder"}}:</td>
-			<td>{{.Account.Holder}}</td>
-		</tr>
-		<tr>
-			<td>{{.Tr "IBAN"}}:</td>
-			<td>{{.Account.IBAN}}</td>
-		</tr>
-		<tr>
-			<td>{{.Tr "BIC (if required)"}}:</td>
-			<td>{{.Account.BIC}}</td>
-		</tr>
-		<tr>
-			<td>{{.Tr "Bank name (if required)"}}:</td>
-			<td>{{.Account.BankName}}</td>
-		</tr>
-		<tr>
-			<td>{{.Tr "Amount"}}:</td>
-			<td>{{.Tr "%.2f EUR" .Amount}}</td>
-		</tr>
-		<tr>
-			<td><strong>{{.Tr "Purpose"}}:</strong></td>
-			<td><strong>{{.Purpose}}</strong></td>
-		</tr>
-	</tbody>
-</table>
-<p>
-	{{.Tr "Or scan the EPC QR code:"}}
-	<br>
-	<img src="data:image/png;base64,{{.EPCImageSrc}}" alt="QR Code with SEPA payment data">
-</p>
+<div class="d-md-flex align-items-start justify-content-between">
+	<div class="me-md-4">
+		<dl style="display: grid; grid-template-columns: max-content 1fr; grid-column-gap: 0.5rem;">
+			<dt>{{.Tr "Account holder"}}:</dt>
+			<dd role="button" onclick="navigator.clipboard.writeText(this.textContent)" style="hyphens: none;" translate="no">{{.Account.Holder}}</dd>
+			<dt>{{.Tr "IBAN"}}:</dt>
+			<dd role="button" onclick="navigator.clipboard.writeText(this.textContent)" style="hyphens: none;" translate="no">{{.Account.IBAN}}</dd>
+			<dt>{{.Tr "BIC"}}:</dt>
+			<dd role="button" onclick="navigator.clipboard.writeText(this.textContent)" style="hyphens: none;" translate="no">{{.Account.BIC}}</dd>
+			<dt>{{.Tr "Bank name"}}:</dt>
+			<dd role="button" onclick="navigator.clipboard.writeText(this.textContent)" style="hyphens: none;" translate="no">{{.Account.BankName}}</dd>
+			<dt>{{.Tr "Amount"}}:</dt>
+			<dd role="button" onclick="navigator.clipboard.writeText('{{.Tr "%.2f" .Amount}}')" style="hyphens: none;" translate="no">{{.Tr "%.2f EUR" .Amount}}</dd>
+			<dt>{{.Tr "Reference"}}:</dt>
+			<dd role="button" onclick="navigator.clipboard.writeText(this.textContent)" style="hyphens: none;" translate="no">{{.Purpose}}</dd>
+		</dl>
+	</div>
+	<div class="text-md-end">
+		<p>{{.Tr "Or scan the EPC QR code:"}}</p>
+		<p><img src="data:image/png;base64,{{.EPCImageSrc}}" alt="QR Code with SEPA payment data" class="bg-white p-1"></p>
+	</div>
+</div>

@@ -162,6 +162,11 @@
             "translation": "%.2f"
         },
         {
+            "id": "%.2f EUR",
+            "message": "%.2f EUR",
+            "translation": "%.2f €"
+        },
+        {
             "id": "If you are sending coins, please stick them down firmly. Otherwise they will be pressed out during transport.",
             "message": "If you are sending coins, please stick them down firmly. Otherwise they will be pressed out during transport.",
             "translation": "Falls du Münzen mitsendest, klebe sie bitte gut fest. Sonst werden sie beim Transport herausgedrückt."
@@ -192,24 +197,19 @@
             "translation": "IBAN"
         },
         {
-            "id": "BIC (if required)",
-            "message": "BIC (if required)",
-            "translation": "BIC (falls nötig)"
+            "id": "BIC",
+            "message": "BIC",
+            "translation": "BIC"
         },
         {
-            "id": "Bank name (if required)",
-            "message": "Bank name (if required)",
-            "translation": "Bank (falls nötig)"
+            "id": "Bank name",
+            "message": "Bank name",
+            "translation": "Bank"
         },
         {
-            "id": "%.2f EUR",
-            "message": "%.2f EUR",
-            "translation": "%.2f €"
-        },
-        {
-            "id": "Purpose",
-            "message": "Purpose",
-            "translation": "Überweisungszweck"
+            "id": "Reference",
+            "message": "Reference",
+            "translation": "Verwendungszweck"
         },
         {
             "id": "Or scan the EPC QR code:",

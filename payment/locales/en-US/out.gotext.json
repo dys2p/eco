@@ -226,6 +226,13 @@
             "fuzzy": true
         },
         {
+            "id": "%.2f EUR",
+            "message": "%.2f EUR",
+            "translation": "%.2f EUR",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
+        },
+        {
             "id": "If you are sending coins, please stick them down firmly. Otherwise they will be pressed out during transport.",
             "message": "If you are sending coins, please stick them down firmly. Otherwise they will be pressed out during transport.",
             "translation": "If you are sending coins, please stick them down firmly. Otherwise they will be pressed out during transport.",
@@ -268,30 +275,23 @@
             "fuzzy": true
         },
         {
-            "id": "BIC (if required)",
-            "message": "BIC (if required)",
-            "translation": "BIC (if required)",
+            "id": "BIC",
+            "message": "BIC",
+            "translation": "BIC",
             "translatorComment": "Copied from source.",
             "fuzzy": true
         },
         {
-            "id": "Bank name (if required)",
-            "message": "Bank name (if required)",
-            "translation": "Bank name (if required)",
+            "id": "Bank name",
+            "message": "Bank name",
+            "translation": "Bank name",
             "translatorComment": "Copied from source.",
             "fuzzy": true
         },
         {
-            "id": "%.2f EUR",
-            "message": "%.2f EUR",
-            "translation": "%.2f EUR",
-            "translatorComment": "Copied from source.",
-            "fuzzy": true
-        },
-        {
-            "id": "Purpose",
-            "message": "Purpose",
-            "translation": "Purpose",
+            "id": "Reference",
+            "message": "Reference",
+            "translation": "Reference",
             "translatorComment": "Copied from source.",
             "fuzzy": true
         },
