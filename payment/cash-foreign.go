@@ -47,7 +47,7 @@ func (CashForeign) Name(l lang.Lang) string {
 	return l.Tr("Cash in Foreign Currency")
 }
 
-func (cash CashForeign) PayHTML(purchaseID, paymentKey, redirectURL string, l lang.Lang) (template.HTML, error) {
+func (cash CashForeign) PayHTML(offerOnion bool, purchaseID, paymentKey, redirectURL string, l lang.Lang) (template.HTML, error) {
 	date, err := cash.Purchases.PurchaseCreationDate(purchaseID, paymentKey)
 	if err != nil {
 		log.Printf("error getting purchase creation date from database: %v", err)

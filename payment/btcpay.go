@@ -8,6 +8,7 @@ import (
 	"log"
 	"math"
 	"net/http"
+	"net/url"
 	"strconv"
 	"strings"
 	"time"
@@ -26,6 +27,7 @@ var btcpayTmpl = template.Must(template.ParseFS(htmlfiles, "btcpay.html"))
 type btcpayTmplData struct {
 	lang.Lang
 	DefaultLanguage string
+	OfferOnion      bool
 	PurchaseID      string
 	PaymentKey      string
 	RedirectURL     string
@@ -33,8 +35,9 @@ type btcpayTmplData struct {
 }
 
 type createdInvoice struct {
-	ID   string
-	Time int64
+	ID           string
+	Time         int64
+	CheckoutLink string // clearnet link from btcpay.Invoice, more robust than recreating it from invoice id
 }
 
 var lastInvoice = make(map[string]createdInvoice) // key: purchase ID
@@ -69,11 +72,12 @@ func (BTCPay) Name(l lang.Lang) string {
 	return l.Tr("Monero or Bitcoin")
 }
 
-func (b BTCPay) PayHTML(purchaseID, paymentKey, redirectURL string, l lang.Lang) (template.HTML, error) {
+func (b BTCPay) PayHTML(offerOnion bool, purchaseID, paymentKey, redirectURL string, l lang.Lang) (template.HTML, error) {
 	buf := &bytes.Buffer{}
 	err := btcpayTmpl.Execute(buf, btcpayTmplData{
 		Lang:            l,
 		DefaultLanguage: l.Prefix,
+		OfferOnion:      offerOnion && b.Store.HostOnion != "",
 		PurchaseID:      purchaseID,
 		PaymentKey:      paymentKey,
 		RedirectURL:     redirectURL,
@@ -100,10 +104,15 @@ func (b BTCPay) createInvoice(w http.ResponseWriter, r *http.Request) http.Handl
 	purchaseID := r.PostFormValue("purchase-id")
 	paymentKey := r.PostFormValue("payment-key")
 	redirectURL := r.PostFormValue("redirect-url")
+	useOnion := r.PostFormValue("onion") != "" && b.Store.HostOnion != ""
 
 	// redirect to existing invoice if it is younger than 15 minutes
 	if last, ok := lastInvoice[purchaseID+":"+paymentKey]; ok && time.Now().Unix()-last.Time < 15*60 {
-		return http.RedirectHandler(b.Store.InvoiceCheckoutLink(last.ID, strings.HasSuffix(r.Host, ".onion") || strings.Contains(r.Host, ".onion:")), http.StatusSeeOther)
+		redir := last.CheckoutLink
+		if useOnion {
+			redir, _ = url.JoinPath(b.Store.HostOnion, "i", last.ID) // assemble onion path on our own
+		}
+		return http.RedirectHandler(redir, http.StatusSeeOther)
 	}
 
 	dueCents, err := b.Purchases.PurchaseDueCents(purchaseID, paymentKey)
@@ -132,11 +141,16 @@ func (b BTCPay) createInvoice(w http.ResponseWriter, r *http.Request) http.Handl
 	})
 
 	lastInvoice[purchaseID+":"+paymentKey] = createdInvoice{
-		ID:   invoice.ID,
-		Time: time.Now().Unix(),
+		ID:           invoice.ID,
+		Time:         time.Now().Unix(),
+		CheckoutLink: invoice.CheckoutLink,
 	}
 
-	return http.RedirectHandler(b.Store.InvoiceCheckoutLink(invoice.ID, strings.HasSuffix(r.Host, ".onion") || strings.Contains(r.Host, ".onion:")), http.StatusSeeOther)
+	redir := invoice.CheckoutLink
+	if useOnion {
+		redir, _ = url.JoinPath(b.Store.HostOnion, "i", invoice.ID) // assemble onion path on our own
+	}
+	return http.RedirectHandler(redir, http.StatusSeeOther)
 }
 
 // redirects to purchase (URL stored in cookie) after payment, so we don't have to give the purchase URL to the BTCPay Server

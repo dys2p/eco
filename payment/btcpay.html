@@ -5,7 +5,13 @@
 	<input type="hidden" name="purchase-id" value="{{.PurchaseID}}">
 	<input type="hidden" name="payment-key" value="{{.PaymentKey}}">
 	<input type="hidden" name="redirect-url" value="{{.RedirectURL}}">
-	<button type="submit" class="btn btn-primary mb-2">{{.Tr "Pay using Monero or Bitcoin"}}</button>
+	{{if .OfferOnion}}
+		<!-- always show clearnet BTCPay link because BTCPay onion might be down -->
+		<button type="submit" class="btn btn-primary mb-2 me-2">{{.Tr "Pay"}} (Clearnet)</button>
+		<button type="submit" class="btn btn-primary mb-2" name="onion" value="_"><i class="fa-brands fa-tor-browser"></i> {{.Tr "Pay"}} (Tor Onion service)</button>
+	{{else}}
+		<button type="submit" class="btn btn-primary mb-2">{{.Tr "Pay with Monero or Bitcoin"}}</button>
+	{{end}}
 
 	{{if .Status}}
 		<div id="btcpay-status" class="mb-2"></div>

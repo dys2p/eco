@@ -122,9 +122,14 @@
             "translation": "Bezahle den angegebenen Betrag in Monero (XMR) oder Bitcoin (BTC). Der Betrag muss innerhalb von 60 Minuten vollständig und als einzelne Transaktion auf der angegebenen Adresse eingehen. Falls deine Zahlung verspätet eintrifft, müssen wir sie manuell bestätigen. Im Zweifel kontaktiere uns bitte."
         },
         {
-            "id": "Pay using Monero or Bitcoin",
-            "message": "Pay using Monero or Bitcoin",
-            "translation": "Zur Bezahlung mit Monero oder Bitcoin"
+            "id": "Pay",
+            "message": "Pay",
+            "translation": "Bezahlen"
+        },
+        {
+            "id": "Pay with Monero or Bitcoin",
+            "message": "Pay with Monero or Bitcoin",
+            "translation": "Bezahlen mit Monero oder Bitcoin"
         },
         {
             "id": "Send cash in an insured letter or package to our store address in Germany. After we take out the money, we shred the letter. Please check the cash shipment limits of your postal company (e. g. Deutsche Post „Einschreiben Wert“ up to 100 Euros within Germany, DHL Parcel up to 500 Euros). Send it to:",

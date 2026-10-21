@@ -52,7 +52,7 @@ func (SEPA) Name(l lang.Lang) string {
 	return l.Tr("Bank Transfer to our SEPA Account")
 }
 
-func (sepa SEPA) PayHTML(purchaseID, paymentKey, redirectURL string, l lang.Lang) (template.HTML, error) {
+func (sepa SEPA) PayHTML(offerOnion bool, purchaseID, paymentKey, redirectURL string, l lang.Lang) (template.HTML, error) {
 	eurocents, err := sepa.Purchases.PurchaseDueCents(purchaseID, paymentKey)
 	if err != nil {
 		log.Printf("error getting purchase due from database: %v", err)

@@ -27,7 +27,7 @@ type Method interface {
 	Handler() http.Handler
 	ID() string
 	Name(l lang.Lang) string
-	PayHTML(purchaseID, paymentKey, redirectURL string, l lang.Lang) (template.HTML, error)
+	PayHTML(offerOnion bool, purchaseID, paymentKey, redirectURL string, l lang.Lang) (template.HTML, error)
 	VerifiesAdult() bool
 }
 
