@@ -1,0 +1,39 @@
+<link href="{{.APIPath}}static/dropzone/basic.min.css" rel="stylesheet">
+<link href="{{.APIPath}}static/dropzone/dropzone.min.css" rel="stylesheet">
+<script src="{{.APIPath}}static/dropzone/dropzone.min.js"></script>
+<style>
+	.dz-error-mark g g {
+		fill: #dd0000;
+	}
+	.dz-success-mark g path {
+		fill: #009900;
+	}
+</style>
+<form action="{{.UploadURL}}" method="post" class="dropzone mb-3" id="dropzone-{{.ID}}"></form>
+<script>
+	// prevent "Error: Dropzone already attached."
+	Dropzone.autoDiscover = false;
+	// create imperatively, so we don't need the "camelized" crap
+	new Dropzone("#dropzone-{{.ID}}", {
+		addRemoveLinks: true,
+		dictRemoveFile: "Delete",
+		dictRemoveFileConfirmation: "Delete file?",
+		// see https://github.com/dropzone/dropzone/wiki/FAQ#how-to-show-files-already-stored-on-server
+		init: function() {
+			{{range .Images}}
+				this.displayExistingFile({ name: "{{.Filename}}", size: {{.Filesize}} }, "{{$.GetURLPrefix}}/{{.Path 300}}");
+			{{end}}
+		},
+		removedfile: function(file) {
+			var xhr = new XMLHttpRequest();
+			xhr.open("POST", '{{.DeleteURL}}');
+			xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+			xhr.onreadystatechange = function() {
+				if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
+					file.previewElement.remove();
+				}
+			}
+			xhr.send("name=" + file.name);
+		}
+	});
+</script>

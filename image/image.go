@@ -110,6 +110,7 @@ func (store Store) Upload(dir string, file multipart.File, header *multipart.Fil
 	return nil
 }
 
+// frontend handler, register it with http.StripPrefix around it
 func (store Store) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	maxSide, _ := strconv.Atoi(r.URL.Query().Get("m"))
 	if maxSide <= 0 || !slices.Contains(store.MaxSides, maxSide) {
