@@ -19,11 +19,11 @@ var htmlfiles embed.FS
 var tmpl = template.Must(template.ParseFS(htmlfiles, "dropzone.html"))
 
 type tmplData struct {
-	APIPath      string
 	ID           string
 	Images       []Image
 	DeleteURL    string
 	GetURLPrefix string
+	StaticPath   string
 	UploadURL    string
 }
 
@@ -70,11 +70,11 @@ func (store Store) DropzoneHTML(apiPath, dir string) (template.HTML, error) {
 
 	buf := &bytes.Buffer{}
 	err := tmpl.Execute(buf, tmplData{
-		APIPath:      path.Join("/", apiPath, "/"),
 		ID:           id,
 		Images:       store.Get(dir),
 		DeleteURL:    path.Join("/", apiPath, "delete", dir),
-		GetURLPrefix: path.Join("/", apiPath, "get", dir),
+		GetURLPrefix: path.Join("/", apiPath, "get"), // dir is already in Image.Path
+		StaticPath:   path.Join("/", apiPath, "static"),
 		UploadURL:    path.Join("/", apiPath, "upload", dir),
 	})
 	return template.HTML(buf.String()), err
