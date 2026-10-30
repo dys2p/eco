@@ -2,8 +2,6 @@
 //
 // Gross values are represented as int because they are usually explicit.
 // Net values are represented as float64 because they are usually intermediate.
-//
-// Note that the ISO 3166-1 code for Greece is "GR", but the VAT rate table uses its ISO 639-1 code "EL".
 package euvat
 
 import (
@@ -23,6 +21,17 @@ const (
 	RateSuperReduced Rate = "super-reduced"
 	RateParking      Rate = "parking"
 )
+
+// CountryCode returns "EL" for Greece, string(c) for other EU countries, and string(countries.NonEU) for the rest.
+func CountryCode(c countries.Country) string {
+	if c == countries.GR {
+		return "EL"
+	}
+	if c.InEU() {
+		return string(c)
+	}
+	return string(countries.NonEU)
+}
 
 // Gross returns the gross of the given net amount using the given VAT rate. The boolean return value indicates if the country and rate have been found.
 func Gross(c countries.Country, net float64, rate Rate) (int, bool) {
