@@ -31,18 +31,6 @@ type Method interface {
 	VerifiesAdult() bool
 }
 
-func Get(methods []Method, id string) (Method, error) {
-	for _, m := range methods {
-		if m.ID() == id {
-			return m, nil
-		}
-	}
-	if len(methods) > 0 {
-		return methods[0], nil
-	}
-	return nil, errors.New("no payment methods found")
-}
-
 // Note that payments don't necessarily add up exactly, e. g. BTCPay can be configured to consider a 99% paid invoice as fully paid.
 //
 // PaymentSettled also covers late BTCPay payments ("paid late", "AfterExpiration").
