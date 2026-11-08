@@ -6,7 +6,6 @@
 package payment
 
 import (
-	"errors"
 	"html/template"
 	"net/http"
 
