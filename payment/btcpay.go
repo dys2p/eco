@@ -47,7 +47,7 @@ type BTCPay struct {
 	Purchases PurchaseRepo
 
 	ErrCreateInvoice func(err error) http.Handler // should write an error message or error template to the ResponseWriter
-	ErrWebhook       func(err error) http.Handler
+	ErrWebhook       func(err error)
 	GetStatus        func() []btcpay.StatusItem
 }
 
@@ -60,7 +60,7 @@ func (b BTCPay) Handler() http.Handler {
 	mux.Handle("POST /payment/btcpay/create-invoice", httputil.HandlerFunc(b.createInvoice))
 	mux.Handle("GET  /payment/btcpay/redirect", httputil.HandlerFunc(b.redirect)) // after payment
 	mux.Handle("GET  /payment/btcpay/status", httputil.HandlerFunc(b.status))
-	mux.Handle("POST /payment/btcpay/webhook", httputil.HandlerFunc(b.webhook))
+	mux.Handle("POST /payment/btcpay/webhook", http.HandlerFunc(b.webhook))
 	return mux
 }
 
@@ -172,40 +172,40 @@ func (b BTCPay) status(w http.ResponseWriter, r *http.Request) http.Handler {
 	}
 }
 
-func (b BTCPay) webhook(w http.ResponseWriter, r *http.Request) http.Handler {
+func (b BTCPay) webhook(w http.ResponseWriter, r *http.Request) {
 	if b.ErrWebhook == nil {
-		b.ErrWebhook = func(err error) http.Handler {
+		b.ErrWebhook = func(err error) {
 			log.Printf("error processing btcpay webhook: %v", err)
-			return nil
 		}
 	}
 
 	event, err := b.Store.ParseInvoiceWebhook(r)
 	if err != nil {
-		return b.ErrWebhook(fmt.Errorf("getting event: %w", err))
+		b.ErrWebhook(fmt.Errorf("getting event: %w", err))
+		return
 	}
 	purchaseID, paymentKey, _ := strings.Cut(event.InvoiceMetadata.OrderID, ":")
 
 	switch event.Type {
 	case btcpay.EventInvoiceProcessing:
-		if err := b.Purchases.SetPurchaseProcessing(purchaseID, paymentKey); err != nil {
-			return b.ErrWebhook(fmt.Errorf("setting purchase %s processing: %w", purchaseID, err))
+		err := b.Purchases.SetPurchaseProcessing(purchaseID, paymentKey)
+		if err != nil {
+			b.ErrWebhook(fmt.Errorf("setting purchase %s processing: %w", purchaseID, err))
 		}
-		return nil
 	case btcpay.EventInvoiceSettled:
-		if err := b.Purchases.SetPurchasePaid(purchaseID, paymentKey, "BTCPay", b.Authenticates(), b.VerifiesAdult()); err != nil {
-			return b.ErrWebhook(fmt.Errorf("setting purchase %s paid: %w", purchaseID, err))
+		err := b.Purchases.SetPurchasePaid(purchaseID, paymentKey, "BTCPay", b.Authenticates(), b.VerifiesAdult())
+		if err != nil {
+			b.ErrWebhook(fmt.Errorf("setting purchase %s paid: %w", purchaseID, err))
 		}
-		return nil
 	case btcpay.EventInvoicePaymentSettled:
 		amountCrypto, _ := strconv.ParseFloat(event.Payment.Value, 64)
 		amountCents := int(math.Round(amountCrypto * event.Rate * 100.0))
-		if err := b.Purchases.PaymentSettled(purchaseID, paymentKey, "BTCPay", b.Authenticates(), b.VerifiesAdult(), event.Payment.ID, amountCents, event.AfterExpiration); err != nil {
-			return b.ErrWebhook(fmt.Errorf("setting purchase %s payment %s of %d: %w", purchaseID, event.Payment.ID, amountCents, err))
+		err := b.Purchases.PaymentSettled(purchaseID, paymentKey, "BTCPay", b.Authenticates(), b.VerifiesAdult(), event.Payment.ID, amountCents, event.AfterExpiration)
+		if err != nil {
+			b.ErrWebhook(fmt.Errorf("setting purchase %s payment %s of %d: %w", purchaseID, event.Payment.ID, amountCents, err))
 		}
-		return nil
 	default:
-		return b.ErrWebhook(fmt.Errorf("unknown event type: %s", event.Type))
+		b.ErrWebhook(fmt.Errorf("unknown event type: %s", event.Type))
 	}
 }
 
